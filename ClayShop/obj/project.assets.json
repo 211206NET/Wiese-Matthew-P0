@@ -1,0 +1,131 @@
+{
+  "version": 3,
+  "targets": {
+    "net6.0": {
+      "BL/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "DL": "1.0.0",
+          "Models": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/BL.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BL.dll": {}
+        }
+      },
+      "DL/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "Models": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/DL.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DL.dll": {}
+        }
+      },
+      "Models/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/Models.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Models.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "BL/1.0.0": {
+      "type": "project",
+      "path": "../BL/BL.csproj",
+      "msbuildProject": "../BL/BL.csproj"
+    },
+    "DL/1.0.0": {
+      "type": "project",
+      "path": "../Dl/DL.csproj",
+      "msbuildProject": "../Dl/DL.csproj"
+    },
+    "Models/1.0.0": {
+      "type": "project",
+      "path": "../Models/Models.csproj",
+      "msbuildProject": "../Models/Models.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net6.0": [
+      "BL >= 1.0.0",
+      "Models >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\khyri\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\khyri\\Revature\\NETFS\\team-Artificers\\TeamMisc\\Matthew\\Wiese-Matthew-P0\\ClayShop\\ClayShop.csproj",
+      "projectName": "ClayShop",
+      "projectPath": "C:\\Users\\khyri\\Revature\\NETFS\\team-Artificers\\TeamMisc\\Matthew\\Wiese-Matthew-P0\\ClayShop\\ClayShop.csproj",
+      "packagesPath": "C:\\Users\\khyri\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\khyri\\Revature\\NETFS\\team-Artificers\\TeamMisc\\Matthew\\Wiese-Matthew-P0\\ClayShop\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\khyri\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net6.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "projectReferences": {
+            "C:\\Users\\khyri\\Revature\\NETFS\\team-Artificers\\TeamMisc\\Matthew\\Wiese-Matthew-P0\\BL\\BL.csproj": {
+              "projectPath": "C:\\Users\\khyri\\Revature\\NETFS\\team-Artificers\\TeamMisc\\Matthew\\Wiese-Matthew-P0\\BL\\BL.csproj"
+            },
+            "C:\\Users\\khyri\\Revature\\NETFS\\team-Artificers\\TeamMisc\\Matthew\\Wiese-Matthew-P0\\Models\\Models.csproj": {
+              "projectPath": "C:\\Users\\khyri\\Revature\\NETFS\\team-Artificers\\TeamMisc\\Matthew\\Wiese-Matthew-P0\\Models\\Models.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net6.0": {
+        "targetAlias": "net6.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
