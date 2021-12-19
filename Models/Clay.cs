@@ -36,7 +36,7 @@ public class Clay
     public void ShowDesc()
     {
         //Console.WriteLine($"APN: {APN}");
-        if(Details.Count >= APN)//Safeguard to prevent out of range array
+        if(Details.Count >= 0)//Safeguard to prevent out of range array
         {
             Console.WriteLine($"Name: {Details[APN].Name}, Cost: {Details[APN].Cost}, "+
             $"Weight: {Details[APN].Weight}, Description: {Details[APN].Desc}");
@@ -75,6 +75,10 @@ public class Clay
 
     public string Name { get; set; } 
     public int APN { get; set; } //Assigned Product Number
+    public int ItemType = 0; //0 = clay, 1 = tools, 2 = equip
+    public double Weight { get; set; }//How many pounds one unit of this product weigh
+    public decimal Cost { get; set; }//Amount the store sells for
+    public string Desc { get; set; }//Description of product
 
     
     public List<ProdDetails> Details { get; }

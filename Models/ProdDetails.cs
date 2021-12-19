@@ -8,18 +8,21 @@ public class ProdDetails
     //Product Objects will reference this object to retrive detailed information
     public ProdDetails(){}
 
-    public ProdDetails(string name, double weight, decimal cost, string desc)
+    public ProdDetails(int itemType, int apn, string name, double weight, decimal cost, string desc)
     {
-         this.Name = name;
-         this.Weight = weight;
-         this.Cost = cost;
-         this.Desc = desc;
+        this.ItemType = itemType;
+        this.APN = apn;
+        this.Name = name;
+        this.Weight = weight;
+        this.Cost = cost;
+        this.Desc = desc;
     }
 
+    public int ItemType { get; set; }//0 = clay, 1 = tools, 2 = equip
     public string Name { get; set; }//Mirrored from product object
     public double Weight { get; set; }//How many pounds one unit of this product weigh
     public decimal Cost { get; set; }//Amount the store sells for
-
+    public int APN { get; set; }//Assigned Product Number
     public string Desc { get; set; }//Description of product
 
 }

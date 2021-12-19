@@ -9,6 +9,7 @@ public MainMenu(IBL bl)
     _bl = bl;
 }
 
+public int chosenStore = 0; //Which store the user currently has chosen
 
 public void Start() 
 {
@@ -16,42 +17,42 @@ public void Start()
 List<Store> allStores = _bl.GetAllStores();
 
 //List<Store> allStores = new List<Store>();
-bool doOnce = false;
-int idStamp = 1;
+// bool doOnce = false;
+// int idStamp = 1;
 //PLACE HOLDER
 //Set up inventory for now (Place-holder until data=base)
 //Because data is deleted each time this is closed, for now I
 //have the data for stores and inventory hard coded at the start 
 //of the scripts for testing
-if(doOnce == false){
-Store store1 = new Store
-{
-    StoreID = idStamp,
-    StoreName = "Randal's Clay Shop",
-    City = "Tacoma",
-    State = "WA"
-};
-Store store2 = new Store
-{
-    StoreID = idStamp+1,
-    StoreName = "Mary's Modeling Clay Shop",
-    City = "Tacoma",
-    State = "WA"
-};
-Store store3 = new Store
-{
-    StoreID = idStamp+2,
-    StoreName = "The Clay Zone",
-    City = "Tacoma",
-    State = "WA"
-};
+// if(doOnce == false){
+// Store store1 = new Store
+// {
+//     StoreID = idStamp,
+//     StoreName = "Randal's Clay Shop",
+//     City = "Tacoma",
+//     State = "WA"
+// };
+// Store store2 = new Store
+// {
+//     StoreID = idStamp+1,
+//     StoreName = "Mary's Modeling Clay Shop",
+//     City = "Tacoma",
+//     State = "WA"
+// };
+// Store store3 = new Store
+// {
+//     StoreID = idStamp+2,
+//     StoreName = "The Clay Zone",
+//     City = "Tacoma",
+//     State = "WA"
+// };
 
-allStores.Add(store1);
-allStores.Add(store2);
-allStores.Add(store3);
-idStamp = 4; //The next store to be made will have this ID
-doOnce = true;
-}//end PLACE HOLDER to get initial stores
+// allStores.Add(store1);
+// allStores.Add(store2);
+// allStores.Add(store3);
+// idStamp = 4; //The next store to be made will have this ID
+// doOnce = true;
+// }//end PLACE HOLDER to get initial stores
 
 //Clay Shop! Matthew Wiese: P0
 Console.WriteLine("Welcome to the plasticine clay shop.\n" +
@@ -59,7 +60,6 @@ Console.WriteLine("Welcome to the plasticine clay shop.\n" +
 
 bool exit = false;
 int pos = 0; //Position, where the user is currently in the application
-int chosenStore = 0; //Which store the user currently has chosen
 
 
 //Main Loop
@@ -69,8 +69,25 @@ while(!exit)
     {
         //Login
         case 0:
-            Console.WriteLine("Login Here: (Place holder: Enter any value to continue)");
-            Console.ReadLine(); //PLACE HOLDER
+            Console.WriteLine("1.) Login Here");
+            Console.WriteLine("2.) No account? Create an account.");//1.)
+            string choose = Console.ReadLine(); //PLACE HOLDER
+
+            switch(choose)
+            {
+                case "1":
+
+                break;
+
+                case "2":
+
+                break;
+
+                default:
+                    Console.WriteLine("Input a correct choice.");
+                break;
+            }
+
             pos = 1;
         break;
 
@@ -84,10 +101,11 @@ while(!exit)
                 Console.WriteLine($"[{i}], Store ID: {allStores[i].StoreID}, "+
                 $"Store Name: {allStores[i].StoreName}, "+
                 $"City: {allStores[i].City}, "+
-                $"State: {allStores[i].State}\n");
+                $"State: {allStores[i].State}");
                 allStores[i].SetUp(); //Tell store to generate inventory PLACE HOLDER
             }
-            Console.WriteLine("[ADMIN] Add a store: enter 'a'");//Go to case 6 main switch
+            //Console.WriteLine("[ADMIN] Add a store: enter 'a'");//Go to case 6 main switch
+            Console.WriteLine("[a], <ADMIN> Manage store");//Go to case 6 main switch
             string select = Console.ReadLine();
             if(select == "a" || select == "A") //User wants to add a store
             {
@@ -101,15 +119,14 @@ while(!exit)
             }
         break;
 
-        //Store Main Menu
+        //Store Customer Main Menu 
         case 2:
-            Console.WriteLine($"{allStores[chosenStore].StoreName}\nWhat would you like to do?");
-            Console.WriteLine("1.) View Clays");//1.)
-            Console.WriteLine("2.) View Professional Clay Tools");//2.) 
-            Console.WriteLine("3.) View Claymation Studio Accessories");//3.) 
-            Console.WriteLine("4.) Return to Store Selection");//4.)  
-            Console.WriteLine("5.) Add new product to inventory");//5.)  
-            Console.WriteLine("6.) Change quantity of an inventory [UNDER CONSTRUCTION]");//6.)  
+            Console.WriteLine($"\nWelcome to {allStores[chosenStore].StoreName}\nWhat would you like to do?");
+            Console.WriteLine("1.) Browse Clays");//1.)
+            Console.WriteLine("2.) Browse Professional Clay Tools");//2.) 
+            Console.WriteLine("3.) Browse Claymation Studio Accessories");//3.) 
+            Console.WriteLine("4.) Return to Store Selection [ Warning: This will clear items in your cart! ]");//4.)   
+            Console.WriteLine("5.) Checkout");//5.)  
             Console.WriteLine("x.) Exit");//x.) 
 
             string input = Console.ReadLine();
@@ -129,16 +146,13 @@ while(!exit)
                     pos = 1;//Return to Store Selection
                 break;
                 case "5":
-                    pos = 7;//Add New Item
-                break;
-                case "6":
-                    pos = 1;//Change Qty [UNDER CONSTRUCTION] PLACE HOLDER
+                    pos = 7;//Checkout
                 break;
                 case "x":
                     exit = true;//Exit App
                 break;
                 default:
-                    Console.WriteLine("Please enter 1,2,3,4 or x");
+                    Console.WriteLine("Please enter 1,2,3,4,5 or x");
                 break;
             }//End Switch pos == 2 
         break;
@@ -167,6 +181,8 @@ while(!exit)
                     {
                         inv2.ShowDesc();
                     }
+                    //Add to cart option here:
+
                 }
             }
             Console.WriteLine("\nEnter any value to return to main menu");
@@ -200,42 +216,47 @@ while(!exit)
 
         //Add a New Store
         case 6:
-            //Get user input
-            Console.WriteLine("Enter a store name:");
-            string userStoreName = Console.ReadLine();
-            Console.WriteLine("Enter the city of the store:");
-            string userCity = Console.ReadLine();
-            Console.WriteLine("Enter the state of the store:");
-            string userState = Console.ReadLine();
-            //Add user data to new store generation
-            Store storeNew = new Store
-            {
-                StoreID = idStamp,
-                StoreName = userStoreName,
-                City = userCity,
-                State = userState
-            };
-            //allStores.AddStore(storeNew);
-            _bl.AddStore(storeNew);
-            //allStores.Add(storeNew); //Plug new store into store list
-            Console.WriteLine($"[{idStamp}] Store: {userStoreName} successfully created!\n");
-            //chosenStore = idStamp; //Set current store to store just made
-            idStamp++; //Add to idStamp for next store
-            pos = 1; //Return to store selection
+        
+                    
+            Console.WriteLine($"Pos: {pos}");
+            //Here, I instantiated an implementation of IRepo (FileRepo)
+            IRepo repo = new FileRepo();
+            //next, I instantiated CSBL (an implementation of IBL) and then injected IRepo implementation for IBL/CSBL
+            IBL bl = new CSBL(repo);
+            //Finally, I instantiate MngMenu that needs an instance that implements Business Logic class
+            Management mngMenu = new Management(bl);
+            mngMenu.chosenStore = this.chosenStore;
+            //Reset local settings for when returning to this menu
+            chosenStore = 0;
+            pos = 1;
+            mngMenu.Start();
+
+            // //Get user input
+            // Console.WriteLine("Enter a store name:");
+            // string userStoreName = Console.ReadLine();
+            // Console.WriteLine("Enter the city of the store:");
+            // string userCity = Console.ReadLine();
+            // Console.WriteLine("Enter the state of the store:");
+            // string userState = Console.ReadLine();
+            // //Add user data to new store generation
+            // Store storeNew = new Store
+            // {
+            //     StoreID = idStamp,
+            //     StoreName = userStoreName,
+            //     City = userCity,
+            //     State = userState
+            // };
+            // //allStores.AddStore(storeNew);
+            // _bl.AddStore(storeNew);
+            // //allStores.Add(storeNew); //Plug new store into store list
+            // Console.WriteLine($"[{idStamp}] Store: {userStoreName} successfully created!\n");
+            // //chosenStore = idStamp; //Set current store to store just made
+            // idStamp++; //Add to idStamp for next store
+            // pos = 1; //Return to store selection
         break;
 
+        //Checkout/Shopping Cart
         case 7:
-            //Add a new item 
-            //Yeah um... no
-            //List<Clay> addClay = _bl.AddClay(1,dsds);
-            // List<Store> addClay = _bl.AddClay(id,sendClay);
-            
-            // Clay storeClay = new Clay
-            // {
-            //     StoreID = chosenStore,
-            //     Name = "Hard Clay"
-            // };
-            // addClay.Add(storeClay);
 
         break;
 

@@ -9,6 +9,7 @@
       "ClayShop/1.0.0": {
         "dependencies": {
           "BL": "1.0.0",
+          "DL": "1.0.0",
           "Models": "1.0.0"
         },
         "runtime": {

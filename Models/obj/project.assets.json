@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\khyri\\Revature\\NETFS\\team-Artificers\\TeamMisc\\Matthew\\Wiese-Matthew-P0\\Models\\Models.csproj",
+      "projectUniqueName": "C:\\Users\\khyri\\Revature\\NETFS\\Wiese-Matthew-P0\\Models\\Models.csproj",
       "projectName": "Models",
-      "projectPath": "C:\\Users\\khyri\\Revature\\NETFS\\team-Artificers\\TeamMisc\\Matthew\\Wiese-Matthew-P0\\Models\\Models.csproj",
+      "projectPath": "C:\\Users\\khyri\\Revature\\NETFS\\Wiese-Matthew-P0\\Models\\Models.csproj",
       "packagesPath": "C:\\Users\\khyri\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\khyri\\Revature\\NETFS\\team-Artificers\\TeamMisc\\Matthew\\Wiese-Matthew-P0\\Models\\obj\\",
+      "outputPath": "C:\\Users\\khyri\\Revature\\NETFS\\Wiese-Matthew-P0\\Models\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\khyri\\AppData\\Roaming\\NuGet\\NuGet.Config",
