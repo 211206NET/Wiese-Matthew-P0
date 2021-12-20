@@ -3,8 +3,6 @@ namespace Models;
 public class Customers
 {
 
-    public List<Customers> CustomerList = new List<Customers>(); //Local Customer
-
     public Customers(int cs, string userName, string pw)
     {
         this.CustNumb = cs;

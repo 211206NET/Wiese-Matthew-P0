@@ -20,4 +20,17 @@ public interface IRepo
     void AddClay(int StoreIndex, Clay clayToAdd);
     void AddTools(int StoreIndex, Tools toolsToAdd);
     void AddEquip(int StoreIndex, Equip equipToAdd);
+
+    List<Customers> GetAllCustomers();
+
+    //void AddCustomer(int customerIndex, Customers customerToAdd);
+    void AddCustomer(int custNum, string userName, string pass);
+
+    //Carried Items
+
+    //AddCarried
+    List<ProdDetails> GetAllCarried();
+
+    void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
+
 }

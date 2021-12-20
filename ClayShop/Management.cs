@@ -29,6 +29,7 @@ public class Management
             Console.WriteLine("[1] Select current store:");
             Console.WriteLine("[2] Change inventory:");
             Console.WriteLine("[3] Adjust/Add store info:");
+            Console.WriteLine("[4] Change carried items:");
             Console.WriteLine("[x] Return to main menu:");
             string choose = Console.ReadLine();
             switch(choose)
@@ -103,8 +104,21 @@ public class Management
 
                 //Adjust/Add Store Info:
                 case "3":
-                    
                     Console.WriteLine("Changing Store Address etc. Or deleting store");
+                break;
+
+                //Adjust carried items
+                case "4":
+                    Console.WriteLine("Change carried items.");
+                    
+                    //Here, I instantiated an implementation of IRepo (FileRepo)
+                    IRepo repo = new FileRepo();
+                    //next, I instantiated CSBL (an implementation of IBL) and then injected IRepo implementation for IBL/CSBL
+                    IBL bl = new CSBL(repo);
+                    //Finally, I instantiate carrMenu that needs an instance that implements Business Logic class
+                    InventoryCtrl carrMenu = new InventoryCtrl(bl);
+                    //Reset local settings for when returning to this menu
+                    carrMenu.Start();
                 break;
 
                 case "x":

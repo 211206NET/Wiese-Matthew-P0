@@ -16,51 +16,17 @@ public void Start()
 
 List<Store> allStores = _bl.GetAllStores();
 
-//List<Store> allStores = new List<Store>();
-// bool doOnce = false;
-// int idStamp = 1;
-//PLACE HOLDER
-//Set up inventory for now (Place-holder until data=base)
-//Because data is deleted each time this is closed, for now I
-//have the data for stores and inventory hard coded at the start 
-//of the scripts for testing
-// if(doOnce == false){
-// Store store1 = new Store
-// {
-//     StoreID = idStamp,
-//     StoreName = "Randal's Clay Shop",
-//     City = "Tacoma",
-//     State = "WA"
-// };
-// Store store2 = new Store
-// {
-//     StoreID = idStamp+1,
-//     StoreName = "Mary's Modeling Clay Shop",
-//     City = "Tacoma",
-//     State = "WA"
-// };
-// Store store3 = new Store
-// {
-//     StoreID = idStamp+2,
-//     StoreName = "The Clay Zone",
-//     City = "Tacoma",
-//     State = "WA"
-// };
-
-// allStores.Add(store1);
-// allStores.Add(store2);
-// allStores.Add(store3);
-// idStamp = 4; //The next store to be made will have this ID
-// doOnce = true;
-// }//end PLACE HOLDER to get initial stores
+List<Customers> allCustomers = _bl.GetAllCustomers();
 
 //Clay Shop! Matthew Wiese: P0
 Console.WriteLine("Welcome to the plasticine clay shop.\n" +
 "Here we have the best clay for claymation.");
 
 bool exit = false;
+bool canLog = false; //For making new customer
+bool canMake = false; //For making new customer
+bool manager = false; //If Manager is logged in
 int pos = 0; //Position, where the user is currently in the application
-
 
 //Main Loop
 while(!exit)
@@ -76,11 +42,74 @@ while(!exit)
             switch(choose)
             {
                 case "1":
+                
+                    while(!canLog)
+                    {
+                        //Login Functionality here
+                        Console.WriteLine("Enter user name here");
+                        string userNL = Console.ReadLine();
+                        Console.WriteLine("Enter password here");
+                        string pwL = Console.ReadLine();
 
+                        foreach(Customers custL in allCustomers)
+                        {
+                            if(custL.UserName == userNL && custL.Pass == pwL)
+                            {       
+                                canLog = true;
+                                //Check if manager login
+                                if(userNL.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
+                                if(manager == true){Console.WriteLine($"\nWelcome back manager {userNL}!\n");}else
+                                {Console.WriteLine($"\nWelcome back {userNL}!\n");}
+                            }
+                        }
+                        
+                        if(!canLog){Console.WriteLine("\nUser name and/or password incorrect, please try again\n");}
+                    }
+
+
+                    pos = 1;
                 break;
 
                 case "2":
 
+                    while(!canMake)
+                    {
+                        //Make new customer
+                        Console.WriteLine("Enter user name here");
+                        string userN = Console.ReadLine();
+
+                        Console.WriteLine("Enter new password here");
+                        string pw1 = Console.ReadLine();
+                        Console.WriteLine("Re-enter new password here");
+                        string pw2 = Console.ReadLine();
+
+                        //Note: to make a manager login, the user name must contain the string "MNG"
+                        //The system for restricting a manager account to be created is not built yet
+
+                        if(pw1 == pw2)
+                        {
+                            canMake = true;
+                            //Check if this customer already exists
+                            foreach(Customers custo in allCustomers)
+                            {
+                                if(custo.UserName == userN)
+                                {
+                                    //An account with this name already exists
+                                    canMake = false;
+                                    Console.WriteLine("Sorry, but an account with this name already exists.");
+                                }else{canMake = true;}    
+                            }
+                        }else{canMake = false;}
+
+                        if(canMake == true)
+                        {
+                           // _bl.AddCustomer(newCust);
+                            _bl.AddCustomer(0,userN,pw1);
+                        }
+
+                        //Check if manager login
+                        if(userN.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
+                    }
                 break;
 
                 default:
@@ -88,7 +117,7 @@ while(!exit)
                 break;
             }
 
-            pos = 1;
+            if(canMake == true || canLog == true){pos = 1;}else{pos = 0;}
         break;
 
         //Select Store
@@ -105,18 +134,18 @@ while(!exit)
                 allStores[i].SetUp(); //Tell store to generate inventory PLACE HOLDER
             }
             //Console.WriteLine("[ADMIN] Add a store: enter 'a'");//Go to case 6 main switch
-            Console.WriteLine("[a], <ADMIN> Manage store");//Go to case 6 main switch
+            if(manager == true){Console.WriteLine("[a], <ADMIN> Manage store");//Go to case 6 main switch
             string select = Console.ReadLine();
             if(select == "a" || select == "A") //User wants to add a store
             {
                 pos = 6;
                 break;
-            }
-            else
-            {
-                chosenStore = Int32.Parse(select);   //User inputs a choice
-                pos = 2;
-            }
+            }}
+
+            //Normal customer login
+            chosenStore = Int32.Parse(Console.ReadLine());   //User inputs a choice
+            pos = 2;
+            
         break;
 
         //Store Customer Main Menu 

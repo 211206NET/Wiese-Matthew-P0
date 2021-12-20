@@ -40,4 +40,43 @@ public class StaticStorage : IRepo
     {
         StaticStorage._allStore[equipIndex].locEquip.Add(equipToAdd);
     }
+    
+    
+ 
+    
+    //Customers
+    private static List<Customers> _allCust = new List<Customers>(); 
+
+    public List<Customers> GetAllCustomers()
+    {
+        return StaticStorage._allCust;
+    }
+    
+    public void AddCustomer(int custNum, string userName, string pass)
+    {
+        if(userName != null){
+        StaticStorage._allCust[custNum].UserName = userName;
+        StaticStorage._allCust[custNum].Pass = pass;}
+    }
+
+    //Carried Items
+    private static List<ProdDetails> _allCarr = new List<ProdDetails>(); 
+
+    public List<ProdDetails> GetAllCarried()
+    {
+        return StaticStorage._allCarr;
+    }
+
+    public void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
+    {
+        //_dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
+        if(itemName != null)
+        {
+            StaticStorage._allCarr[itemNum].Name = itemName;
+            StaticStorage._allCarr[itemNum].ItemType = itemType;
+            StaticStorage._allCarr[itemNum].Desc = itemDesc;
+            StaticStorage._allCarr[itemNum].Cost = itemCost;
+            StaticStorage._allCarr[itemNum].Weight = itemWeight;
+        }
+    }
 }

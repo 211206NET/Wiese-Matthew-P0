@@ -19,16 +19,16 @@ public class FileRepo : IRepo
         return JsonSerializer.Deserialize<List<Store>>(jsonString); //Bug
     }
 
-    public Store GetStoreByIndex(int index)
-    {
-        List<Store> allStores = GetAllStores();
-        // for(int i = 0; i < allStores.Count; i++)
-        // {
-        //     if(i == index) return allStores[i];
-        // }
+    // public Store GetStoreByIndex(int index)
+    // {
+    //     List<Store> allStores = GetAllStores();
+    //     // for(int i = 0; i < allStores.Count; i++)
+    //     // {
+    //     //     if(i == index) return allStores[i];
+    //     // }
 
-        return allStores[index];
-    }
+    //     return allStores[index];
+    // }
 
     public void AddStore(Store restToAdd)
     {
@@ -115,40 +115,94 @@ public class FileRepo : IRepo
     }
 
 
-    //=======================<<<< CUSTOMER SECTION  >>>>===========================\\
+    //=======================<<<<  CUSTOMER SECTION  >>>>===========================\\
     
+    private string filePathC = "../DL/Customers.json";
+
     //public List<Customers> CustomerList = new List<Customers>(); //Local Customer
     public List<Customers> GetAllCustomers()
     {
-        string jsonString = File.ReadAllText(filePath);
+        string jsonString = File.ReadAllText(filePathC);
 
-        return JsonSerializer.Deserialize<List<Customers>>(jsonString); //Bug
+        return JsonSerializer.Deserialize<List<Customers>>(jsonString); 
     }
 
-    public Customers GetCustomerByIndex(int index)
-    {
-        List<Customers> allCustomers = GetAllCustomers();
-        return allCustomers[index];
-    }
+    // public Customers GetCustomerByIndex(int index)
+    // {
+    //     List<Customers> allCustomers = GetAllCustomers();
+    //     return allCustomers[index];
+    // }
 
-    public void AddCustomer(string userName, string pass)
+    public void AddCustomer(int custNum, string userName, string pass)
     {
         int custNumbAssg = 0;
+        bool canMake = true; //Can make new account
 
-        //1. Grab all Customers
+        //1. Grab all customers
         List<Customers> allCustomers = GetAllCustomers();
-        custNumbAssg = allCustomers.Count+1; //Get next customer number
+        custNumbAssg = allCustomers.Count; //Get next customer number
 
-        Customers newCust = new Customers {
-            CustNumb = custNumbAssg,
-            UserName = userName,
-            Pass = pass
-        };
+        if(canMake == true)
+        {
+            //2. Set new customer data
+            Customers newCust = new Customers {
+                CustNumb = custNumbAssg,
+                UserName = userName,
+                Pass = pass
+            };
 
-        allCustomers.Add(newCust);
+            //3. Append Custoemrs 
+            allCustomers.Add(newCust);
 
-        //4. Write to file
-        string jsonString = JsonSerializer.Serialize(allCustomers);
-        File.WriteAllText(filePath, jsonString);
+            //4. Write to file
+            string jsonString = JsonSerializer.Serialize(allCustomers);
+            File.WriteAllText(filePathC, jsonString);
+        }
+    }
+
+
+    //=======================<<<<   CARRIED ITEMS   >>>>===========================\\
+
+    private string filePathIC = "../DL/Carried.json";
+
+    //AddCarried
+    public List<ProdDetails> GetAllCarried()
+    {
+        string jsonString = File.ReadAllText(filePathIC);
+        return JsonSerializer.Deserialize<List<ProdDetails>>(jsonString); //Bug
+    }
+
+    public void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
+    {
+        //_dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
+        
+        int carrNumbAssg = 0;
+        bool canMake = true; //Can make new account
+
+        //1. Grab all customers
+        List<ProdDetails> allCarried = GetAllCarried();
+        carrNumbAssg = allCarried.Count; //Get next customer number
+
+        if(canMake == true)
+        {
+            //2. Set new customer data
+            ProdDetails newCarry = new ProdDetails {
+                APN = carrNumbAssg,
+                Name = itemName,
+                ItemType = itemType,
+                Desc = itemDesc,
+                Cost = itemCost,
+                Weight = itemWeight
+            };
+            //void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
+
+            //3. Append Custoemrs 
+            allCarried.Add(newCarry);
+
+            //4. Write to file
+            string jsonString = JsonSerializer.Serialize(allCarried);
+            File.WriteAllText(filePathIC, jsonString);
+        }
+
     }
 }

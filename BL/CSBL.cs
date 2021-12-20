@@ -56,4 +56,33 @@ public class CSBL : IBL
     {
         _dl.AddEquip(storeIndex, equipToAdd);
     }
+
+
+    //Customers
+    
+    public List<Customers> GetAllCustomers()
+    {
+        return _dl.GetAllCustomers();
+    }
+    public void AddCustomer(int custNum, string userName, string pass)
+    {
+        _dl.AddCustomer(custNum, userName, pass);
+    }
+
+    //Carried Items
+
+    //AddCarried
+    public List<ProdDetails> GetAllCarried()
+    {
+        return _dl.GetAllCarried();
+    }
+
+
+    //public void AddCarried(ProdDetails addDetails)
+    public void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
+    {
+        _dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
+        //_dl.AddCarried(addDetails);
+    }
+
 }
