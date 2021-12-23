@@ -21,7 +21,7 @@ public class InventoryCtrl
             //Management Menu
             Console.WriteLine("Select an action:");
             Console.WriteLine("[0] Add item to list of carried items:");//Done
-            Console.WriteLine("[1] Remove item from list of carried items:");
+            Console.WriteLine("[1] Remove item from list of carried items and purge from all stores:");//Done
             Console.WriteLine("[2] Make changes to item on carried items list:");//Done
             Console.WriteLine("[x] Return to management menu:");//Done
 
@@ -63,6 +63,49 @@ public class InventoryCtrl
                 
                 //Remove item from list of carried items:
                 case "1":
+                    List<ProdDetails> allCarriedDelete = _bl.GetAllCarried();
+
+                    //Show list of carried items
+                    string itemTypeStrD; itemTypeStrD = "";
+                    //Show list of all carried items, manager can select which one to modify
+                    for(int i = 0; i < allCarriedDelete.Count; i++)  
+                    {
+                        if(allCarriedDelete[i].ItemType == 0){itemTypeStrD = "Clay";}
+                        if(allCarriedDelete[i].ItemType == 1){itemTypeStrD = "Tool";}
+                        if(allCarriedDelete[i].ItemType == 2){itemTypeStrD = "Equipment";}
+                        Console.WriteLine($"\n[{i}], APN: {allCarriedDelete[i].APN}, "+
+                        $"Item Name: {allCarriedDelete[i].Name}, "+
+                        $"Item Type: {itemTypeStrD}, "+
+                        $"Item Cost: {allCarriedDelete[i].Cost}, "+
+                        $"Item Weight: {allCarriedDelete[i].Weight}, \n"+
+                        $"\tItem Description: {allCarriedDelete[i].Desc}");
+                    }
+
+                    Console.WriteLine("Choose from the above items in the carried list to permanently delete.");
+                    string? chooseDlt = Console.ReadLine();
+                    bool resD; int aD;
+                    resD = Int32.TryParse(chooseDlt, out aD);
+                    if(resD)
+                    {
+                        int chsDlyInt = Int32.Parse(chooseDlt ?? "");
+                        //Ask manager if they are sure they want to remove this carried item
+                        Console.WriteLine($"Are you sure you want to remove the item: {allCarriedDelete[chsDlyInt].Name}? [y,n]");
+                        string decideD = Console.ReadLine() ?? "";
+                        if(decideD == "y")
+                        {
+                            // Console.WriteLine($"The item: {allCarriedDelete[chsDlyInt].Name} has been removed."+
+                            // "\nIt has been purged from all store inventories.\n");
+                            List<ProdDetails> allInventoryDelete = _bl.GetAllInventory(); //Get a list of the inventory
+                            int invDlyInt = 0;
+                            for(int i = 0; i < allInventoryDelete.Count; i++)
+                            {
+                                if(allInventoryDelete[i].APN == allCarriedDelete[chsDlyInt].APN) //Find the same item in the inventory list
+                                {invDlyInt = i;} //Log the index of the target item
+                            }
+                            _bl.RemoveInventory(invDlyInt); //Delete the item from store inventories as well
+                            _bl.RemoveCarried(chsDlyInt); //Removes from carried list, delete last as previous delete references this list
+                        }
+                    }
                 break;
 
                 //Make changes to item on carried items list:
@@ -87,7 +130,7 @@ public class InventoryCtrl
                         $"Item Type: {itemTypeStr}, "+
                         $"Item Cost: {getAllCarried2[i].Cost}, "+
                         $"Item Weight: {getAllCarried2[i].Weight}, \n"+
-                        $"Item Description: {getAllCarried2[i].Desc}\n");
+                        $"\tItem Description: {getAllCarried2[i].Desc}");
                     }
 
                     //Ask manager to choose entry to modify

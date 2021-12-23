@@ -232,24 +232,14 @@ while(!exit)
         //Display Tool Inventory for Selected Store
         case 4:
             Console.WriteLine("Tool Inventory");
-            foreach(Tools tInv in allStores[chosenStore].locTools)
-            {
-                Console.WriteLine($"Tool Product: {tInv.Name}");
-            }
-            Console.WriteLine("Enter anything to continue:");
-            Console.ReadLine(); //For now take user input to continue
+
             pos = 2; //Return to main Menu
         break;
 
         //Display Studio Equipment Inventory for Selected Store
         case 5:
             Console.WriteLine("Studio Equipment Inventory");
-            foreach(Equip eInv in allStores[chosenStore].locEquip)
-            {
-                Console.WriteLine($"Equipment Product: {eInv.Name}");
-            }
-            Console.WriteLine("Enter anything to continue:");
-            Console.ReadLine(); //For now take user input to continue
+
             pos = 2; //Return to main Menu
         break;
 

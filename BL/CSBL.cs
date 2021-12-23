@@ -49,37 +49,10 @@ public class CSBL : IBL
     {
         _dl.ChangeInventory(storeIndex, apn, itemQty);
     }
-
-    /// <summary>
-    /// Adds a new clay item to Clay list
-    /// </summary>
-    /// <param name="storeIndex">Index of Store to add clay inventory to</param>
-    /// <param name="clayToAdd">A clay object to be added to store object</param>
-    public void AddClay(int storeIndex, Clay clayToAdd)
+    public void RemoveInventory(int invIndexToRemove)
     {
-        _dl.AddClay(storeIndex, clayToAdd);
+        _dl.RemoveInventory(invIndexToRemove);
     }
-
-    /// <summary>
-    /// Adds a new Tools item to Tools list
-    /// </summary>
-    /// <param name="storeIndex">Index of Store to add tools inventory to</param>
-    /// <param name="toolsToAdd">A tools object to be added to store object</param>
-    public void AddTools(int storeIndex, Tools toolsToAdd)
-    {
-        _dl.AddTools(storeIndex, toolsToAdd);
-    }
-
-    /// <summary>
-    /// Adds a new Equipment item to Tools list
-    /// </summary>
-    /// <param name="storeIndex">Index of Store to add equipment inventory to</param>
-    /// <param name="equipToAdd">A equipment object to be added to store object</param>
-    public void AddEquip(int storeIndex, Equip equipToAdd)
-    {
-        _dl.AddEquip(storeIndex, equipToAdd);
-    }
-
 
     ///<>Customers
     
@@ -114,6 +87,11 @@ public class CSBL : IBL
         _dl.ChangeCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
     }
 
-    //Show Carried
+    public void RemoveCarried(int carriedIndexToRemove)
+    {
+        _dl.RemoveCarried(carriedIndexToRemove);
+    }
+
+   
 
 }

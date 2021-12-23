@@ -20,11 +20,8 @@ public interface IRepo
     void ChangeStoreInfo(int storeIndex, string name, string city, string state);
     void RemoveStore(int StoreToRemove);
     void AddInventory(int storeIndex, ProdDetails invToAdd);
-    void ChangeInventory(int storeIndex, int apn, int itemQty);
-
-    void AddClay(int StoreIndex, Clay clayToAdd);
-    void AddTools(int StoreIndex, Tools toolsToAdd);
-    void AddEquip(int StoreIndex, Equip equipToAdd);
+    void ChangeInventory(int storeIndex, int apn, int itemQty);    
+    void RemoveInventory(int invIndexToRemove);
 
     List<Customers> GetAllCustomers();
 
@@ -40,5 +37,7 @@ public interface IRepo
 
     
     void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
+
+    void RemoveCarried(int carriedIndexToRemove);
 
 }

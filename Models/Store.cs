@@ -4,6 +4,12 @@ namespace Models;
 
 public class Store
 {
+    public List<ProdDetails> localInv = new List<ProdDetails>(); //Will store all inventory
+    
+    public string? StoreName { get; set; }
+    public int StoreID { get; set; }//Each different store has an ID 
+    public string? City { get; set; }
+    public string? State { get; set; }
 
     // private IBL _bl;
     // public Store(IBL bl)
@@ -38,10 +44,6 @@ public class Store
     //         //([A-Z]\w+/g)   /^[a-zA-Z0-9=!?']+$/g
     //     } 
     // }
-    public string? StoreName { get; set; }
-    public int StoreID { get; set; }//Each different store has an ID 
-    public string? City { get; set; }
-    public string? State { get; set; }
     //public bool Inited { get; set; } //If this Class ran at least once yet, IDK might be useful
     //public int CPN = 1; //{ get; set; } //Clay Product Number //unused
 
@@ -57,7 +59,6 @@ public class Store
     // }
 
     //New master item list
-    public List<ProdDetails> localInv = new List<ProdDetails>(); //Will store all inventory
 
     // public void RefreshInv()
     // {
@@ -65,9 +66,9 @@ public class Store
     // }
 
     //Old lists
-    public List<Clay> locClay = new List<Clay>(); //Local Clay Inventory
-    public List<Tools> locTools = new List<Tools>(); //Local Clay Inventory
-    public List<Equip> locEquip = new List<Equip>(); //Local Clay Inventory
+    // public List<Clay> locClay = new List<Clay>(); //Local Clay Inventory
+    // public List<Tools> locTools = new List<Tools>(); //Local Clay Inventory
+    // public List<Equip> locEquip = new List<Equip>(); //Local Clay Inventory
     
     // public Store()
     // {

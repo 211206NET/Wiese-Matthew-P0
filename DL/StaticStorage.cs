@@ -5,6 +5,7 @@ public class StaticStorage : IRepo
     //Will make only one list: static
     private static List<Store> _allStore = new List<Store>(); 
     private static List<ProdDetails> _allInventory = new List<ProdDetails>(); 
+    private static List<ProdDetails> _allCarried = new List<ProdDetails>(); 
     
     /// <summary>
     /// Returns all stores from _allStore List
@@ -47,29 +48,12 @@ public class StaticStorage : IRepo
     public void ChangeInventory(int storeIndex, int apn, int itemQty)
     {
         StaticStorage._allInventory[storeIndex].OnHand = itemQty;
+    }    
+    public void RemoveInventory(int invIndexToRemove)
+    {
+        StaticStorage._allInventory.RemoveAt(invIndexToRemove);
     }
 
-    /// <summary>
-    /// Adds clay object to the clay List that the user has selected
-    /// </summary>
-    /// <param name="clayIndex"></param>
-    /// <param name="clayToAdd"></param>
-    public void AddClay(int clayIndex, Clay clayToAdd)
-    {
-        StaticStorage._allStore[clayIndex].locClay.Add(clayToAdd);
-    }
-    public void AddTools(int toolsIndex, Tools toolsToAdd)
-    {
-        StaticStorage._allStore[toolsIndex].locTools.Add(toolsToAdd);
-    }
-    public void AddEquip(int equipIndex, Equip equipToAdd)
-    {
-        StaticStorage._allStore[equipIndex].locEquip.Add(equipToAdd);
-    }
-    
-    
- 
-    
     //Customers
     private static List<Customers> _allCust = new List<Customers>(); 
 
@@ -116,5 +100,10 @@ public class StaticStorage : IRepo
             StaticStorage._allCarr[itemNum].Cost = itemCost;
             StaticStorage._allCarr[itemNum].Weight = itemWeight;
         }
+    }
+
+    public void RemoveCarried(int carriedIndexToRemove)//Store storeToRemove)
+    {
+        StaticStorage._allCarried.RemoveAt(carriedIndexToRemove);
     }
 }

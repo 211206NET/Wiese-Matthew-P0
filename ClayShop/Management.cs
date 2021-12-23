@@ -86,8 +86,6 @@ public class Management
                     chosenStoreIndex = select;
                     chosenStore = allStoresQ[chosenStoreIndex].StoreID;   //User inputs a choice
                     Console.WriteLine($"allStoresQ[chosenStoreIndex].StoreID: {allStoresQ[chosenStoreIndex].StoreID}, chosenStoreIndex: {chosenStoreIndex}");
-                   
-                    
 
                 break;
 
@@ -155,7 +153,7 @@ public class Management
                     {
                         if(inv.StoreAt == allStoresI[chosenStoreIndex].StoreID){
                         Console.WriteLine($"[{intFor}], APN: [{inv.APN}] {inv.Name}, Cost: {inv.Cost}, Weight: {inv.Weight}\n"+
-                        $"Description: {inv.Desc}");  intFor++;}
+                        $"\tDescription: {inv.Desc}");  intFor++;}
                     }}
                     Console.WriteLine("\nEnter a number to select item to change quantity of,\nor enter 'n' to add new product from carried list.");
                     string choice = Console.ReadLine() ?? "";
@@ -178,7 +176,6 @@ public class Management
                             _bl.ChangeInventory(allStoresI[chosenStoreIndex].StoreID, choiceInt, Int32.Parse(choice)); //Call method to adjust Qty of item already on hand
                         }
                         else{Console.WriteLine("Not a numeric value!");}
-
                     }
                     else
                     {
@@ -200,7 +197,7 @@ public class Management
                                 $"Item Type: {itemTypeStr}, "+
                                 $"Item Cost: {getAllCarried2[i].Cost}, "+
                                 $"Item Weight: {getAllCarried2[i].Weight}, \n"+
-                                $"Item Description: {getAllCarried2[i].Desc}\n");
+                                $"\tItem Description: {getAllCarried2[i].Desc}");
                             }
                             Console.WriteLine("Choose which item to add from the above list.");
                             choice = Console.ReadLine() ?? "";
@@ -214,8 +211,8 @@ public class Management
                                 //foreach(ProdDetails inv in allStoresI[chosenStore].localInv)
                                 foreach(ProdDetails inv in allInventory)
                                 {   
-                                    Console.WriteLine($"inv.StoreAt: {inv.StoreAt}, chosenStore: {chosenStore},"+
-                                    $"inv.APN: {inv.APN}, Carried APN: {getAllCarried2[choiceInt].APN}");
+                                   Console.WriteLine($"inv.StoreAt: {inv.StoreAt}, chosenStore: {chosenStore},"+
+                                   $"inv.APN: {inv.APN}, Carried APN: {getAllCarried2[choiceInt].APN}");
                                     if(inv.StoreAt == chosenStore){
                                     if(inv.APN == getAllCarried2[choiceInt].APN){abort = true;}}//This item is already in stock, abort
                                 }

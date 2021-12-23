@@ -126,7 +126,7 @@ public class FileRepo : IRepo
     }
     public void ChangeInventory(int storeIndex, int itemIndex, int itemQty)
     {
-        //1. Grab all customers
+        //1. Grab all inventory
         List<ProdDetails> allInv = GetAllInventory();
 
 
@@ -144,66 +144,20 @@ public class FileRepo : IRepo
         File.WriteAllText(filePathInv, jsonString); 
     }
 
-    public void AddClay(int storeIndex, Clay clayToAdd)
+    public void RemoveInventory(int invIndexToRemove)
     {
-        //1. Grab all Stores
-        List<Store> allStores = GetAllStores();
+        List<ProdDetails> allInv = GetAllInventory();
+        //Loop through inventory and delete all instances of this object
+        // for(int i = 0; i < allInv.Count; i++)
+        // { 
+        //     if(allInv[i].APN == invItemToRemove)
+        //     {allInv.RemoveAt(i);}
+        // }
+        allInv.RemoveAt(invIndexToRemove);
 
-        //2. Find the Store by its index
-        Store selectedStore = allStores[storeIndex];
-        
-        //3. Append Clay
-        if(selectedStore.locClay == null)
-        {
-            selectedStore.locClay = new List<Clay>();
-        }
-        selectedStore.locClay.Add(clayToAdd);
-
-        //4. Write to file
-        string jsonString = JsonSerializer.Serialize(allStores);
-        File.WriteAllText(filePath, jsonString);
+        string jsonString = JsonSerializer.Serialize(allInv);
+        File.WriteAllText(filePathInv, jsonString);
     }
-
-    public void AddTools(int storeIndex, Tools toolsToAdd)
-    {
-        //1. Grab all Stores
-        List<Store> allStores = GetAllStores();
-
-        //2. Find the Store by its index
-        Store selectedStore = allStores[storeIndex];
-        
-        //3. Append Tools
-        if(selectedStore.locTools == null)
-        {
-            selectedStore.locTools = new List<Tools>();
-        }
-        selectedStore.locTools.Add(toolsToAdd);
-
-        //4. Write to file
-        string jsonString = JsonSerializer.Serialize(allStores);
-        File.WriteAllText(filePath, jsonString);
-    }
-
-    public void AddEquip(int storeIndex, Equip equipToAdd)
-    {
-        //1. Grab all Stores
-        List<Store> allStores = GetAllStores();
-        
-        //2. Find the Store by its index
-        Store selectedStore = allStores[storeIndex];
-        
-        //3. Append Equip
-        if(selectedStore.locEquip == null)
-        {
-            selectedStore.locEquip = new List<Equip>();
-        }
-        selectedStore.locEquip.Add(equipToAdd);
-
-        //4. Write to file
-        string jsonString = JsonSerializer.Serialize(allStores);
-        File.WriteAllText(filePath, jsonString);
-    }
-
 
     //=======================<<<<  CUSTOMER SECTION  >>>>===========================\\
     
@@ -334,6 +288,21 @@ public class FileRepo : IRepo
             File.WriteAllText(filePathIC, jsonString);
         }
 
+    }
+
+    public void RemoveCarried(int carriedIndexToRemove)
+    {
+        List<ProdDetails> allcarry= GetAllCarried();
+        //Loop through all carried items and remove the cancelled item
+        // for(int i = 0; i < allcarry.Count; i++)
+        // { 
+        //     if(allcarry[i].APN == carriedToRemove)
+        //     {allcarry.RemoveAt(i);}
+        // }
+        allcarry.RemoveAt(carriedIndexToRemove);
+
+        string jsonString = JsonSerializer.Serialize(allcarry);
+        File.WriteAllText(filePathIC, jsonString);
     }
 
     // public void SaveCarried(int entryIndex, int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight) //string jsongStr
