@@ -13,7 +13,7 @@ public class Customers
     public Customers(){}
 
     public int CustNumb { get; set; } //Customer Number (Unique Number)
-    public string UserName { get; set; } //User Name
-    public string Pass { get; set; } //Password
+    public string? UserName { get; set; } //User Name
+    public string? Pass { get; set; } //Password
 
 }

@@ -6,9 +6,14 @@ public interface IBL
     // Store SearchStore(string searchString);
 
     List<Store> GetAllStores();
+    List<ProdDetails> GetAllInventory();
 
     void AddStore(Store storeToAdd);
+    void ChangeStoreInfo(int storeIndex, string name, string city, string state);
+    void RemoveStore(int storeToRemove);
 
+    void AddInventory(int storeIndex, ProdDetails invToAdd);
+    void ChangeInventory(int storeIndex, int apn, int itemQty);
     void AddClay(int storeIndex, Clay clayToAdd);
     void AddTools(int storeIndex, Tools toolsToAdd);
     void AddEquip(int storeIndex, Equip equipToAdd);
@@ -26,6 +31,9 @@ public interface IBL
 
     void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
     //void AddCarried(ProdDetails addCarry);
+
+    
+    void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
 
 
 }

@@ -35,89 +35,89 @@ while(!exit)
     {
         //Login
         case 0:
-            Console.WriteLine("1.) Login Here");
-            Console.WriteLine("2.) No account? Create an account.");//1.)
-            string choose = Console.ReadLine(); //PLACE HOLDER
+        Console.WriteLine("1.) Login Here");
+        Console.WriteLine("2.) No account? Create an account.");//1.)
+        string choose = Console.ReadLine() ?? ""; //PLACE HOLDER
 
-            switch(choose)
+        switch(choose)
+        {
+        case "1":
+        
+        while(!canLog)
+        {
+            //Login Functionality here
+            Console.WriteLine("Enter user name here");
+            string userNL = Console.ReadLine() ?? "";
+            Console.WriteLine("Enter password here");
+            string pwL = Console.ReadLine() ?? "";
+
+            foreach(Customers custL in allCustomers)
             {
-                case "1":
-                
-                    while(!canLog)
-                    {
-                        //Login Functionality here
-                        Console.WriteLine("Enter user name here");
-                        string userNL = Console.ReadLine();
-                        Console.WriteLine("Enter password here");
-                        string pwL = Console.ReadLine();
-
-                        foreach(Customers custL in allCustomers)
-                        {
-                            if(custL.UserName == userNL && custL.Pass == pwL)
-                            {       
-                                canLog = true;
-                                //Check if manager login
-                                if(userNL.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
-                                if(manager == true){Console.WriteLine($"\nWelcome back manager {userNL}!\n");}else
-                                {Console.WriteLine($"\nWelcome back {userNL}!\n");}
-                            }
-                        }
-                        
-                        if(!canLog){Console.WriteLine("\nUser name and/or password incorrect, please try again\n");}
-                    }
+                if(custL.UserName == userNL && custL.Pass == pwL)
+                {       
+                    canLog = true;
+                    //Check if manager login
+                    if(userNL.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
+                    if(manager == true){Console.WriteLine($"\nWelcome back manager {userNL}!\n");}else
+                    {Console.WriteLine($"\nWelcome back {userNL}!\n");}
+                }
+            }
+            
+            if(!canLog){Console.WriteLine("\nUser name and/or password incorrect, please try again\n");}
+        }
 
 
-                    pos = 1;
-                break;
+            pos = 1;
+        break;
 
-                case "2":
+        case "2":
 
-                    while(!canMake)
-                    {
-                        //Make new customer
-                        Console.WriteLine("Enter user name here");
-                        string userN = Console.ReadLine();
+        while(!canMake)
+        {
+            //Make new customer
+            Console.WriteLine("Enter user name here");
+            string userN = Console.ReadLine() ?? "";
 
-                        Console.WriteLine("Enter new password here");
-                        string pw1 = Console.ReadLine();
-                        Console.WriteLine("Re-enter new password here");
-                        string pw2 = Console.ReadLine();
+            Console.WriteLine("Enter new password here");
+            string pw1 = Console.ReadLine() ?? "";
+            Console.WriteLine("Re-enter new password here");
+            string pw2 = Console.ReadLine() ?? "";
 
-                        //Note: to make a manager login, the user name must contain the string "MNG"
-                        //The system for restricting a manager account to be created is not built yet
+            //Note: to make a manager login, the user name must contain the string "MNG"
+            //The system for restricting a manager account to be created is not built yet
 
-                        if(pw1 == pw2)
-                        {
-                            canMake = true;
-                            //Check if this customer already exists
-                            foreach(Customers custo in allCustomers)
-                            {
-                                if(custo.UserName == userN)
-                                {
-                                    //An account with this name already exists
-                                    canMake = false;
-                                    Console.WriteLine("Sorry, but an account with this name already exists.");
-                                }else{canMake = true;}    
-                            }
-                        }else{canMake = false;}
+            if(pw1 == pw2)
+            {
+            canMake = true;
+            //Check if this customer already exists
+            foreach(Customers custo in allCustomers)
+            {
+                if(custo.UserName == userN)
+                {
+                //An account with this name already exists
+                canMake = false;
+                Console.WriteLine("Sorry, but an account with this name already exists.");
+                }else{canMake = true;}    
+            }
+            }else{canMake = false;}
 
-                        if(canMake == true)
-                        {
-                           // _bl.AddCustomer(newCust);
-                            _bl.AddCustomer(0,userN,pw1);
-                        }
-
-                        //Check if manager login
-                        if(userN.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
-                    }
-                break;
-
-                default:
-                    Console.WriteLine("Input a correct choice.");
-                break;
+            if(canMake == true)
+            {
+                // _bl.AddCustomer(newCust);
+                _bl.AddCustomer(0,userN,pw1);
             }
 
-            if(canMake == true || canLog == true){pos = 1;}else{pos = 0;}
+            //Check if manager login
+            if(userN.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
+        }
+        break;
+
+        default:
+            Console.WriteLine("Input a correct choice.");
+        break;
+        }
+
+        if(canMake == true || canLog == true){pos = 1;}else{pos = 0;}
         break;
 
         //Select Store
@@ -131,21 +131,25 @@ while(!exit)
                 $"Store Name: {allStores[i].StoreName}, "+
                 $"City: {allStores[i].City}, "+
                 $"State: {allStores[i].State}");
-                allStores[i].SetUp(); //Tell store to generate inventory PLACE HOLDER
+                //allStores[i].SetUp(); //Tell store to generate inventory PLACE HOLDER
             }
-            //Console.WriteLine("[ADMIN] Add a store: enter 'a'");//Go to case 6 main switch
-            if(manager == true){Console.WriteLine("[a], <ADMIN> Manage store");//Go to case 6 main switch
-            string select = Console.ReadLine();
-            if(select == "a" || select == "A") //User wants to add a store
-            {
-                pos = 6;
-                break;
-            }}
 
-            //Normal customer login
-            chosenStore = Int32.Parse(Console.ReadLine());   //User inputs a choice
+            //Console.WriteLine("[ADMIN] Add a store: enter 'a'");//Go to case 6 main switch
+            if(manager == true){Console.WriteLine("[a], <ADMIN> Management menu");//Go to case 6 main switch
+                string select = Console.ReadLine() ?? "";
+                if(select == "a" || select == "A") //User wants to add a store
+                {
+                    pos = 6;
+                    break;
+                }
+                else{chosenStore = Int32.Parse(select);}
+            }
+            else
+            {
+                //Normal customer login
+                chosenStore = Int32.Parse(Console.ReadLine() ?? "");   //User inputs a choice
+            }
             pos = 2;
-            
         break;
 
         //Store Customer Main Menu 
@@ -158,7 +162,7 @@ while(!exit)
             Console.WriteLine("5.) Checkout");//5.)  
             Console.WriteLine("x.) Exit");//x.) 
 
-            string input = Console.ReadLine();
+            string input = Console.ReadLine() ?? "";
             //Homunculus Switch
             switch(input)
             {
@@ -189,14 +193,19 @@ while(!exit)
         //Display Clay Inventory for Selected Store
         case 3:
             Console.WriteLine("Clay Inventory");
-            foreach(Clay inv in allStores[chosenStore].locClay)
+            // foreach(Clay inv in allStores[chosenStore].locClay)
+            // {
+            //     Console.WriteLine($"[{inv.APN}] Clay Product: {inv.Name}");
+            // }
+            foreach(ProdDetails inv in allStores[chosenStore].localInv)
             {
-                Console.WriteLine($"[{inv.APN}] Clay Product: {inv.Name}");
+                if(inv.ItemType == 0)
+                {Console.WriteLine($"[{inv.APN}] Clay Product: {inv.Name}");}
             }
 
             Console.WriteLine("Select product for more details or 'x' to return to menu:\n");
             //int chooseAPN = Int32.Parse(Console.ReadLine()); 
-            string chooseAPN = Console.ReadLine(); 
+            string chooseAPN = Console.ReadLine() ?? ""; 
             if(chooseAPN == "x")
             {
                 pos = 2; //Return to main Menu
@@ -204,14 +213,15 @@ while(!exit)
             else
             {
                 int intAPN = Int32.Parse(chooseAPN); //Select APN
-                foreach(Clay inv2 in allStores[chosenStore].locClay)
+                //foreach(Clay inv2 in allStores[chosenStore].locClay)
+                foreach(ProdDetails inv2 in allStores[chosenStore].localInv)
                 {
+                    if(inv2.ItemType == 0){
                     if(inv2.APN == intAPN)
                     {
-                        inv2.ShowDesc();
-                    }
+                        //inv2.ShowDesc(); //This should come from BL...?
+                    }}
                     //Add to cart option here:
-
                 }
             }
             Console.WriteLine("\nEnter any value to return to main menu");
@@ -243,10 +253,9 @@ while(!exit)
             pos = 2; //Return to main Menu
         break;
 
-        //Add a New Store
+        //Management Menu
         case 6:
         
-                    
             Console.WriteLine($"Pos: {pos}");
             //Here, I instantiated an implementation of IRepo (FileRepo)
             IRepo repo = new FileRepo();
@@ -260,28 +269,6 @@ while(!exit)
             pos = 1;
             mngMenu.Start();
 
-            // //Get user input
-            // Console.WriteLine("Enter a store name:");
-            // string userStoreName = Console.ReadLine();
-            // Console.WriteLine("Enter the city of the store:");
-            // string userCity = Console.ReadLine();
-            // Console.WriteLine("Enter the state of the store:");
-            // string userState = Console.ReadLine();
-            // //Add user data to new store generation
-            // Store storeNew = new Store
-            // {
-            //     StoreID = idStamp,
-            //     StoreName = userStoreName,
-            //     City = userCity,
-            //     State = userState
-            // };
-            // //allStores.AddStore(storeNew);
-            // _bl.AddStore(storeNew);
-            // //allStores.Add(storeNew); //Plug new store into store list
-            // Console.WriteLine($"[{idStamp}] Store: {userStoreName} successfully created!\n");
-            // //chosenStore = idStamp; //Set current store to store just made
-            // idStamp++; //Add to idStamp for next store
-            // pos = 1; //Return to store selection
         break;
 
         //Checkout/Shopping Cart

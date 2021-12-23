@@ -14,8 +14,13 @@ public interface IRepo
     //interface members are implicitely public
     //they also lack method body
     List<Store> GetAllStores();
+    List<ProdDetails> GetAllInventory();
 
     void AddStore(Store StoreToAdd);
+    void ChangeStoreInfo(int storeIndex, string name, string city, string state);
+    void RemoveStore(int StoreToRemove);
+    void AddInventory(int storeIndex, ProdDetails invToAdd);
+    void ChangeInventory(int storeIndex, int apn, int itemQty);
 
     void AddClay(int StoreIndex, Clay clayToAdd);
     void AddTools(int StoreIndex, Tools toolsToAdd);
@@ -32,5 +37,8 @@ public interface IRepo
     List<ProdDetails> GetAllCarried();
 
     void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
+
+    
+    void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
 
 }

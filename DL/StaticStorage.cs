@@ -4,6 +4,7 @@ public class StaticStorage : IRepo
 {
     //Will make only one list: static
     private static List<Store> _allStore = new List<Store>(); 
+    private static List<ProdDetails> _allInventory = new List<ProdDetails>(); 
     
     /// <summary>
     /// Returns all stores from _allStore List
@@ -13,6 +14,10 @@ public class StaticStorage : IRepo
     {
         return StaticStorage._allStore;
     }
+    public List<ProdDetails> GetAllInventory()
+    {
+        return StaticStorage._allInventory;
+    }
 
     /// <summary>
     /// Adds a new store to the list
@@ -21,6 +26,27 @@ public class StaticStorage : IRepo
     public void AddStore(Store storeToAdd)
     {
         StaticStorage._allStore.Add(storeToAdd);
+    }
+    public void ChangeStoreInfo(int storeIndex, string name, string city, string state)
+    {
+        if(name != null)
+        {
+            StaticStorage._allStore[storeIndex].StoreName = name;
+            StaticStorage._allStore[storeIndex].City = city;
+            StaticStorage._allStore[storeIndex].State = state;
+        }
+    }
+    public void RemoveStore(int storeToRemove)
+    {
+        StaticStorage._allStore.RemoveAt(storeToRemove);
+    }
+    public void AddInventory(int storeIndex, ProdDetails invToAdd)
+    {
+        StaticStorage._allInventory.Add(invToAdd);
+    }
+    public void ChangeInventory(int storeIndex, int apn, int itemQty)
+    {
+        StaticStorage._allInventory[storeIndex].OnHand = itemQty;
     }
 
     /// <summary>
@@ -70,6 +96,18 @@ public class StaticStorage : IRepo
     public void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
     {
         //_dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
+        if(itemName != null)
+        {
+            StaticStorage._allCarr[itemNum].Name = itemName;
+            StaticStorage._allCarr[itemNum].ItemType = itemType;
+            StaticStorage._allCarr[itemNum].Desc = itemDesc;
+            StaticStorage._allCarr[itemNum].Cost = itemCost;
+            StaticStorage._allCarr[itemNum].Weight = itemWeight;
+        }
+    }
+
+    public void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
+    {
         if(itemName != null)
         {
             StaticStorage._allCarr[itemNum].Name = itemName;
