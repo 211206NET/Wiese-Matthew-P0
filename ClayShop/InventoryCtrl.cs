@@ -112,12 +112,6 @@ public class InventoryCtrl
                 case "2":
                     List<ProdDetails> getAllCarried2 = _bl.GetAllCarried(); //Needs to be in each case ir won't update in while loop
 
-                    string itemNameC = "";//How do these empty values not overwrite data?
-                    int itemTypeC = 0;
-                    decimal itemCostC = 0;
-                    string itemDescC = "";
-                    double itemWeightC = 0;
-
                     string itemTypeStr; itemTypeStr = "";
                     //Show list of all carried items, manager can select which one to modify
                     for(int i = 0; i < getAllCarried2.Count; i++)  
@@ -133,6 +127,7 @@ public class InventoryCtrl
                         $"\tItem Description: {getAllCarried2[i].Desc}");
                     }
 
+                    //Selecting item to change from list code
                     //Ask manager to choose entry to modify
                     string change = ""; int changeInt = 0; decimal changeDec = 0; double changeDoub = 0; //Vars to record manager changes
                     Console.WriteLine("\nSelect which number you want to modify.");
@@ -140,6 +135,15 @@ public class InventoryCtrl
                     //Show manager what item was selected
                     Console.WriteLine($"\nYou chose: {getAllCarried2[selChangeCarried].Name} "+
                     "\nEnter a new value for each field or leave blank to keep the same.\n");
+
+                    //Storing default values of selected item code (so no blank overwrite when hitting space below)
+                    string itemNameC = getAllCarried2[selChangeCarried].Name ?? "";
+                    int itemTypeC = getAllCarried2[selChangeCarried].ItemType;
+                    decimal itemCostC = getAllCarried2[selChangeCarried].Cost;
+                    string itemDescC = getAllCarried2[selChangeCarried].Desc ?? "";
+                    double itemWeightC = getAllCarried2[selChangeCarried].Weight;
+
+                    //Changing value code 
                     //Offer to change name
                     Console.WriteLine($"\nChange name: {getAllCarried2[selChangeCarried].Name}?");
                     change = Console.ReadLine() ?? "";

@@ -28,6 +28,8 @@ bool canMake = false; //For making new customer
 bool manager = false; //If Manager is logged in
 int pos = 0; //Position, where the user is currently in the application
 
+DateOnly dateOnlyVar = DateOnly.FromDateTime(DateTime.Now); 
+
 //Main Loop
 while(!exit)
 {
@@ -35,6 +37,8 @@ while(!exit)
     {
         //Login
         case 0:
+        //public DateOnly dateOnlyVar = DateOnly.Today; 
+        Console.WriteLine($"dateOnlyVar: {dateOnlyVar}");
         Console.WriteLine("1.) Login Here");
         Console.WriteLine("2.) No account? Create an account.");//1.)
         string choose = Console.ReadLine() ?? ""; //PLACE HOLDER
@@ -155,9 +159,9 @@ while(!exit)
         //Store Customer Main Menu 
         case 2:
             Console.WriteLine($"\nWelcome to {allStores[chosenStore].StoreName}\nWhat would you like to do?");
-            Console.WriteLine("1.) Browse Clays");//1.)
-            Console.WriteLine("2.) Browse Professional Clay Tools");//2.) 
-            Console.WriteLine("3.) Browse Claymation Studio Accessories");//3.) 
+            Console.WriteLine("1.) Shop Clays");//1.)
+            Console.WriteLine("2.) Shop Professional Clay Tools");//2.) 
+            Console.WriteLine("3.) Shop Claymation Studio Accessories");//3.) 
             Console.WriteLine("4.) Return to Store Selection [ Warning: This will clear items in your cart! ]");//4.)   
             Console.WriteLine("5.) Checkout");//5.)  
             Console.WriteLine("x.) Exit");//x.) 
@@ -197,9 +201,9 @@ while(!exit)
             // {
             //     Console.WriteLine($"[{inv.APN}] Clay Product: {inv.Name}");
             // }
-            foreach(ProdDetails inv in allStores[chosenStore].localInv)
+            foreach(ProdDetails inv in _bl.GetAllInventory())
             {
-                if(inv.ItemType == 0)
+                if(inv.ItemType == 0 && inv.StoreAt == allStores[chosenStore].StoreID)
                 {Console.WriteLine($"[{inv.APN}] Clay Product: {inv.Name}");}
             }
 
@@ -214,12 +218,14 @@ while(!exit)
             {
                 int intAPN = Int32.Parse(chooseAPN); //Select APN
                 //foreach(Clay inv2 in allStores[chosenStore].locClay)
-                foreach(ProdDetails inv2 in allStores[chosenStore].localInv)
+                foreach(ProdDetails inv2 in _bl.GetAllInventory())
                 {
-                    if(inv2.ItemType == 0){
+                    if(inv2.ItemType == 0 && inv2.StoreAt == allStores[chosenStore].StoreID){
                     if(inv2.APN == intAPN)
                     {
                         //inv2.ShowDesc(); //This should come from BL...?
+                        Console.WriteLine($"Cost: {inv2.Cost}, APN: [{inv2.APN}], Clay Product: {inv2.Name}, Weight: {inv2.Weight}"+
+                        $"\nDescription: {inv2.Desc}, Quantity left: {inv2.OnHand}");
                     }}
                     //Add to cart option here:
                 }
@@ -232,6 +238,35 @@ while(!exit)
         //Display Tool Inventory for Selected Store
         case 4:
             Console.WriteLine("Tool Inventory");
+            foreach(ProdDetails inv in _bl.GetAllInventory())
+            {
+                if(inv.ItemType == 1 && inv.StoreAt == allStores[chosenStore].StoreID)
+                {Console.WriteLine($"[{inv.APN}] Tool Product: {inv.Name}");}
+            }
+
+            Console.WriteLine("Select product for more details or 'x' to return to menu:\n");
+            string chooseAPNT = Console.ReadLine() ?? ""; 
+            if(chooseAPNT == "x")
+            {
+                pos = 2; //Return to main Menu
+            }
+            else
+            {
+                int intAPN = Int32.Parse(chooseAPNT); //Select APN
+                foreach(ProdDetails inv2 in _bl.GetAllInventory())
+                {
+                    if(inv2.ItemType == 1 && inv2.StoreAt == allStores[chosenStore].StoreID){
+                    if(inv2.APN == intAPN)
+                    {
+                        //inv2.ShowDesc(); //This should come from BL...?
+                        Console.WriteLine($"Cost: {inv2.Cost}, APN: [{inv2.APN}], Clay Product: {inv2.Name}, Weight: {inv2.Weight}"+
+                        $"\nDescription: {inv2.Desc}, Quantity left: {inv2.OnHand}");
+                    }}
+                    //Add to cart option here:
+                }
+            }
+            Console.WriteLine("\nEnter any value to return to main menu");
+            Console.ReadLine(); //For now take user input to continue
 
             pos = 2; //Return to main Menu
         break;
@@ -239,6 +274,35 @@ while(!exit)
         //Display Studio Equipment Inventory for Selected Store
         case 5:
             Console.WriteLine("Studio Equipment Inventory");
+            foreach(ProdDetails inv in _bl.GetAllInventory())
+            {
+                if(inv.ItemType == 2 && inv.StoreAt == allStores[chosenStore].StoreID)
+                {Console.WriteLine($"[{inv.APN}] Equipment Product: {inv.Name}");}
+            }
+
+            Console.WriteLine("Select product for more details or 'x' to return to menu:\n");
+            string chooseAPNE = Console.ReadLine() ?? ""; 
+            if(chooseAPNE == "x")
+            {
+                pos = 2; //Return to main Menu
+            }
+            else
+            {
+                int intAPN = Int32.Parse(chooseAPNE); //Select APN
+                foreach(ProdDetails inv2 in _bl.GetAllInventory())
+                {
+                    if(inv2.ItemType == 2 && inv2.StoreAt == allStores[chosenStore].StoreID){
+                    if(inv2.APN == intAPN)
+                    {
+                        //inv2.ShowDesc(); //This should come from BL...?
+                        Console.WriteLine($"Cost: {inv2.Cost}, APN: [{inv2.APN}], Clay Product: {inv2.Name}, Weight: {inv2.Weight}"+
+                        $"\nDescription: {inv2.Desc}, Quantity left: {inv2.OnHand}");
+                    }}
+                    //Add to cart option here:
+                }
+            }
+            Console.WriteLine("\nEnter any value to return to main menu");
+            Console.ReadLine(); //For now take user input to continue
 
             pos = 2; //Return to main Menu
         break;
