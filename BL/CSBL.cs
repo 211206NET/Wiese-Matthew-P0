@@ -90,6 +90,22 @@ public class CSBL : IBL
     public void RemoveCarried(int carriedIndexToRemove)
     {
         _dl.RemoveCarried(carriedIndexToRemove);
+    }  
+
+    //Line Items
+    public List<LineItems> GetAllLineItem()
+    {
+        return _dl.GetAllLineItem();
+    }
+
+    public void AddLineItem(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax)
+    {
+        _dl.AddLineItem(apn, name, qty, costPerItem, salesTax);
+    }
+
+    public void RemoveLineItem(int lineItemIndexToRemove)
+    {
+        _dl.RemoveLineItem(lineItemIndexToRemove);
     }
 
    

@@ -196,6 +196,8 @@ while(!exit)
 
         //Display Clay Inventory for Selected Store
         case 3:
+            int remAPN = 0; string remName = ""; decimal remCost = 0; 
+            List<LineItems> lineItemsList = _bl.GetAllLineItem();//Update shopping list
             Console.WriteLine("Clay Inventory");
             // foreach(Clay inv in allStores[chosenStore].locClay)
             // {
@@ -220,16 +222,40 @@ while(!exit)
                 //foreach(Clay inv2 in allStores[chosenStore].locClay)
                 foreach(ProdDetails inv2 in _bl.GetAllInventory())
                 {
-                    if(inv2.ItemType == 0 && inv2.StoreAt == allStores[chosenStore].StoreID){
+                    //Console.WriteLine($"inv2.ItemType: {inv2.ItemType}, inv2.StoreAt: {inv2.StoreAt}, allStores[chosenStore].StoreID: {allStores[chosenStore].StoreID}");
+                    if(inv2.ItemType == 0 && inv2.StoreAt == allStores[chosenStore].StoreID){ 
                     if(inv2.APN == intAPN)
                     {
                         //inv2.ShowDesc(); //This should come from BL...?
                         Console.WriteLine($"Cost: {inv2.Cost}, APN: [{inv2.APN}], Clay Product: {inv2.Name}, Weight: {inv2.Weight}"+
-                        $"\nDescription: {inv2.Desc}, Quantity left: {inv2.OnHand}");
+                        $"\nDescription: {inv2.Desc}, Quantity left: {inv2.OnHand}"); 
+                        remAPN = inv2.APN;  remName = inv2.Name ?? "";  remCost = inv2.Cost; 
                     }}
+                }//End For Each
+
                     //Add to cart option here:
-                }
+                    Console.WriteLine("\nDo you want to buy this item? y/n");
+                    string buy = Console.ReadLine() ?? "";
+                    if(buy == "y")
+                    {
+                        Console.WriteLine("\nHow many do you want to buy?");
+                        int qtyToBuy = Int32.Parse(Console.ReadLine() ?? ""); //need check for parse!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                        decimal sendTax = Convert.ToDecimal(chosenStore*0.2);
+
+                        
+                        //Now to Save it
+                        _bl.AddLineItem(remAPN, remName ?? "", qtyToBuy, remCost, sendTax);         
+                        pos = 2;
+                        break;
+                    }
+                    else
+                    {
+                        pos = 2;
+                        break;
+                    }
             }
+
             Console.WriteLine("\nEnter any value to return to main menu");
             Console.ReadLine(); //For now take user input to continue
             pos = 2;
@@ -327,6 +353,19 @@ while(!exit)
 
         //Checkout/Shopping Cart
         case 7:
+        
+            Console.WriteLine($"Pos: {pos}");
+            //Here, I instantiated an implementation of IRepo (FileRepo)
+            IRepo repoCart = new FileRepo();
+            //next, I instantiated CSBL (an implementation of IBL) and then injected IRepo implementation for IBL/CSBL
+            IBL blCart = new CSBL(repoCart);
+            //Finally, I instantiate repoCart that needs an instance that implements Business Logic class
+            Cart cartMenu = new Cart(blCart);
+            cartMenu.chosenStore = this.chosenStore;
+            //Reset local settings for when returning to this menu
+            //chosenStore = 0;
+            pos = 2;
+            cartMenu.Start();
 
         break;
 

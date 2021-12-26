@@ -6,6 +6,7 @@ public class StaticStorage : IRepo
     private static List<Store> _allStore = new List<Store>(); 
     private static List<ProdDetails> _allInventory = new List<ProdDetails>(); 
     private static List<ProdDetails> _allCarried = new List<ProdDetails>(); 
+    private static List<LineItems> _allLineItems= new List<LineItems>(); 
     
     /// <summary>
     /// Returns all stores from _allStore List
@@ -105,5 +106,27 @@ public class StaticStorage : IRepo
     public void RemoveCarried(int carriedIndexToRemove)//Store storeToRemove)
     {
         StaticStorage._allCarried.RemoveAt(carriedIndexToRemove);
+    }
+
+    //Line Items
+    public List<LineItems> GetAllLineItem()
+    {
+        return StaticStorage._allLineItems;
+    }
+
+    public void AddLineItem(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax)
+    {
+        // if(name != null)
+        // {
+        //     StaticStorage._allLineItems[itemIndex].Name = name;
+        //     StaticStorage._allLineItems[itemIndex].Qty = qty;
+        //     StaticStorage._allLineItems[itemIndex].CostPerItem = costPerItem;
+        //     StaticStorage._allLineItems[itemIndex].SalesTax = salesTax;
+        // }
+    }
+
+    public void RemoveLineItem(int lineItemIndexToRemove)
+    {
+        StaticStorage._allLineItems.RemoveAt(lineItemIndexToRemove);
     }
 }

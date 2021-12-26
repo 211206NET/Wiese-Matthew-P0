@@ -146,38 +146,59 @@ public class Management
                     //First show current inventory
                     Console.WriteLine($"Inventory for {allStoresI[chosenStoreIndex].StoreName}, Inventory count: {allInventory.Count}\n");
                     //if(allStoresI[chosenStore].localInv.Count > 0){
-                    int intFor = 0;
+     
                     if(allInventory.Count > 0){
                     //foreach(ProdDetails inv in allStoresI[chosenStore].localInv)
                     foreach(ProdDetails inv in allInventory) //To find inventory of the store we want only
                     {
                         if(inv.StoreAt == allStoresI[chosenStoreIndex].StoreID){
-                        Console.WriteLine($"[{intFor}], APN: [{inv.APN}] {inv.Name}, Cost: {inv.Cost}, Weight: {inv.Weight}\n"+
-                        $"\tDescription: {inv.Desc}");  intFor++;}
+                        Console.WriteLine($"APN: [{inv.APN}] {inv.Name}, Cost: {inv.Cost}, Weight: {inv.Weight}\n"+
+                        $"\tDescription: {inv.Desc}"); }
                     }}
-                    Console.WriteLine("\nEnter a number to select item to change quantity of,\nor enter 'n' to add new product from carried list.");
+                    Console.WriteLine("\nEnter an APN to select item to change quantity of,\nor enter 'n' to add new product from carried list.");
                     string choice = Console.ReadLine() ?? "";
                     bool res; bool res2; bool res3; int a; int choiceInt = 0;  int choiceInt2 = 0;
                     res = Int32.TryParse(choice, out a);
+
                     if(res)
                     {
                         //A number was selected, choose an item to change qty
                         choiceInt = Int32.Parse(choice); //Convert string to int
+                    
+                        //First get the actual index of the item
+                        int getIndex = 0;
+                        //foreach(ProdDetails inv in allInventory)
+                        for(int i = 0; i < allInventory.Count-1; i++)
+                        {   
+                            // Console.WriteLine($"i: {i}, Inventory.StoreAt: {allInventory[i].StoreAt}, "+
+                            // $"Store.StoreID: {allStoresI[chosenStoreIndex].StoreID}, Inventory.APN: {allInventory[i].APN}"+
+                            // $"Chosen APN: {choiceInt}");
+                            //     Inventory.StoreAt             Store.StoreID                          Inventory.APN           
+                            if(allInventory[i].StoreAt == allStoresI[chosenStoreIndex].StoreID && allInventory[i].APN == choiceInt)
+                            {
+                                getIndex = i;
+                                Console.WriteLine($"i: {i}, allInventory[i].APN: {allInventory[i].APN}");
+                            }
+                        }
+
                         // Console.WriteLine($"You selected: {allStoresI[chosenStoreIndex].localInv[choiceInt].Name}"+
                         // $", Quantity: {allStoresI[chosenStoreIndex].localInv[choiceInt].OnHand}\nEnter new value:");
-                        Console.WriteLine($"You selected: {allInventory[choiceInt].Name}"+
-                        $", Quantity: {allInventory[choiceInt].OnHand}\nEnter new value:");
+                        
+                        Console.WriteLine($"You selected: {allInventory[getIndex].Name}"+
+                        $", Quantity: {allInventory[getIndex].OnHand}\nEnter new value:");
                         choice = Console.ReadLine() ?? "";
                         res2 = Int32.TryParse(choice, out a);
                         if(res2)
                         {
-                            allInventory[choiceInt].OnHand = Int32.Parse(choice); //Set new Qty
-
-                            _bl.ChangeInventory(allStoresI[chosenStoreIndex].StoreID, choiceInt, Int32.Parse(choice)); //Call method to adjust Qty of item already on hand
+                            allInventory[getIndex].OnHand = Int32.Parse(choice); //Set new Qty
+                            if(Int32.Parse(choice) > 0){
+                            _bl.ChangeInventory(allStoresI[chosenStoreIndex].StoreID, getIndex, Int32.Parse(choice)); //Call method to adjust Qty of item already on hand
+                            }
+                            else{_bl.RemoveInventory(getIndex);}
                         }
                         else{Console.WriteLine("Not a numeric value!");}
                     }
-                    else
+                    else//Change qty above, new item below
                     {
                         //A string was selected, add new item maybe
                         if(choice == "n")
@@ -211,11 +232,12 @@ public class Management
                                 //foreach(ProdDetails inv in allStoresI[chosenStore].localInv)
                                 foreach(ProdDetails inv in allInventory)
                                 {   
-                                   Console.WriteLine($"inv.StoreAt: {inv.StoreAt}, chosenStore: {chosenStore},"+
-                                   $"inv.APN: {inv.APN}, Carried APN: {getAllCarried2[choiceInt].APN}");
+                                //    Console.WriteLine($"inv.StoreAt: {inv.StoreAt}, chosenStore: {chosenStore},"+
+                                //    $"inv.APN: {inv.APN}, Carried APN: {getAllCarried2[choiceInt].APN}");
                                     if(inv.StoreAt == chosenStore){
                                     if(inv.APN == getAllCarried2[choiceInt].APN){abort = true;}}//This item is already in stock, abort
                                 }
+
 
                                 //Continue with adding item
                                 if(!abort){
@@ -225,7 +247,7 @@ public class Management
                                 res3 = Int32.TryParse(choice, out a);
                                 if(res3)
                                 {
-                                    choiceInt2 = Int32.Parse(choice);
+                                    choiceInt2 = Int32.Parse(choice);//Qty
                                     ProdDetails addStock = new ProdDetails {
                                         StoreAt = allStoresI[chosenStoreIndex].StoreID, 
                                         OnHand = choiceInt2, 
@@ -237,10 +259,7 @@ public class Management
                                         Weight = getAllCarried2[choiceInt].Weight
                                     };
 
-                                    //Adding a new entry to list allInventory
-                                    //allStoresI[chosenStore].localInv.Add(addStock);
                                     allInventory.Add(addStock);
-
                                     //Now to Save it
                                     _bl.AddInventory(chosenStoreIndex, addStock);
                                     abort = false; //reset

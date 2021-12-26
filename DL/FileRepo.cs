@@ -305,9 +305,58 @@ public class FileRepo : IRepo
         File.WriteAllText(filePathIC, jsonString);
     }
 
-    // public void SaveCarried(int entryIndex, int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight) //string jsongStr
-    // {
-    //         //4. Write to file
-    //         File.WriteAllText(path, entryIndex, itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
-    // }
+    //=======================<<<<   LINE ITEMS   >>>>===========================\\
+
+    private string filePathLIL = "../DL/LineItemList.json";
+
+    //AddLineItem
+    public List<LineItems> GetAllLineItem()
+    {
+        string jsonString = File.ReadAllText(filePathLIL);
+        return JsonSerializer.Deserialize<List<LineItems>>(jsonString) ?? new List<LineItems>(); 
+    }
+
+    public void AddLineItem(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax)
+    {
+        //_dl.AddLineItem(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
+        
+        int lilNumbAssg = 0;
+        bool canMake = true; //Can make new account
+
+        //1. Grab all customers
+        List<LineItems> allLineItem = GetAllLineItem();
+        lilNumbAssg = allLineItem.Count; //Get next customer number
+
+        if(canMake == true)
+        {
+            //2. Set new customer data
+            LineItems newLI = new LineItems {
+                APN = apn,    
+                Name = name,
+                Qty = qty,
+                CostPerItem = costPerItem,
+                SalesTax = salesTax
+            };
+            //void AddLineItem(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
+
+            //3. Append LineItem 
+            allLineItem.Add(newLI);
+
+            string jsonString = JsonSerializer.Serialize(allLineItem);
+            //SaveLineItem(jsonString);
+            //4. Write to file
+            File.WriteAllText(filePathLIL, jsonString);
+        }
+
+    }
+
+    public void RemoveLineItem(int lineItemIndexToRemove)
+    {
+        List<LineItems> allLI= GetAllLineItem();
+        allLI.RemoveAt(lineItemIndexToRemove);
+
+        string jsonString = JsonSerializer.Serialize(allLI);
+        File.WriteAllText(filePathLIL, jsonString);
+    }
+
 }

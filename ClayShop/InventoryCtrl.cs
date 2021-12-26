@@ -183,14 +183,14 @@ public class InventoryCtrl
                     if(change != ""){itemDescC = change;} change = ""; //Change description  getAllCarried2[selChangeCarried].Desc
 
                     
-                    ProdDetails changeCarry = new ProdDetails {
-                        APN = selChangeCarried,
-                        Name = itemNameC,
-                        ItemType = itemTypeC,
-                        Desc = itemDescC,
-                        Cost = itemCostC,
-                        Weight = itemWeightC
-                    };
+                    // ProdDetails changeCarry = new ProdDetails {
+                    //     APN = selChangeCarried,
+                    //     Name = itemNameC,
+                    //     ItemType = itemTypeC,
+                    //     Desc = itemDescC,
+                    //     Cost = itemCostC,
+                    //     Weight = itemWeightC
+                    // };
                     // string jsonStringC = JsonSerializer.Serialize(changeCarry);
 
                     _bl.ChangeCarried(selChangeCarried,itemNameC,itemTypeC,itemDescC,itemCostC,itemWeightC);

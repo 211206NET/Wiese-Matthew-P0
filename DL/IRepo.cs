@@ -40,4 +40,10 @@ public interface IRepo
 
     void RemoveCarried(int carriedIndexToRemove);
 
+    //Line Items
+    List<LineItems> GetAllLineItem();
+
+    void AddLineItem(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax);
+
+    void RemoveLineItem(int lineItemIndexToRemove);
 }
