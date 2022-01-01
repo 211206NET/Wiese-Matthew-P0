@@ -103,7 +103,7 @@ public class InventoryCtrl
                             {
                                 if(allInventoryDelete[i].Items[j].APN == allCarriedDelete[chsDlyInt].APN) //Find the same item in the inventory list
                                 {
-                                    _bl.RemoveInventory(i,j); //Delete the item from store inventories as well
+                                    _bl.RemoveItem(i,j); //Delete the item from store inventories as well
                                 }
                             }
                             }

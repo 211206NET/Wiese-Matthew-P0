@@ -11,12 +11,12 @@ public class Management
         _bl = bl;
     }
 
-
     int targetInv = 0; //Index of inventory
     public int chosenStore = 0;//StoreID
     public int chosenStoreIndex = 0;//Index of store in store list
     public void Start()
     {
+        List<Inventory> allInventory = _bl.GetAllInventory();
         List<Store> allStores = _bl.GetAllStores();
         bool exit = false;
         int idStamp = allStores.Count+1;
@@ -54,8 +54,9 @@ public class Management
                         State = userState
                     };
                     //allStores.AddStore(storeNew);
-                    _bl.AddStore(storeNew);
 
+                    _bl.AddStore(storeNew);
+                    allStores = _bl.GetAllStores();
                     //Add Inventory Obj for new store generation
                     Inventory invNew = new Inventory
                     {
@@ -115,30 +116,30 @@ public class Management
 
                 //Adjust/Add Store Info:
                 case "3":
-                    List<Store> allStoresA = _bl.GetAllStores();
+                    allStores = _bl.GetAllStores();
                     Console.WriteLine("Changing Store Address etc.");
 
-                    string storeName = allStoresA[chosenStoreIndex].StoreName ?? "";
-                    string city = allStoresA[chosenStoreIndex].City ?? "";
-                    string state = allStoresA[chosenStoreIndex].State ?? "";
+                    string storeName = allStores[chosenStoreIndex].StoreName ?? "";
+                    string city = allStores[chosenStoreIndex].City ?? "";
+                    string state = allStores[chosenStoreIndex].State ?? "";
                     //chosenStore
                     //Ask manager to choose entry to modify
                     string change = ""; //Var to record manager changes
                     //Show manager what store was selected
-                    Console.WriteLine($"\nYou chose: {allStoresA[chosenStoreIndex].StoreName} "+
+                    Console.WriteLine($"\nYou chose: {allStores[chosenStoreIndex].StoreName} "+
                     "\nEnter a new value for each field or leave blank to keep the same.\n");
                     //Offer to change name
-                    Console.WriteLine($"\nChange name: {allStoresA[chosenStoreIndex].StoreName}?");
+                    Console.WriteLine($"\nChange name: {allStores[chosenStoreIndex].StoreName}?");
                     change = Console.ReadLine() ?? "";
                     if(change != ""){storeName = change;} change = ""; //Change name of store
 
                     //Offer to change city
-                    Console.WriteLine($"\nChange city: {allStoresA[chosenStoreIndex].City}?");
+                    Console.WriteLine($"\nChange city: {allStores[chosenStoreIndex].City}?");
                     change = Console.ReadLine() ?? "";
                     if(change != ""){city = change;} change = ""; //Change city
 
                     //Offer to change state
-                    Console.WriteLine($"\nChange state: {allStoresA[chosenStoreIndex].State}?");
+                    Console.WriteLine($"\nChange state: {allStores[chosenStoreIndex].State}?");
                     change = Console.ReadLine() ?? "";
                     if(change != ""){state = change;} change = ""; //Change state 
 
@@ -149,13 +150,13 @@ public class Management
                 //Manage Store Inventory
                 case "4":
                     //Get list of stores to find current store
-                    List<Store> allStoresI = _bl.GetAllStores(); 
-                    List<Inventory> allInventory = _bl.GetAllInventory();
+                    allStores = _bl.GetAllStores(); 
+                    allInventory = _bl.GetAllInventory();
                     //_bl.GetAllInventory();
 
                     //First show current inventory
-                    Console.WriteLine($"Inventory for {allStoresI[chosenStoreIndex].StoreName}, Inventory count: {allInventory.Count}\n");
-                    //if(allStoresI[chosenStore].localInv.Count > 0){
+                    Console.WriteLine($"Inventory for {allStores[chosenStoreIndex].StoreName}, Inventory count: {allInventory.Count}\n");
+                    //if(allStores[chosenStore].localInv.Count > 0){
      
                     Console.WriteLine($"allInventory.Count: {allInventory.Count}");
                     if(allInventory.Count > 0){
@@ -163,7 +164,7 @@ public class Management
                     //Return what index of inventory we need to access
                     for(int i = 0; i < allInventory.Count; i++)
                     {
-                        if(allInventory[i].Store == allStoresI[chosenStoreIndex].StoreID){targetInv = i;}
+                        if(allInventory[i].Store == allStores[chosenStoreIndex].StoreID){targetInv = i;}
                     }
 
                     //foreach(ProdDetails inv in allInventory) //To find inventory of the store we want only
@@ -189,10 +190,10 @@ public class Management
                         for(int i = 0; i < allInventory[targetInv].Items.Count; i++) //-1 needed on Count?
                         {   
                             // Console.WriteLine($"i: {i}, Inventory.StoreAt: {allInventory[i].StoreAt}, "+
-                            // $"Store.StoreID: {allStoresI[chosenStoreIndex].StoreID}, Inventory.APN: {allInventory[i].APN}"+
+                            // $"Store.StoreID: {allStores[chosenStoreIndex].StoreID}, Inventory.APN: {allInventory[i].APN}"+
                             // $"Chosen APN: {choiceInt}");
                             //     Inventory.StoreAt             Store.StoreID                          Inventory.APN           
-                            if(allInventory[targetInv].Items[i].StoreAt == allStoresI[chosenStoreIndex].StoreID && 
+                            if(allInventory[targetInv].Items[i].StoreAt == allStores[chosenStoreIndex].StoreID && 
                             allInventory[targetInv].Items[i].APN == choiceInt)
                             {
                                 getIndex = i;
@@ -200,8 +201,8 @@ public class Management
                             }
                         }
 
-                        // Console.WriteLine($"You selected: {allStoresI[chosenStoreIndex].localInv[choiceInt].Name}"+
-                        // $", Quantity: {allStoresI[chosenStoreIndex].localInv[choiceInt].OnHand}\nEnter new value:");
+                        // Console.WriteLine($"You selected: {allStores[chosenStoreIndex].localInv[choiceInt].Name}"+
+                        // $", Quantity: {allStores[chosenStoreIndex].localInv[choiceInt].OnHand}\nEnter new value:");
                         
                         Console.WriteLine($"You selected: {allInventory[targetInv].Items[getIndex].Name}"+
                         $", Quantity: {allInventory[targetInv].Items[getIndex].OnHand}\nEnter new value:");
@@ -211,9 +212,9 @@ public class Management
                         {
                             allInventory[targetInv].Items[getIndex].OnHand = Int32.Parse(choice); //Set new Qty
                             if(Int32.Parse(choice) > 0){
-                            _bl.ChangeInventory(allStoresI[chosenStoreIndex].StoreID, getIndex, Int32.Parse(choice)); //Call method to adjust Qty of item already on hand
+                            _bl.ChangeInventory(allStores[chosenStoreIndex].StoreID, getIndex, Int32.Parse(choice)); //Call method to adjust Qty of item already on hand
                             }
-                            else{_bl.RemoveInventory(targetInv,getIndex);}
+                            else{_bl.RemoveItem(targetInv,getIndex);}
                         }
                         else{Console.WriteLine("Not a numeric value!");}
                     }
@@ -223,21 +224,21 @@ public class Management
                         if(choice == "n")
                         {
                             //Add new item to stock
-                            List<ProdDetails> getAllCarried2 = _bl.GetAllCarried(); //Needs to be in each case or won't update in while loop
+                            List<ProdDetails> getAllCarried = _bl.GetAllCarried();
                             //Add new item
                             string itemTypeStr; itemTypeStr = "";
                             //Show list of all carried items, manager can select which one to modify
-                            for(int i = 0; i < getAllCarried2.Count; i++)  
+                            for(int i = 0; i < getAllCarried.Count; i++)  
                             {
-                                if(getAllCarried2[i].ItemType == 0){itemTypeStr = "Clay";}
-                                if(getAllCarried2[i].ItemType == 1){itemTypeStr = "Tool";}
-                                if(getAllCarried2[i].ItemType == 2){itemTypeStr = "Equipment";}
-                                Console.WriteLine($"\n[{i}], APN: {getAllCarried2[i].APN}, "+
-                                $"Item Name: {getAllCarried2[i].Name}, "+
+                                if(getAllCarried[i].ItemType == 0){itemTypeStr = "Clay";}
+                                if(getAllCarried[i].ItemType == 1){itemTypeStr = "Tool";}
+                                if(getAllCarried[i].ItemType == 2){itemTypeStr = "Equipment";}
+                                Console.WriteLine($"\n[{i}], APN: {getAllCarried[i].APN}, "+
+                                $"Item Name: {getAllCarried[i].Name}, "+
                                 $"Item Type: {itemTypeStr}, "+
-                                $"Item Cost: {getAllCarried2[i].Cost}, "+
-                                $"Item Weight: {getAllCarried2[i].Weight}, \n"+
-                                $"\tItem Description: {getAllCarried2[i].Desc}");
+                                $"Item Cost: {getAllCarried[i].Cost}, "+
+                                $"Item Weight: {getAllCarried[i].Weight}, \n"+
+                                $"\tItem Description: {getAllCarried[i].Desc}");
                             }
                             Console.WriteLine("Choose which item to add from the above list.");
                             choice = Console.ReadLine() ?? "";
@@ -249,19 +250,20 @@ public class Management
                                 
                                 Console.WriteLine($"targetInv: {targetInv}");
                                 //First check that this item isn't already in stock
-                                //foreach(ProdDetails inv in allStoresI[chosenStore].localInv)
+                                //foreach(ProdDetails inv in allStores[chosenStore].localInv)
                                 foreach(ProdDetails inv in allInventory[targetInv].Items)
                                 {   
                                 //    Console.WriteLine($"inv.StoreAt: {inv.StoreAt}, chosenStore: {chosenStore},"+
-                                //    $"inv.APN: {inv.APN}, Carried APN: {getAllCarried2[choiceInt].APN}");
-                                    if(inv.StoreAt == chosenStore){
-                                    if(inv.APN == getAllCarried2[choiceInt].APN){abort = true;}}//This item is already in stock, abort
+                                //    $"inv.APN: {inv.APN}, Carried APN: {getAllCarried[choiceInt].APN}");
+                                    if(inv.StoreAt == allStores[chosenStore].StoreID){
+                                    if(inv.APN == getAllCarried[choiceInt].APN){abort = true;}}//This item is already in stock, abort
                                 }
 
-
+                                Console.WriteLine($"abort: {abort}");
+                                
                                 //Continue with adding item
                                 if(!abort){
-                                Console.WriteLine($"You chose {getAllCarried2[choiceInt].Name}, Now enter quantity for the item:");
+                                Console.WriteLine($"You chose {getAllCarried[choiceInt].Name}, Now enter quantity for the item:");
 
                                 choice = Console.ReadLine() ?? "";
                                 res3 = Int32.TryParse(choice, out a);
@@ -269,14 +271,14 @@ public class Management
                                 {
                                     choiceInt2 = Int32.Parse(choice);//Qty
                                     ProdDetails addStock = new ProdDetails {
-                                        StoreAt = allStoresI[chosenStoreIndex].StoreID, 
+                                        StoreAt = allStores[chosenStoreIndex].StoreID, 
                                         OnHand = choiceInt2, 
-                                        APN = getAllCarried2[choiceInt].APN,
-                                        Name = getAllCarried2[choiceInt].Name,
-                                        ItemType = getAllCarried2[choiceInt].ItemType,
-                                        Desc = getAllCarried2[choiceInt].Desc,
-                                        Cost = getAllCarried2[choiceInt].Cost,
-                                        Weight = getAllCarried2[choiceInt].Weight
+                                        APN = getAllCarried[choiceInt].APN,
+                                        Name = getAllCarried[choiceInt].Name,
+                                        ItemType = getAllCarried[choiceInt].ItemType,
+                                        Desc = getAllCarried[choiceInt].Desc,
+                                        Cost = getAllCarried[choiceInt].Cost,
+                                        Weight = getAllCarried[choiceInt].Weight
                                     };
 
                                     //allInventory[targetInv].Items.Add(addStock);  //DO I NEED THIS EVEN?
@@ -293,13 +295,25 @@ public class Management
                 //Delete Store
                 case "5":
                     List<Store> allStoresB = _bl.GetAllStores();
+                    allInventory = _bl.GetAllInventory();
+                    int useInv = -1;
                     Console.WriteLine($"Are you sure you want to remove the store: {allStoresB[chosenStoreIndex].StoreName}? [y,n]");
                     string decide = Console.ReadLine() ?? "";
+                    //Get Inventory Index
+                    for(int i = 0; i < allInventory.Count; i++)
+                    {
+                        if(allInventory[i].Store == allStoresB[chosenStoreIndex].StoreID)
+                        {useInv = i; break;}
+                    }
+
                     if(decide == "y")
                     {
                         Console.WriteLine($"The store: {allStoresB[chosenStoreIndex].StoreName} has been removed."+
                         "\nMake sure to allocate inventory where needed.\n");
                         _bl.RemoveStore(chosenStoreIndex);
+                        if(allInventory.Count > -1){
+                        _bl.RemoveInventory(useInv);//Deletes the store inventory
+                        }
                     }
                 break;
 
