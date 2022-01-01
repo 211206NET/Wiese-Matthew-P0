@@ -95,14 +95,19 @@ public class InventoryCtrl
                         {
                             // Console.WriteLine($"The item: {allCarriedDelete[chsDlyInt].Name} has been removed."+
                             // "\nIt has been purged from all store inventories.\n");
-                            List<ProdDetails> allInventoryDelete = _bl.GetAllInventory(); //Get a list of the inventory
-                            int invDlyInt = 0;
+                            List<Inventory> allInventoryDelete = _bl.GetAllInventory(); //Get a list of the inventory
+                            //A nested loop is used here to delete all of this item from the inventory of all stores
                             for(int i = 0; i < allInventoryDelete.Count; i++)
                             {
-                                if(allInventoryDelete[i].APN == allCarriedDelete[chsDlyInt].APN) //Find the same item in the inventory list
-                                {invDlyInt = i;} //Log the index of the target item
+                            for(int j = 0; j < allInventoryDelete[i].Items.Count; j++)
+                            {
+                                if(allInventoryDelete[i].Items[j].APN == allCarriedDelete[chsDlyInt].APN) //Find the same item in the inventory list
+                                {
+                                    _bl.RemoveInventory(i,j); //Delete the item from store inventories as well
+                                }
                             }
-                            _bl.RemoveInventory(invDlyInt); //Delete the item from store inventories as well
+                            }
+                            
                             _bl.RemoveCarried(chsDlyInt); //Removes from carried list, delete last as previous delete references this list
                         }
                     }

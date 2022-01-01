@@ -6,16 +6,17 @@ public interface IBL
     // Store SearchStore(string searchString);
 
     List<Store> GetAllStores();
-    List<ProdDetails> GetAllInventory();
+    List<Inventory> GetAllInventory();
 
     void AddStore(Store storeToAdd);
     void ChangeStoreInfo(int storeIndex, string name, string city, string state);
     void RemoveStore(int storeToRemove);
 
 
-    void AddInventory(int storeIndex, ProdDetails invToAdd);
-    void ChangeInventory(int storeIndex, int apn, int itemQty);    
-    void RemoveInventory(int invIndexToRemove);
+    void AddInventory(Inventory invToAdd);
+    void AddItem(int invIndex, ProdDetails invToAdd);
+    void ChangeInventory(int invIndex, int apn, int itemQty);    
+    void RemoveInventory(int invIndex, int invIndexToRemove);
 
     //Customers
     List<Customers> GetAllCustomers();

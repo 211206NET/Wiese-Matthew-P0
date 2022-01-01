@@ -16,6 +16,8 @@ public void Start()
 
 List<Store> allStores = _bl.GetAllStores();
 
+List<Inventory> allInventory = _bl.GetAllInventory();
+
 List<Customers> allCustomers = _bl.GetAllCustomers();
 
 //Clay Shop! Matthew Wiese: P0
@@ -29,6 +31,21 @@ bool manager = false; //If Manager is logged in
 int pos = 0; //Position, where the user is currently in the application
 
 DateOnly dateOnlyVar = DateOnly.FromDateTime(DateTime.Now); 
+
+// string[] testA = new string[8];
+// testA[1] = "abCDef";
+// Console.WriteLine($"Easy Way: {testA[1][0]}");
+
+// //int index = testA[1].IndexOf("C");
+// char[] chars = testA[1].ToCharArray();
+// char first = chars[0];
+// Console.WriteLine($"result of tets string: {first}");
+
+// List<string> Strlist = new List<string>();  
+// Strlist.Add("ZbCDef");
+// Console.WriteLine($"Easy List Way: {Strlist[0][0]}");
+
+//Console.WriteLine($"{(32 / 8 * 2)}");
 
 //Main Loop
 while(!exit)
@@ -203,10 +220,17 @@ while(!exit)
             // {
             //     Console.WriteLine($"[{inv.APN}] Clay Product: {inv.Name}");
             // }
-            foreach(ProdDetails inv in _bl.GetAllInventory())
+            //Return what index of inventory we need to access
+            int targetInv = 0;
+            for(int i = 0; i < allInventory.Count; i++)
             {
-                if(inv.ItemType == 0 && inv.StoreAt == allStores[chosenStore].StoreID)
-                {Console.WriteLine($"[{inv.APN}] Clay Product: {inv.Name}");}
+                if(allInventory[i].Store == allStores[chosenStore].StoreID){targetInv = i;}
+            }
+
+            for(int i = 0; i < allInventory[targetInv].Items.Count; i++)
+            {
+                if(allInventory[targetInv].Items[i].ItemType == 0 && allInventory[targetInv].Items[i].StoreAt == allStores[chosenStore].StoreID)
+                {Console.WriteLine($"[{allInventory[targetInv].Items[i].APN}] Clay Product: {allInventory[targetInv].Items[i].Name}");}
             }
 
             Console.WriteLine("Select product for more details or 'x' to return to menu:\n");
@@ -220,16 +244,20 @@ while(!exit)
             {
                 int intAPN = Int32.Parse(chooseAPN); //Select APN
                 //foreach(Clay inv2 in allStores[chosenStore].locClay)
-                foreach(ProdDetails inv2 in _bl.GetAllInventory())
+                //foreach(Inventory inv2 in _bl.GetAllInventory())
+
+                for(int i = 0; i < allInventory[targetInv].Items.Count; i++)
                 {
                     //Console.WriteLine($"inv2.ItemType: {inv2.ItemType}, inv2.StoreAt: {inv2.StoreAt}, allStores[chosenStore].StoreID: {allStores[chosenStore].StoreID}");
-                    if(inv2.ItemType == 0 && inv2.StoreAt == allStores[chosenStore].StoreID){ 
-                    if(inv2.APN == intAPN)
+                    if(allInventory[targetInv].Items[i].ItemType == 0){ 
+                    if(allInventory[targetInv].Items[i].APN == intAPN)
                     {
                         //inv2.ShowDesc(); //This should come from BL...?
-                        Console.WriteLine($"Cost: {inv2.Cost}, APN: [{inv2.APN}], Clay Product: {inv2.Name}, Weight: {inv2.Weight}"+
-                        $"\nDescription: {inv2.Desc}, Quantity left: {inv2.OnHand}"); 
-                        remAPN = inv2.APN;  remName = inv2.Name ?? "";  remCost = inv2.Cost; 
+                        Console.WriteLine($"Cost: {allInventory[targetInv].Items[i].Cost}, APN: [{allInventory[targetInv].Items[i].APN}],"+
+                        $" Clay Product: {allInventory[targetInv].Items[i].Name}, Weight: {allInventory[targetInv].Items[i].Weight}"+
+                        $"\nDescription: {allInventory[targetInv].Items[i].Desc}, Quantity left: {allInventory[targetInv].Items[i].OnHand}"); 
+                        remAPN = allInventory[targetInv].Items[i].APN;  remName = allInventory[targetInv].Items[i].Name ?? "";  
+                        remCost = allInventory[targetInv].Items[i].Cost; 
                     }}
                 }//End For Each
 
@@ -241,7 +269,7 @@ while(!exit)
                         Console.WriteLine("\nHow many do you want to buy?");
                         int qtyToBuy = Int32.Parse(Console.ReadLine() ?? ""); //need check for parse!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                        decimal sendTax = Convert.ToDecimal(chosenStore*0.2);
+                        decimal sendTax = Convert.ToDecimal(chosenStore*0.2); //[PLACE HOLDER]
 
                         
                         //Now to Save it
@@ -264,10 +292,17 @@ while(!exit)
         //Display Tool Inventory for Selected Store
         case 4:
             Console.WriteLine("Tool Inventory");
-            foreach(ProdDetails inv in _bl.GetAllInventory())
+            //Return what index of inventory we need to access
+            int targetInvT = 0;
+            for(int i = 0; i < allInventory.Count; i++)
             {
-                if(inv.ItemType == 1 && inv.StoreAt == allStores[chosenStore].StoreID)
-                {Console.WriteLine($"[{inv.APN}] Tool Product: {inv.Name}");}
+                if(allInventory[i].Store == allStores[chosenStore].StoreID){targetInv = i;}
+            }
+
+            for(int i = 0; i < allInventory[targetInvT].Items.Count; i++)
+            {
+                if(allInventory[targetInvT].Items[i].ItemType == 1 && allInventory[targetInvT].Items[i].StoreAt == allStores[chosenStore].StoreID)
+                {Console.WriteLine($"[{allInventory[targetInvT].Items[i].APN}] Clay Product: {allInventory[targetInvT].Items[i].Name}");}
             }
 
             Console.WriteLine("Select product for more details or 'x' to return to menu:\n");
@@ -279,17 +314,23 @@ while(!exit)
             else
             {
                 int intAPN = Int32.Parse(chooseAPNT); //Select APN
-                foreach(ProdDetails inv2 in _bl.GetAllInventory())
+
+                for(int i = 1; i < allInventory[targetInvT].Items.Count; i++)
                 {
-                    if(inv2.ItemType == 1 && inv2.StoreAt == allStores[chosenStore].StoreID){
-                    if(inv2.APN == intAPN)
+                    //Console.WriteLine($"inv2.ItemType: {inv2.ItemType}, inv2.StoreAt: {inv2.StoreAt}, allStores[chosenStore].StoreID: {allStores[chosenStore].StoreID}");
+                    if(allInventory[targetInvT].Items[i].ItemType == 1){ 
+                    if(allInventory[targetInvT].Items[i].APN == intAPN)
                     {
                         //inv2.ShowDesc(); //This should come from BL...?
-                        Console.WriteLine($"Cost: {inv2.Cost}, APN: [{inv2.APN}], Clay Product: {inv2.Name}, Weight: {inv2.Weight}"+
-                        $"\nDescription: {inv2.Desc}, Quantity left: {inv2.OnHand}");
+                        Console.WriteLine($"Cost: {allInventory[targetInvT].Items[i].Cost}, APN: [{allInventory[targetInvT].Items[i].APN}],"+
+                        $" Clay Product: {allInventory[targetInvT].Items[i].Name}, Weight: {allInventory[targetInvT].Items[i].Weight}"+
+                        $"\nDescription: {allInventory[targetInvT].Items[i].Desc}, Quantity left: {allInventory[targetInvT].Items[i].OnHand}"); 
+                        remAPN = allInventory[targetInvT].Items[i].APN;  remName = allInventory[targetInvT].Items[i].Name ?? "";  
+                        remCost = allInventory[targetInvT].Items[i].Cost; 
                     }}
                     //Add to cart option here:
-                }
+                }//End For 
+
             }
             Console.WriteLine("\nEnter any value to return to main menu");
             Console.ReadLine(); //For now take user input to continue
@@ -300,10 +341,17 @@ while(!exit)
         //Display Studio Equipment Inventory for Selected Store
         case 5:
             Console.WriteLine("Studio Equipment Inventory");
-            foreach(ProdDetails inv in _bl.GetAllInventory())
+            //Return what index of inventory we need to access
+            int targetInvE = 0;
+            for(int i = 0; i < allInventory.Count; i++)
             {
-                if(inv.ItemType == 2 && inv.StoreAt == allStores[chosenStore].StoreID)
-                {Console.WriteLine($"[{inv.APN}] Equipment Product: {inv.Name}");}
+                if(allInventory[i].Store == allStores[chosenStore].StoreID){targetInvE = i;}
+            }
+
+            for(int i = 0; i < allInventory[targetInvE].Items.Count; i++)
+            {
+                if(allInventory[targetInvE].Items[i].ItemType == 2 && allInventory[targetInvE].Items[i].StoreAt == allStores[chosenStore].StoreID)
+                {Console.WriteLine($"[{allInventory[targetInvE].Items[i].APN}] Clay Product: {allInventory[targetInvE].Items[i].Name}");}
             }
 
             Console.WriteLine("Select product for more details or 'x' to return to menu:\n");
@@ -315,17 +363,23 @@ while(!exit)
             else
             {
                 int intAPN = Int32.Parse(chooseAPNE); //Select APN
-                foreach(ProdDetails inv2 in _bl.GetAllInventory())
+
+                for(int i = 1; i < allInventory[targetInvE].Items.Count; i++)
                 {
-                    if(inv2.ItemType == 2 && inv2.StoreAt == allStores[chosenStore].StoreID){
-                    if(inv2.APN == intAPN)
+                    //Console.WriteLine($"inv2.ItemType: {inv2.ItemType}, inv2.StoreAt: {inv2.StoreAt}, allStores[chosenStore].StoreID: {allStores[chosenStore].StoreID}");
+                    if(allInventory[targetInvE].Items[i].ItemType == 2){ 
+                    if(allInventory[targetInvE].Items[i].APN == intAPN)
                     {
                         //inv2.ShowDesc(); //This should come from BL...?
-                        Console.WriteLine($"Cost: {inv2.Cost}, APN: [{inv2.APN}], Clay Product: {inv2.Name}, Weight: {inv2.Weight}"+
-                        $"\nDescription: {inv2.Desc}, Quantity left: {inv2.OnHand}");
+                        Console.WriteLine($"Cost: {allInventory[targetInvE].Items[i].Cost}, APN: [{allInventory[targetInvE].Items[i].APN}],"+
+                        $" Clay Product: {allInventory[targetInvE].Items[i].Name}, Weight: {allInventory[targetInvE].Items[i].Weight}"+
+                        $"\nDescription: {allInventory[targetInvE].Items[i].Desc}, Quantity left: {allInventory[targetInvE].Items[i].OnHand}"); 
+                        remAPN = allInventory[targetInvE].Items[i].APN;  remName = allInventory[targetInvE].Items[i].Name ?? "";  
+                        remCost = allInventory[targetInvE].Items[i].Cost; 
                     }}
                     //Add to cart option here:
-                }
+                }//End For 
+
             }
             Console.WriteLine("\nEnter any value to return to main menu");
             Console.ReadLine(); //For now take user input to continue

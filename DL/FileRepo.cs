@@ -8,355 +8,388 @@ namespace DL;
 //This class reads and writes to the file
 public class FileRepo : IRepo
 {
-    public FileRepo(){ }
+public FileRepo(){ }
 
-    private string filePath = "../DL/Stores.json";
+private string filePath = "../DL/Stores.json";
 
-    //Stores
-    public List<Store> GetAllStores()
+//Stores
+public List<Store> GetAllStores()
+{
+    //string jsonString = File.ReadAllText(filePath);
+
+    string jsonString = "";
+    try
     {
-        //string jsonString = File.ReadAllText(filePath);
-
-        string jsonString = "";
-        try
-        {
-            jsonString = File.ReadAllText(filePath);
-        }    
-        catch(FileNotFoundException ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-
-        return JsonSerializer.Deserialize<List<Store>>(jsonString) ?? new List<Store>();
-
+        jsonString = File.ReadAllText(filePath);
+    }    
+    catch(FileNotFoundException ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+    catch(Exception ex)
+    {
+        Console.WriteLine(ex.Message);
     }
 
-    // public Store GetStoreByIndex(int index)
-    // {
-    //     List<Store> allStores = GetAllStores();
-    //     // for(int i = 0; i < allStores.Count; i++)
-    //     // {
-    //     //     if(i == index) return allStores[i];
-    //     // }
+    return JsonSerializer.Deserialize<List<Store>>(jsonString) ?? new List<Store>();
 
-    //     return allStores[index];
-    // }
+}
 
-    public void AddStore(Store storeToAdd)
-    {
-        
-        /*Serialization in C# is the process of bringing an object into a form that it can be written on stream. 
-        It's the process of converting the object into a form so that it can be stored on a file, database, or 
-        memory; or, it can be transferred across the network. Its main purpose is to save the state of the object 
-        so that it can be recreated when needed.
+// public Store GetStoreByIndex(int index)
+// {
+//     List<Store> allStores = GetAllStores();
+//     // for(int i = 0; i < allStores.Count; i++)
+//     // {
+//     //     if(i == index) return allStores[i];
+//     // }
 
-        As the name suggests, deserialization in C# is the reverse process of serialization. It is the process of 
-        getting back the serialized object so that it can be loaded into memory. It resurrects the state of the 
-        object by setting properties, fields etc.
-        */
+//     return allStores[index];
+// }
 
-        //First, we're going to grab all the Stores from the file
-        //Second, we'll deserialize as List<Store>
-        List<Store> allStores = GetAllStores();
-        //Third, we'll use List's Add method to add our new Store
-        allStores.Add(storeToAdd);
-
-        //Lastly, we'll serialize that List<Store> and then write it to the file
-        string jsonString = JsonSerializer.Serialize(allStores);
-        File.WriteAllText(filePath, jsonString);
-    }
-    public void ChangeStoreInfo(int storeIndex, string name, string city, string state)
-    {
-        List<Store> allStores = GetAllStores();
-        
-        allStores[storeIndex].StoreName = name;
-        allStores[storeIndex].City = city;
-        allStores[storeIndex].State = state;
-
-        string jsonString = JsonSerializer.Serialize(allStores);
-        File.WriteAllText(filePath, jsonString);
-    }
-
-    public void RemoveStore(int storeToRemove)//Store storeToRemove)
-    {
-        
-        List<Store> allStores = GetAllStores();
-        allStores.RemoveAt(storeToRemove);
-
-        string jsonString = JsonSerializer.Serialize(allStores);
-        File.WriteAllText(filePath, jsonString);
-    }
-
-    //Inventory
-    private string filePathInv = "../DL/Inventory.json";
-    public List<ProdDetails> GetAllInventory()
-    {
-        //string jsonString = File.ReadAllText(filePath);
-
-        string jsonString = "";
-        try
-        {
-            jsonString = File.ReadAllText(filePathInv);
-        }    
-        catch(FileNotFoundException ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-
-        return JsonSerializer.Deserialize<List<ProdDetails>>(jsonString) ?? new List<ProdDetails>();
-
-    }
-
-    public void AddInventory(int storeIndex, ProdDetails invToAdd) //storeIndex not used?
-    {
-        List<ProdDetails> allInv = GetAllInventory(); 
-        
-        allInv.Add(invToAdd);
-        
-        string jsonString = JsonSerializer.Serialize(allInv);
-        File.WriteAllText(filePathInv, jsonString);
-    }
-    public void ChangeInventory(int storeIndex, int itemIndex, int itemQty)
-    {
-        //1. Grab all inventory
-        List<ProdDetails> allInv = GetAllInventory();
-
-
-        for(int i = 0; i < allInv.Count; i++)
-        {    
-            //Console.WriteLine($"allInv[i].StoreAt: {allInv[i].StoreAt}, storeIndex: {storeIndex}, i: {i}, itemIndex: {itemIndex}");
-            if(allInv[i].StoreAt == storeIndex && i == itemIndex)
-            {
-                allInv[i].OnHand = itemQty; 
-                Console.WriteLine($"\n{allInv[i].Name} qty changed to {itemQty} for this store\n");
-            }
-        }
-        
-        string jsonString = JsonSerializer.Serialize(allInv);
-        File.WriteAllText(filePathInv, jsonString); 
-    }
-
-    public void RemoveInventory(int invIndexToRemove)
-    {
-        List<ProdDetails> allInv = GetAllInventory();
-        //Loop through inventory and delete all instances of this object
-        // for(int i = 0; i < allInv.Count; i++)
-        // { 
-        //     if(allInv[i].APN == invItemToRemove)
-        //     {allInv.RemoveAt(i);}
-        // }
-        allInv.RemoveAt(invIndexToRemove);
-
-        string jsonString = JsonSerializer.Serialize(allInv);
-        File.WriteAllText(filePathInv, jsonString);
-    }
-
-    //=======================<<<<  CUSTOMER SECTION  >>>>===========================\\
+public void AddStore(Store storeToAdd)
+{
     
-    private string filePathC = "../DL/Customers.json";
+    /*Serialization in C# is the process of bringing an object into a form that it can be written on stream. 
+    It's the process of converting the object into a form so that it can be stored on a file, database, or 
+    memory; or, it can be transferred across the network. Its main purpose is to save the state of the object 
+    so that it can be recreated when needed.
 
-    //public List<Customers> CustomerList = new List<Customers>(); //Local Customer
-    public List<Customers> GetAllCustomers()
+    As the name suggests, deserialization in C# is the reverse process of serialization. It is the process of 
+    getting back the serialized object so that it can be loaded into memory. It resurrects the state of the 
+    object by setting properties, fields etc.
+    */
+
+    //First, we're going to grab all the Stores from the file
+    //Second, we'll deserialize as List<Store>
+    List<Store> allStores = GetAllStores();
+    //Third, we'll use List's Add method to add our new Store
+    allStores.Add(storeToAdd);
+
+    //Lastly, we'll serialize that List<Store> and then write it to the file
+    string jsonString = JsonSerializer.Serialize(allStores);
+    File.WriteAllText(filePath, jsonString);
+}
+public void ChangeStoreInfo(int storeIndex, string name, string city, string state)
+{
+    List<Store> allStores = GetAllStores();
+    
+    allStores[storeIndex].StoreName = name;
+    allStores[storeIndex].City = city;
+    allStores[storeIndex].State = state;
+
+    string jsonString = JsonSerializer.Serialize(allStores);
+    File.WriteAllText(filePath, jsonString);
+}
+
+public void RemoveStore(int storeToRemove)//Store storeToRemove)
+{
+    
+    List<Store> allStores = GetAllStores();
+    allStores.RemoveAt(storeToRemove);
+
+    string jsonString = JsonSerializer.Serialize(allStores);
+    File.WriteAllText(filePath, jsonString);
+}
+
+//Inventory
+private string filePathInv = "../DL/Inventory.json";
+// public List<ProdDetails> GetAllInventory()
+// {
+//     //string jsonString = File.ReadAllText(filePath);
+
+//     string jsonString = "";
+//     try
+//     {
+//         jsonString = File.ReadAllText(filePathInv);
+//     }    
+//     catch(FileNotFoundException ex)
+//     {
+//         Console.WriteLine(ex.Message);
+//     }
+//     catch(Exception ex)
+//     {
+//         Console.WriteLine(ex.Message);
+//     }
+
+//     return JsonSerializer.Deserialize<List<ProdDetails>>(jsonString) ?? new List<ProdDetails>();
+
+// }
+public List<Inventory> GetAllInventory()
+{
+    //string jsonString = File.ReadAllText(filePath);
+    string jsonString = "";
+    try
     {
-        string jsonString = File.ReadAllText(filePathC);
-
-        return JsonSerializer.Deserialize<List<Customers>>(jsonString) ?? new List<Customers>(); 
+        jsonString = File.ReadAllText(filePathInv);
+    }    
+    catch(FileNotFoundException ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+    catch(Exception ex)
+    {
+        Console.WriteLine(ex.Message);
     }
 
-    // public Customers GetCustomerByIndex(int index)
-    // {
-    //     List<Customers> allCustomers = GetAllCustomers();
-    //     return allCustomers[index];
+    return JsonSerializer.Deserialize<List<Inventory>>(jsonString) ?? new List<Inventory>();
+}
+
+//Add new Inventory to Inventory List
+public void AddInventory(Inventory invToAdd) 
+{
+    List<Inventory> allInventory = GetAllInventory(); 
+    allInventory.Add(invToAdd); //Old way before Inventory Obj
+    
+    string jsonString = JsonSerializer.Serialize(allInventory);
+    File.WriteAllText(filePathInv, jsonString);
+}
+
+//Add item to existing Inventory
+public void AddItem(int invIndex, ProdDetails invToAdd) 
+{
+    //List<ProdDetails> allInv = GetAllInventory(); //Old way before Inventory Obj
+    List<Inventory> allInventory = GetAllInventory(); 
+    //allInv.Add(invToAdd); //Old way before Inventory Obj
+    Inventory selectedInventory = allInventory[invIndex];
+    
+    if(selectedInventory.Items == null)
+    {
+        selectedInventory.Items = new List<ProdDetails>();
+    }
+    selectedInventory.Items.Add(invToAdd);
+    
+    string jsonString = JsonSerializer.Serialize(allInventory);
+    File.WriteAllText(filePathInv, jsonString);
+}
+
+public void ChangeInventory(int invIndex, int itemIndex, int itemQty)//Change store inventory
+{
+    List<Inventory> allInv = GetAllInventory();
+
+    if(allInv[invIndex].Items.Count > 0)//Must have an entry to change an entry
+    {
+        allInv[invIndex].Items[itemIndex].OnHand = itemQty; //Override to new value
+        Console.WriteLine($"\n{allInv[invIndex].Items[itemIndex].Name} qty changed to {itemQty} for this store\n");
+    }
+
+    string jsonString = JsonSerializer.Serialize(allInv);
+    File.WriteAllText(filePathInv, jsonString); 
+}
+
+public void RemoveInventory(int invIndex, int invIndexToRemove)
+{
+    //List<ProdDetails> allInv = GetAllInventory(); //Old way before Inventory Obj
+    List<Inventory> allInv = GetAllInventory();
+    //Loop through inventory and delete all instances of this object, Shouldn't be duplicates
+    // for(int i = 0; i < allInv.Count; i++)
+    // { 
+    //     if(allInv[i].APN == invItemToRemove)
+    //     {allInv.RemoveAt(i);}
     // }
+    allInv[invIndex].Items.RemoveAt(invIndexToRemove);
 
-    public void AddCustomer(int custNum, string userName, string pass)
+    string jsonString = JsonSerializer.Serialize(allInv);
+    File.WriteAllText(filePathInv, jsonString);
+}
+
+//=======================<<<<  CUSTOMER SECTION  >>>>===========================\\
+
+private string filePathC = "../DL/Customers.json";
+
+//public List<Customers> CustomerList = new List<Customers>(); //Local Customer
+public List<Customers> GetAllCustomers()
+{
+    string jsonString = File.ReadAllText(filePathC);
+
+    return JsonSerializer.Deserialize<List<Customers>>(jsonString) ?? new List<Customers>(); 
+}
+
+// public Customers GetCustomerByIndex(int index)
+// {
+//     List<Customers> allCustomers = GetAllCustomers();
+//     return allCustomers[index];
+// }
+
+public void AddCustomer(int custNum, string userName, string pass)
+{
+    int custNumbAssg = 0;
+    bool canMake = true; //Can make new account
+
+    //1. Grab all customers
+    List<Customers> allCustomers = GetAllCustomers();
+    custNumbAssg = allCustomers.Count; //Get next customer number
+
+    if(canMake == true)
     {
-        int custNumbAssg = 0;
-        bool canMake = true; //Can make new account
+        //2. Set new customer data
+        Customers newCust = new Customers {
+            CustNumb = custNumbAssg,
+            UserName = userName,
+            Pass = pass
+        };
 
-        //1. Grab all customers
-        List<Customers> allCustomers = GetAllCustomers();
-        custNumbAssg = allCustomers.Count; //Get next customer number
+        //3. Append Customers 
+        allCustomers.Add(newCust);
 
-        if(canMake == true)
-        {
-            //2. Set new customer data
-            Customers newCust = new Customers {
-                CustNumb = custNumbAssg,
-                UserName = userName,
-                Pass = pass
-            };
-
-            //3. Append Customers 
-            allCustomers.Add(newCust);
-
-            //4. Write to file
-            string jsonString = JsonSerializer.Serialize(allCustomers);
-            File.WriteAllText(filePathC, jsonString);
-        }
+        //4. Write to file
+        string jsonString = JsonSerializer.Serialize(allCustomers);
+        File.WriteAllText(filePathC, jsonString);
     }
+}
 
 
-    //=======================<<<<   CARRIED ITEMS   >>>>===========================\\
+//=======================<<<<   CARRIED ITEMS   >>>>===========================\\
 
-    private string filePathIC = "../DL/Carried.json";
+private string filePathIC = "../DL/Carried.json";
 
-    //AddCarried
-    public List<ProdDetails> GetAllCarried()
+//AddCarried
+public List<ProdDetails> GetAllCarried()
+{
+    string jsonString = File.ReadAllText(filePathIC);
+    return JsonSerializer.Deserialize<List<ProdDetails>>(jsonString) ?? new List<ProdDetails>(); 
+}
+
+public void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
+{
+    //_dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
+    
+    int carrNumbAssg = 0;
+    bool canMake = true; //Can make new account
+
+    //1. Grab all customers
+    List<ProdDetails> allCarried = GetAllCarried();
+    carrNumbAssg = allCarried.Count; //Get next customer number
+
+    if(canMake == true)
     {
-        string jsonString = File.ReadAllText(filePathIC);
-        return JsonSerializer.Deserialize<List<ProdDetails>>(jsonString) ?? new List<ProdDetails>(); 
-    }
+        //2. Set new customer data
+        ProdDetails newCarry = new ProdDetails {
+            APN = carrNumbAssg,
+            Name = itemName,
+            ItemType = itemType,
+            Desc = itemDesc,
+            Cost = itemCost,
+            Weight = itemWeight
+        };
+        //void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
 
-    public void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
-    {
-        //_dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
-        
-        int carrNumbAssg = 0;
-        bool canMake = true; //Can make new account
+        //3. Append Carried 
+        allCarried.Add(newCarry);
 
-        //1. Grab all customers
-        List<ProdDetails> allCarried = GetAllCarried();
-        carrNumbAssg = allCarried.Count; //Get next customer number
-
-        if(canMake == true)
-        {
-            //2. Set new customer data
-            ProdDetails newCarry = new ProdDetails {
-                APN = carrNumbAssg,
-                Name = itemName,
-                ItemType = itemType,
-                Desc = itemDesc,
-                Cost = itemCost,
-                Weight = itemWeight
-            };
-            //void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
-
-            //3. Append Carried 
-            allCarried.Add(newCarry);
-
-            string jsonString = JsonSerializer.Serialize(allCarried);
-            //SaveCarried(jsonString);
-            //4. Write to file
-            File.WriteAllText(filePathIC, jsonString);
-        }
-
-    }
-    public void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
-    {
-        //_dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
-        
-        int carrNumbAssg = 0;
-        bool canMake = true; //Can make new account
-
-        //1. Grab all customers
-        List<ProdDetails> allCarried = GetAllCarried();
-        carrNumbAssg = allCarried.Count; //Get next customer number
-
-        if(canMake == true)
-        {
-            //2. Set new customer data
-            // ProdDetails newCarry = new ProdDetails {
-            //     APN = carrNumbAssg,
-            //     Name = itemName,
-            //     ItemType = itemType,
-            //     Desc = itemDesc,
-            //     Cost = itemCost,
-            //     Weight = itemWeight
-            // };
-            //void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
-
-            //3. Change Carried
-            allCarried[itemNum].Name = itemName;
-            allCarried[itemNum].ItemType = itemType;
-            allCarried[itemNum].Desc = itemDesc;
-            allCarried[itemNum].Cost = itemCost;
-            allCarried[itemNum].Weight = itemWeight;
-            //allCarried.Add(newCarry);
-
-            string jsonString = JsonSerializer.Serialize(allCarried);
-            //SaveCarried(jsonString);
-            //4. Write to file
-            File.WriteAllText(filePathIC, jsonString);
-        }
-
-    }
-
-    public void RemoveCarried(int carriedIndexToRemove)
-    {
-        List<ProdDetails> allcarry= GetAllCarried();
-        //Loop through all carried items and remove the cancelled item
-        // for(int i = 0; i < allcarry.Count; i++)
-        // { 
-        //     if(allcarry[i].APN == carriedToRemove)
-        //     {allcarry.RemoveAt(i);}
-        // }
-        allcarry.RemoveAt(carriedIndexToRemove);
-
-        string jsonString = JsonSerializer.Serialize(allcarry);
+        string jsonString = JsonSerializer.Serialize(allCarried);
+        //SaveCarried(jsonString);
+        //4. Write to file
         File.WriteAllText(filePathIC, jsonString);
     }
 
-    //=======================<<<<   LINE ITEMS   >>>>===========================\\
+}
+public void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
+{
+    //_dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
+    
+    int carrNumbAssg = 0;
+    bool canMake = true; //Can make new account
 
-    private string filePathLIL = "../DL/LineItemList.json";
+    //1. Grab all customers
+    List<ProdDetails> allCarried = GetAllCarried();
+    carrNumbAssg = allCarried.Count; //Get next customer number
 
-    //AddLineItem
-    public List<LineItems> GetAllLineItem()
+    if(canMake == true)
     {
-        string jsonString = File.ReadAllText(filePathLIL);
-        return JsonSerializer.Deserialize<List<LineItems>>(jsonString) ?? new List<LineItems>(); 
+        //2. Set new customer data
+        // ProdDetails newCarry = new ProdDetails {
+        //     APN = carrNumbAssg,
+        //     Name = itemName,
+        //     ItemType = itemType,
+        //     Desc = itemDesc,
+        //     Cost = itemCost,
+        //     Weight = itemWeight
+        // };
+        //void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
+
+        //3. Change Carried
+        allCarried[itemNum].Name = itemName;
+        allCarried[itemNum].ItemType = itemType;
+        allCarried[itemNum].Desc = itemDesc;
+        allCarried[itemNum].Cost = itemCost;
+        allCarried[itemNum].Weight = itemWeight;
+        //allCarried.Add(newCarry);
+
+        string jsonString = JsonSerializer.Serialize(allCarried);
+        //SaveCarried(jsonString);
+        //4. Write to file
+        File.WriteAllText(filePathIC, jsonString);
     }
 
-    public void AddLineItem(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax)
+}
+
+public void RemoveCarried(int carriedIndexToRemove)
+{
+    List<ProdDetails> allcarry= GetAllCarried();
+    //Loop through all carried items and remove the cancelled item
+    // for(int i = 0; i < allcarry.Count; i++)
+    // { 
+    //     if(allcarry[i].APN == carriedToRemove)
+    //     {allcarry.RemoveAt(i);}
+    // }
+    allcarry.RemoveAt(carriedIndexToRemove);
+
+    string jsonString = JsonSerializer.Serialize(allcarry);
+    File.WriteAllText(filePathIC, jsonString);
+}
+
+//=======================<<<<   LINE ITEMS   >>>>===========================\\
+
+private string filePathLIL = "../DL/LineItemList.json";
+
+//AddLineItem
+public List<LineItems> GetAllLineItem()
+{
+    string jsonString = File.ReadAllText(filePathLIL);
+    return JsonSerializer.Deserialize<List<LineItems>>(jsonString) ?? new List<LineItems>(); 
+}
+
+public void AddLineItem(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax)
+{
+    //_dl.AddLineItem(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
+    
+    int lilNumbAssg = 0;
+    bool canMake = true; //Can make new account
+
+    //1. Grab all customers
+    List<LineItems> allLineItem = GetAllLineItem();
+    lilNumbAssg = allLineItem.Count; //Get next customer number
+
+    if(canMake == true)
     {
-        //_dl.AddLineItem(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
-        
-        int lilNumbAssg = 0;
-        bool canMake = true; //Can make new account
+        //2. Set new customer data
+        LineItems newLI = new LineItems {
+            APN = apn,    
+            Name = name,
+            Qty = qty,
+            CostPerItem = costPerItem,
+            SalesTax = salesTax
+        };
+        //void AddLineItem(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
 
-        //1. Grab all customers
-        List<LineItems> allLineItem = GetAllLineItem();
-        lilNumbAssg = allLineItem.Count; //Get next customer number
+        //3. Append LineItem 
+        allLineItem.Add(newLI);
 
-        if(canMake == true)
-        {
-            //2. Set new customer data
-            LineItems newLI = new LineItems {
-                APN = apn,    
-                Name = name,
-                Qty = qty,
-                CostPerItem = costPerItem,
-                SalesTax = salesTax
-            };
-            //void AddLineItem(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
-
-            //3. Append LineItem 
-            allLineItem.Add(newLI);
-
-            string jsonString = JsonSerializer.Serialize(allLineItem);
-            //SaveLineItem(jsonString);
-            //4. Write to file
-            File.WriteAllText(filePathLIL, jsonString);
-        }
-
-    }
-
-    public void RemoveLineItem(int lineItemIndexToRemove)
-    {
-        List<LineItems> allLI= GetAllLineItem();
-        allLI.RemoveAt(lineItemIndexToRemove);
-
-        string jsonString = JsonSerializer.Serialize(allLI);
+        string jsonString = JsonSerializer.Serialize(allLineItem);
+        //SaveLineItem(jsonString);
+        //4. Write to file
         File.WriteAllText(filePathLIL, jsonString);
     }
+
+}
+
+public void RemoveLineItem(int lineItemIndexToRemove)
+{
+    List<LineItems> allLI= GetAllLineItem();
+    allLI.RemoveAt(lineItemIndexToRemove);
+
+    string jsonString = JsonSerializer.Serialize(allLI);
+    File.WriteAllText(filePathLIL, jsonString);
+}
 
 }

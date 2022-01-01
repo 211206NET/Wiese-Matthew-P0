@@ -30,13 +30,14 @@ public class ProdDetails
         //}
     }
 
-    public int StoreAt { get; set; }//What store this item has been stocked at
+    public int APN { get; set; }//Assigned Product Number  [PK]
+    public int StoreAt { get; set; }//What store this item has been stocked at  [FK]  [Will use Inventory between this and store]
+    public string? Name { get; set; }//Mirrored from product object
     public int OnHand { get; set; }//Number of this item the store has currently
     public int ItemType { get; set; }//0 = clay, 1 = tools, 2 = equip
-    public string? Name { get; set; }//Mirrored from product object
     public double Weight { get; set; }//How many pounds one unit of this product weigh
     public decimal Cost { get; set; }//Amount the store sells for
-    public int APN { get; set; }//Assigned Product Number
     public string? Desc { get; set; }//Description of product
+    
 
 }

@@ -6,10 +6,12 @@ public class Store
 {
     public List<ProdDetails> localInv = new List<ProdDetails>(); //Will store all inventory
     
+    
+    public int StoreID { get; set; }//Each different store has an ID [PK]
     public string? StoreName { get; set; }
-    public int StoreID { get; set; }//Each different store has an ID 
     public string? City { get; set; }
     public string? State { get; set; }
+    public decimal SalesTax { get; set; }//Percent tax rate  [NOT IMPLEMENTED YET]
 
     // private IBL _bl;
     // public Store(IBL bl)

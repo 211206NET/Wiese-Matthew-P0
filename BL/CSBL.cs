@@ -19,7 +19,7 @@ public class CSBL : IBL
     {
         return _dl.GetAllStores();
     }
-    public List<ProdDetails> GetAllInventory()
+    public List<Inventory> GetAllInventory()
     {
         return _dl.GetAllInventory();
     }
@@ -41,17 +41,21 @@ public class CSBL : IBL
     {
         _dl.RemoveStore(storeToRemove);
     }
-    public void AddInventory(int storeIndex, ProdDetails invToAdd)
+    public void AddInventory(Inventory invToAdd)
     {
-        _dl.AddInventory(storeIndex, invToAdd);
+        _dl.AddInventory(invToAdd);
     }
-    public void ChangeInventory(int storeIndex, int apn, int itemQty)
+    public void AddItem(int invIndex, ProdDetails invToAdd)
     {
-        _dl.ChangeInventory(storeIndex, apn, itemQty);
+        _dl.AddItem(invIndex, invToAdd);
     }
-    public void RemoveInventory(int invIndexToRemove)
+    public void ChangeInventory(int invIndex, int itemIndex, int itemQty)
     {
-        _dl.RemoveInventory(invIndexToRemove);
+        _dl.ChangeInventory(invIndex, itemIndex, itemQty);
+    }
+    public void RemoveInventory(int invIndex, int invIndexToRemove)
+    {
+        _dl.RemoveInventory(invIndex, invIndexToRemove);
     }
 
     ///<>Customers

@@ -4,7 +4,7 @@ public class StaticStorage : IRepo
 {
     //Will make only one list: static
     private static List<Store> _allStore = new List<Store>(); 
-    private static List<ProdDetails> _allInventory = new List<ProdDetails>(); 
+    private static List<Inventory> _allInventory = new List<Inventory>(); 
     private static List<ProdDetails> _allCarried = new List<ProdDetails>(); 
     private static List<LineItems> _allLineItems= new List<LineItems>(); 
     
@@ -16,7 +16,7 @@ public class StaticStorage : IRepo
     {
         return StaticStorage._allStore;
     }
-    public List<ProdDetails> GetAllInventory()
+    public List<Inventory> GetAllInventory()
     {
         return StaticStorage._allInventory;
     }
@@ -42,17 +42,21 @@ public class StaticStorage : IRepo
     {
         StaticStorage._allStore.RemoveAt(storeToRemove);
     }
-    public void AddInventory(int storeIndex, ProdDetails invToAdd)
+    public void AddInventory(Inventory invToAdd)
     {
         StaticStorage._allInventory.Add(invToAdd);
     }
-    public void ChangeInventory(int storeIndex, int apn, int itemQty)
+    public void AddItem(int invIndex, ProdDetails invToAdd)
     {
-        StaticStorage._allInventory[storeIndex].OnHand = itemQty;
+        StaticStorage._allInventory[invIndex].Items.Add(invToAdd);
+    }
+    public void ChangeInventory(int invIndex, int itemIndex, int itemQty)
+    {
+        StaticStorage._allInventory[invIndex].Items[itemIndex].OnHand = itemQty;
     }    
-    public void RemoveInventory(int invIndexToRemove)
+    public void RemoveInventory(int invIndex, int invIndexToRemove)
     {
-        StaticStorage._allInventory.RemoveAt(invIndexToRemove);
+        StaticStorage._allInventory[invIndex].Items.RemoveAt(invIndexToRemove);
     }
 
     //Customers
