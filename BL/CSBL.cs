@@ -53,9 +53,13 @@ public class CSBL : IBL
     {
         _dl.ChangeInventory(invIndex, itemIndex, itemQty);
     }
-    public void RemoveInventory(int invIndex, int invIndexToRemove)
+    public void RemoveInventory(int invIndexToRemove)
     {
-        _dl.RemoveInventory(invIndex, invIndexToRemove);
+        _dl.RemoveInventory(invIndexToRemove);
+    }
+    public void RemoveItem(int invIndex, int invIndexToRemove)
+    {
+        _dl.RemoveItem(invIndex, invIndexToRemove);
     }
 
     ///<>Customers
@@ -79,10 +83,10 @@ public class CSBL : IBL
 
 
     //public void AddCarried(ProdDetails addDetails)
-    public void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
+    public void AddCarried(ProdDetails itemNew)//(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
     {
-        _dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
-        //_dl.AddCarried(addDetails);
+        //_dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
+        _dl.AddCarried(itemNew);
     }
 
     //public void AddCarried(ProdDetails addDetails)
@@ -102,14 +106,26 @@ public class CSBL : IBL
         return _dl.GetAllLineItem();
     }
 
-    public void AddLineItem(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax)
+    public void AddLineItem(LineItems newLI)//(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax)
     {
-        _dl.AddLineItem(apn, name, qty, costPerItem, salesTax);
+        _dl.AddLineItem(newLI);//(apn, name, qty, costPerItem, salesTax);
     }
 
     public void RemoveLineItem(int lineItemIndexToRemove)
     {
         _dl.RemoveLineItem(lineItemIndexToRemove);
+    }
+
+    //AddOrder
+    public List<Orders> GetAllOrders()
+    {
+        return _dl.GetAllOrders();
+    }
+
+    //Add a new order to order history
+    public void AddOrder(Orders orderItems)
+    {
+        _dl.AddOrder(orderItems);
     }
 
    

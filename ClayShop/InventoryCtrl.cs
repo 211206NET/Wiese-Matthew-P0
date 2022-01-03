@@ -44,10 +44,12 @@ public class InventoryCtrl
                     Console.WriteLine("Enter the weight of the item");
                     Double itemWeight = Convert.ToDouble(Int32.Parse(Console.ReadLine() ?? ""));
 
+                    int carrNumbAssg = 0;
+                    carrNumbAssg = getAllCarried.Count; //Get next customer number
                     //Add user data to new carried items list
                     ProdDetails itemNew = new ProdDetails
                     {
-                            APN = 0,
+                            APN = carrNumbAssg,
                             Name = itemName ?? "",
                             ItemType = itemType,
                             Desc = itemDesc ?? "",
@@ -55,8 +57,8 @@ public class InventoryCtrl
                             Weight = itemWeight
                     };
 
-                    //_bl.AddCarried(itemNew);
-                    _bl.AddCarried(0,itemName ?? "",itemType,itemDesc ?? "",itemCost,itemWeight);
+                    _bl.AddCarried(itemNew);
+                    //_bl.AddCarried(0,itemName ?? "",itemType,itemDesc ?? "",itemCost,itemWeight);
 
                     Console.WriteLine($"[{itemName}] successfully created and added to the list of carried items for this franchise.\n");
                 break;

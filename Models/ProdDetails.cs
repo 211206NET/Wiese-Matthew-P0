@@ -8,9 +8,9 @@ public class ProdDetails
     //Product Objects will reference this object to retrive detailed information
     public ProdDetails(){}
 
-    public ProdDetails(int storeAt, int onHand, int itemType, int apn, string name, double weight, decimal cost, string desc)
+    public ProdDetails(int onHand, int itemType, int apn, string name, double weight, decimal cost, string desc) //int storeAt, 
     {
-        this.StoreAt = storeAt;
+        //this.StoreAt = storeAt;
         this.OnHand = onHand;
         this.ItemType = itemType;
         this.APN = apn;
@@ -20,18 +20,18 @@ public class ProdDetails
         this.Desc = desc;
     }
 
-    public void ShowDesc()
-    {
-        //Console.WriteLine($"APN: {APN}");
-        //if(Details.Count >= 0)//Safeguard to prevent out of range array
-        //{
-            Console.WriteLine($"Name: {Name}, Cost: {Cost}, "+
-            $"Weight: {Weight}, Description: {Desc}");
-        //}
-    }
+    // public void ShowDesc()
+    // {
+    //     //Console.WriteLine($"APN: {APN}");
+    //     //if(Details.Count >= 0)//Safeguard to prevent out of range array
+    //     //{
+    //         Console.WriteLine($"Name: {Name}, Cost: {Cost}, "+
+    //         $"Weight: {Weight}, Description: {Desc}");
+    //     //}
+    // }
 
     public int APN { get; set; }//Assigned Product Number  [PK]
-    public int StoreAt { get; set; }//What store this item has been stocked at  [FK]  [Will use Inventory between this and store]
+    //public int StoreAt { get; set; }//What store this item has been stocked at  [FK]  [Will use Inventory between this and store]
     public string? Name { get; set; }//Mirrored from product object
     public int OnHand { get; set; }//Number of this item the store has currently
     public int ItemType { get; set; }//0 = clay, 1 = tools, 2 = equip

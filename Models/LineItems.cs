@@ -6,11 +6,12 @@ public class LineItems
     //item name   /  qty  /   individual item cost   /    total cost for line
     //...
     //total items   /  total qty  /                      total cost for all item before tax  / after tax
-    public int APN { get; set; } //[PK]
+    public int Id { get; set; } //[PK]
     //public int Customer { get; set; } //[FK]
     //public int Store { get; set; } //[FK] 
-    public int InvId { get; set; } //[FK] [Not used yet]
-    public int OrderId { get; set; } //[FK]
+    public int StoreId { get; set; }
+    public int InvId { get; set; } //[FK] 
+    public int CustomerId { get; set; } //[FK]
     public string? Name { get; set; }
     public int Qty { get; set; }
     public decimal CostPerItem { get; set; }

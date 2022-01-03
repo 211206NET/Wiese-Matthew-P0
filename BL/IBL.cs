@@ -16,30 +16,26 @@ public interface IBL
     void AddInventory(Inventory invToAdd);
     void AddItem(int invIndex, ProdDetails invToAdd);
     void ChangeInventory(int invIndex, int apn, int itemQty);    
-    void RemoveInventory(int invIndex, int invIndexToRemove);
+    void RemoveInventory(int invIndex);
+    void RemoveItem(int invIndex, int invIndexToRemove);
 
     //Customers
     List<Customers> GetAllCustomers();
-
     void AddCustomer(int custNum, string userName, string pass);
 
     //Carried Items
-
-    //AddCarried
     List<ProdDetails> GetAllCarried();
-
-    void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
-    //void AddCarried(ProdDetails addCarry);
-
+    void AddCarried(ProdDetails itemNew);//(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
     void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
     void RemoveCarried(int carriedIndexToRemove);
 
     //Line Items
     List<LineItems> GetAllLineItem();
-
-    void AddLineItem(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax);
-
+    void AddLineItem(LineItems newLI);//int apn, string name, int qty, Decimal costPerItem, Decimal salesTax);
     void RemoveLineItem(int lineItemIndexToRemove);
+
+    List<Orders> GetAllOrders();
+    void AddOrder(Orders orderItems);
 
 
 }

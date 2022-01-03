@@ -10,6 +10,7 @@ public MainMenu(IBL bl)
 }
 
 public int chosenStore = 0; //Which store the user currently has chosen
+public int userId = 0; //Current user Id
 
 public void Start() 
 {
@@ -19,6 +20,8 @@ List<Store> allStores = _bl.GetAllStores();
 List<Inventory> allInventory = _bl.GetAllInventory();
 
 List<Customers> allCustomers = _bl.GetAllCustomers();
+
+List<LineItems> lineItemsList = _bl.GetAllLineItem();
 
 //Clay Shop! Matthew Wiese: P0
 Console.WriteLine("Welcome to the plasticine clay shop.\n" +
@@ -30,7 +33,6 @@ bool canMake = false; //For making new customer
 bool manager = false; //If Manager is logged in
 int pos = 0; //Position, where the user is currently in the application
 int whatItem = 0; //0 = Clay, 1 = Tools, 2 == Equipment (For showing item inventory by section)
-
 DateOnly dateOnlyVar = DateOnly.FromDateTime(DateTime.Now); 
 
 // string[] testA = new string[8];
@@ -47,6 +49,10 @@ DateOnly dateOnlyVar = DateOnly.FromDateTime(DateTime.Now);
 // Console.WriteLine($"Easy List Way: {Strlist[0][0]}");
 
 //Console.WriteLine($"{(32 / 8 * 2)}");
+// int sample = 0;
+// Console.WriteLine("Enter error string here");
+// sample = int.Parse(Console.ReadLine());
+// Console.WriteLine(sample);
 
 //Main Loop
 while(!exit)
@@ -76,6 +82,7 @@ while(!exit)
             {
                 if(custL.UserName == userNL && custL.Pass == pwL)
                 {       
+                    userId = custL.CustNumb;//Set the Id number of customer currently shopping
                     canLog = true;
                     //Check if manager login
                     if(userNL.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
@@ -221,7 +228,7 @@ while(!exit)
         //Display Inventory for Selected Store
         case 3:
             int remAPN = 0; string remName = ""; decimal remCost = 0; 
-            List<LineItems> lineItemsList = _bl.GetAllLineItem();//Update shopping list
+            lineItemsList = _bl.GetAllLineItem();//Update shopping list
             if(whatItem == 0){Console.WriteLine("Clay Inventory");}
             if(whatItem == 1){Console.WriteLine("Tools Inventory");}
             if(whatItem == 2){Console.WriteLine("Equipment Inventory");}
@@ -234,7 +241,7 @@ while(!exit)
 
             foreach(ProdDetails pDet in allInventory[targetInv].Items)
             {
-                if(pDet.ItemType == whatItem && pDet.StoreAt == allStores[chosenStore].StoreID)
+                if(pDet.ItemType == whatItem && allInventory[targetInv].Store == allStores[chosenStore].StoreID)  //pDet.StoreAt
                 {Console.WriteLine($"[{pDet.APN}] Clay Product: {pDet.Name}");}
             }
 
@@ -273,8 +280,27 @@ while(!exit)
                     decimal sendTax = Convert.ToDecimal(chosenStore*0.2); //[PLACE HOLDER]
 
                     
+                    //Return what index item buying is in list of inventory object
+                    int targetProd = 0;
+                    for(int i = 0; i < allInventory[targetInv].Items.Count; i++)
+                    {
+                        if(allInventory[targetInv].Items[i].APN == remAPN){targetProd = i;}
+                    }
+
                     //Now to Save it
-                    _bl.AddLineItem(remAPN, remName ?? "", qtyToBuy, remCost, sendTax);         
+                    LineItems newLI = new LineItems {
+                        Id = remAPN,   
+                        StoreId = allStores[chosenStore].StoreID, 
+                        InvId = targetProd, 
+                        CustomerId = userId,
+                        Name = remName,
+                        Qty = qtyToBuy,
+                        CostPerItem = remCost,
+                        SalesTax = sendTax
+                    };
+                    
+                    _bl.AddLineItem(newLI); 
+                    //_bl.AddLineItem(remAPN, remName ?? "", qtyToBuy, remCost, sendTax);         
                     pos = 2;
                     break;
                 }
@@ -290,104 +316,6 @@ while(!exit)
             pos = 2;
         break;
 
-        // //Display Tool Inventory for Selected Store
-        // case 4:
-        //     Console.WriteLine("Tool Inventory");
-        //     //Return what index of inventory we need to access
-        //     int targetInvT = 0;
-        //     for(int i = 0; i < allInventory.Count; i++)
-        //     {
-        //         if(allInventory[i].Store == allStores[chosenStore].StoreID){targetInv = i;}
-        //     }
-
-        //     foreach(ProdDetails pDetT in allInventory[targetInvT].Items)
-        //     {
-        //         if(pDetT.ItemType == 1 && pDetT.StoreAt == allStores[chosenStore].StoreID)
-        //         {Console.WriteLine($"[{pDetT.APN}] Clay Product: {pDetT.Name}");}
-        //     }
-
-        //     Console.WriteLine("Select product for more details or 'x' to return to menu:\n");
-        //     string chooseAPNT = Console.ReadLine() ?? ""; 
-        //     if(chooseAPNT == "x")
-        //     {
-        //         pos = 2; //Return to main Menu
-        //     }
-        //     else
-        //     {
-        //         int intAPN = Int32.Parse(chooseAPNT); //Select APN
-
-        //         foreach(ProdDetails prodDT in allInventory[targetInvT].Items)
-        //         {
-        //             if(prodDT.ItemType == 1){ 
-        //             if(prodDT.APN == intAPN)
-        //             {
-        //                 //inv2.ShowDesc(); //This should come from BL...?
-        //                 Console.WriteLine($"Cost: {prodDT.Cost}, APN: [{prodDT.APN}],"+
-        //                 $" Clay Product: {prodDT.Name}, Weight: {prodDT.Weight}"+
-        //                 $"\nDescription: {prodDT.Desc}, Quantity left: {prodDT.OnHand}"); 
-        //                 remAPN = prodDT.APN;  remName = prodDT.Name ?? "";  
-        //                 remCost = prodDT.Cost; 
-        //             }}
-        //         }//End For 
-                
-        //         //Add to cart option here:
-
-        //     }
-        //     Console.WriteLine("\nEnter any value to return to main menu");
-        //     Console.ReadLine(); //For now take user input to continue
-
-        //     pos = 2; //Return to main Menu
-        // break;
-
-        // //Display Studio Equipment Inventory for Selected Store
-        // case 5:
-        //     Console.WriteLine("Studio Equipment Inventory");
-        //     //Return what index of inventory we need to access
-        //     int targetInvE = 0;
-        //     for(int i = 0; i < allInventory.Count; i++)
-        //     {
-        //         if(allInventory[i].Store == allStores[chosenStore].StoreID){targetInvE = i;}
-        //     }
-
-        //     foreach(ProdDetails pDetE in allInventory[targetInvE].Items)
-        //     {
-        //         if(pDetE.ItemType == 2 && pDetE.StoreAt == allStores[chosenStore].StoreID)
-        //         {Console.WriteLine($"[{pDetE.APN}] Clay Product: {pDetE.Name}");}
-        //     }
-
-        //     Console.WriteLine("Select product for more details or 'x' to return to menu:\n");
-        //     string chooseAPNE = Console.ReadLine() ?? ""; 
-        //     if(chooseAPNE == "x")
-        //     {
-        //         pos = 2; //Return to main Menu
-        //     }
-        //     else
-        //     {
-        //         int intAPN = Int32.Parse(chooseAPNE); //Select APN
-
-        //         foreach(ProdDetails prodDE in allInventory[targetInvE].Items)
-        //         {
-        //             if(prodDE.ItemType == 2){ 
-        //             if(prodDE.APN == intAPN)
-        //             {
-        //                 //inv2.ShowDesc(); //This should come from BL...?
-        //                 Console.WriteLine($"Cost: {prodDE.Cost}, APN: [{prodDE.APN}],"+
-        //                 $" Clay Product: {prodDE.Name}, Weight: {prodDE.Weight}"+
-        //                 $"\nDescription: {prodDE.Desc}, Quantity left: {prodDE.OnHand}"); 
-        //                 remAPN = prodDE.APN;  remName = prodDE.Name ?? "";  
-        //                 remCost = prodDE.Cost; 
-        //             }}
-        //         }//End For 
-
-        //         //Add to cart option here:
-
-        //     }
-        //     Console.WriteLine("\nEnter any value to return to main menu");
-        //     Console.ReadLine(); //For now take user input to continue
-
-        //     pos = 2; //Return to main Menu
-        // break;
-
         //Management Menu
         case 6:
         
@@ -398,7 +326,7 @@ while(!exit)
             IBL bl = new CSBL(repo);
             //Finally, I instantiate MngMenu that needs an instance that implements Business Logic class
             Management mngMenu = new Management(bl);
-            mngMenu.chosenStore = this.chosenStore;
+            mngMenu.chosenStore = allStores[this.chosenStore].StoreID;
             //Reset local settings for when returning to this menu
             chosenStore = 0;
             pos = 1;
@@ -408,19 +336,29 @@ while(!exit)
 
         //Checkout/Shopping Cart
         case 7:
-        
-            Console.WriteLine($"Pos: {pos}");
-            //Here, I instantiated an implementation of IRepo (FileRepo)
-            IRepo repoCart = new FileRepo();
-            //next, I instantiated CSBL (an implementation of IBL) and then injected IRepo implementation for IBL/CSBL
-            IBL blCart = new CSBL(repoCart);
-            //Finally, I instantiate repoCart that needs an instance that implements Business Logic class
-            Cart cartMenu = new Cart(blCart);
-            cartMenu.chosenStore = this.chosenStore;
-            //Reset local settings for when returning to this menu
-            //chosenStore = 0;
+            int buyListQty = 0; //How many qty current customer has in cart
+            lineItemsList = _bl.GetAllLineItem();//Update shopping list
+            foreach(LineItems li in lineItemsList)
+            {
+                if(li.CustomerId == userId && li.StoreId == allStores[this.chosenStore].StoreID){
+                    buyListQty += li.Qty;
+                }
+            }
+
+            if(buyListQty > 0){
+                //Here, I instantiated an implementation of IRepo (FileRepo)
+                IRepo repoCart = new FileRepo();
+                //next, I instantiated CSBL (an implementation of IBL) and then injected IRepo implementation for IBL/CSBL
+                IBL blCart = new CSBL(repoCart);
+                //Finally, I instantiate repoCart that needs an instance that implements Business Logic class
+                Cart cartMenu = new Cart(blCart);
+                cartMenu.chosenStore = allStores[this.chosenStore].StoreID;
+                cartMenu.userId = this.userId;
+                //Reset local settings for when returning to this menu
+                //chosenStore = 0;
+                cartMenu.Start();
+            }
             pos = 2;
-            cartMenu.Start();
 
         break;
 

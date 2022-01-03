@@ -54,7 +54,11 @@ public class StaticStorage : IRepo
     {
         StaticStorage._allInventory[invIndex].Items[itemIndex].OnHand = itemQty;
     }    
-    public void RemoveInventory(int invIndex, int invIndexToRemove)
+    public void RemoveInventory(int invIndex)
+    {
+        StaticStorage._allInventory.RemoveAt(invIndex);
+    }
+    public void RemoveItem(int invIndex, int invIndexToRemove)
     {
         StaticStorage._allInventory[invIndex].Items.RemoveAt(invIndexToRemove);
     }
@@ -82,17 +86,18 @@ public class StaticStorage : IRepo
         return StaticStorage._allCarr;
     }
 
-    public void AddCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
+    public void AddCarried(ProdDetails itemNew)//(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
     {
+        StaticStorage._allCarried.Add(itemNew);
         //_dl.AddCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
-        if(itemName != null)
-        {
-            StaticStorage._allCarr[itemNum].Name = itemName;
-            StaticStorage._allCarr[itemNum].ItemType = itemType;
-            StaticStorage._allCarr[itemNum].Desc = itemDesc;
-            StaticStorage._allCarr[itemNum].Cost = itemCost;
-            StaticStorage._allCarr[itemNum].Weight = itemWeight;
-        }
+        // if(itemName != null)
+        // {
+        //     StaticStorage._allCarr[itemNum].Name = itemName;
+        //     StaticStorage._allCarr[itemNum].ItemType = itemType;
+        //     StaticStorage._allCarr[itemNum].Desc = itemDesc;
+        //     StaticStorage._allCarr[itemNum].Cost = itemCost;
+        //     StaticStorage._allCarr[itemNum].Weight = itemWeight;
+        // }
     }
 
     public void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
@@ -118,8 +123,9 @@ public class StaticStorage : IRepo
         return StaticStorage._allLineItems;
     }
 
-    public void AddLineItem(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax)
+    public void AddLineItem(LineItems newLI)//int apn, string name, int qty, Decimal costPerItem, Decimal salesTax)
     {
+        StaticStorage._allLineItems.Add(newLI);
         // if(name != null)
         // {
         //     StaticStorage._allLineItems[itemIndex].Name = name;
@@ -133,4 +139,19 @@ public class StaticStorage : IRepo
     {
         StaticStorage._allLineItems.RemoveAt(lineItemIndexToRemove);
     }
+
+//AddOrder
+private static List<Orders> _allOrders = new List<Orders>(); 
+public List<Orders> GetAllOrders()
+{
+        return StaticStorage._allOrders;
+}
+
+//Add a new order to order history
+public void AddOrder(Orders orderItems)
+{
+    StaticStorage._allOrders.Add(orderItems);
+}
+
+
 }

@@ -4,7 +4,7 @@ namespace Models;
 
 public class Store
 {
-    public List<ProdDetails> localInv = new List<ProdDetails>(); //Will store all inventory
+    //public List<ProdDetails> localInv = new List<ProdDetails>(); //Will store all inventory
     
     
     public int StoreID { get; set; }//Each different store has an ID [PK]

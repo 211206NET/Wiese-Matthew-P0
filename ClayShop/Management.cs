@@ -193,7 +193,7 @@ public class Management
                             // $"Store.StoreID: {allStores[chosenStoreIndex].StoreID}, Inventory.APN: {allInventory[i].APN}"+
                             // $"Chosen APN: {choiceInt}");
                             //     Inventory.StoreAt             Store.StoreID                          Inventory.APN           
-                            if(allInventory[targetInv].Items[i].StoreAt == allStores[chosenStoreIndex].StoreID && 
+                            if(allInventory[targetInv].Store == allStores[chosenStoreIndex].StoreID &&  //allInventory[targetInv].Items[i].StoreAt
                             allInventory[targetInv].Items[i].APN == choiceInt)
                             {
                                 getIndex = i;
@@ -248,18 +248,21 @@ public class Management
                                 choiceInt = Int32.Parse(choice); //Manager has chosen what item to add
                                 bool abort = false; //Stop adding item if already added
                                 
-                                Console.WriteLine($"targetInv: {targetInv}");
+                                // Console.WriteLine($"targetInv: {targetInv}, allInventory.Count: {allInventory.Count}");
+                                // Console.WriteLine($"Items.Count {allInventory[targetInv].Items.Count}");
                                 //First check that this item isn't already in stock
                                 //foreach(ProdDetails inv in allStores[chosenStore].localInv)
                                 foreach(ProdDetails inv in allInventory[targetInv].Items)
                                 {   
-                                //    Console.WriteLine($"inv.StoreAt: {inv.StoreAt}, chosenStore: {chosenStore},"+
-                                //    $"inv.APN: {inv.APN}, Carried APN: {getAllCarried[choiceInt].APN}");
-                                    if(inv.StoreAt == allStores[chosenStore].StoreID){
+                                    // Console.WriteLine($"(Inside Foreach) targetInv: {targetInv}, chosenStore: {chosenStore}");
+                                    // Console.WriteLine($"allinv.Store: {allInventory[targetInv].Store}");
+                                    // Console.WriteLine($"chosenStore: {chosenStore},");
+                                    // Console.WriteLine($"inv.APN: {inv.APN}, Carried APN: {getAllCarried[choiceInt].APN}");
+                                    if(allInventory[targetInv].Store == chosenStore){            //inv.StoreAt
                                     if(inv.APN == getAllCarried[choiceInt].APN){abort = true;}}//This item is already in stock, abort
                                 }
 
-                                Console.WriteLine($"abort: {abort}");
+                                // Console.WriteLine($"abort: {abort}");
                                 
                                 //Continue with adding item
                                 if(!abort){
@@ -271,7 +274,7 @@ public class Management
                                 {
                                     choiceInt2 = Int32.Parse(choice);//Qty
                                     ProdDetails addStock = new ProdDetails {
-                                        StoreAt = allStores[chosenStoreIndex].StoreID, 
+                                        //StoreAt = allStores[chosenStoreIndex].StoreID, 
                                         OnHand = choiceInt2, 
                                         APN = getAllCarried[choiceInt].APN,
                                         Name = getAllCarried[choiceInt].Name,
