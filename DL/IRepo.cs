@@ -13,20 +13,24 @@ public interface IRepo
     //Notice, how we're lacking access modifiers
     //interface members are implicitely public
     //they also lack method body
-    List<Store> GetAllStores();
-    List<Inventory> GetAllInventory();
 
+    //Store
+    List<Store> GetAllStores();
     void AddStore(Store StoreToAdd);
-    void ChangeStoreInfo(int storeIndex, string name, string city, string state);
+    void ChangeStoreInfo(int storeIndex, Store changeStoreInfo);//(int storeIndex, string name, string city, string state);
     void RemoveStore(int StoreToRemove);
+
+    //Inventory
+    List<Inventory> GetAllInventory();
     void AddInventory(Inventory invToAdd);
     void AddItem(int invIndex, ProdDetails invToAdd);
     void ChangeInventory(int invIndex, int apn, int itemQty);    
     void RemoveInventory(int invIndex);
     void RemoveItem(int invIndex, int invIndexToRemove);
 
+    //Customers
     List<Customers> GetAllCustomers();
-    void AddCustomer(int custNum, string userName, string pass);
+    void AddCustomer(Customers addCust);//int custNum, string userName, string pass);
 
     //Carried Items
     List<ProdDetails> GetAllCarried();
@@ -39,6 +43,7 @@ public interface IRepo
     void AddLineItem(LineItems newLI);//(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax);
     void RemoveLineItem(int lineItemIndexToRemove);
 
+    //Orders
     List<Orders> GetAllOrders();
     void AddOrder(Orders orderItems);
 

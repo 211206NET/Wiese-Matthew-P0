@@ -1,6 +1,6 @@
 
 namespace UI;
-public class Cart {
+public class Cart : IMenu {
 
 private IBL _bl;
 public Cart(IBL bl)

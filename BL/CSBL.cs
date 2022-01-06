@@ -32,9 +32,9 @@ public class CSBL : IBL
     {
         _dl.AddStore(storeToAdd);
     }
-    public void ChangeStoreInfo(int storeIndex, string name, string city, string state)
+    public void ChangeStoreInfo(int storeIndex, Store changeStoreInfo)//(int storeIndex, string name, string city, string state)
     {
-       _dl.ChangeStoreInfo(storeIndex, name, city, state);
+       _dl.ChangeStoreInfo(storeIndex, changeStoreInfo);
     }
     
     public void RemoveStore(int storeToRemove)
@@ -68,9 +68,9 @@ public class CSBL : IBL
     {
         return _dl.GetAllCustomers();
     }
-    public void AddCustomer(int custNum, string userName, string pass)
+    public void AddCustomer(Customers addCust)//int custNum, string userName, string pass, bool employee)
     {
-        _dl.AddCustomer(custNum, userName, pass);
+        _dl.AddCustomer(addCust);//custNum, userName, pass, employee);
     }
 
     ///<>Carried Items

@@ -9,7 +9,7 @@ public interface IBL
     List<Inventory> GetAllInventory();
 
     void AddStore(Store storeToAdd);
-    void ChangeStoreInfo(int storeIndex, string name, string city, string state);
+    void ChangeStoreInfo(int storeIndex, Store changeStoreInfo);//(int storeIndex, string name, string city, string state);
     void RemoveStore(int storeToRemove);
 
 
@@ -21,7 +21,7 @@ public interface IBL
 
     //Customers
     List<Customers> GetAllCustomers();
-    void AddCustomer(int custNum, string userName, string pass);
+    void AddCustomer(Customers addCust);//int custNum, string userName, string pass, bool employee);
 
     //Carried Items
     List<ProdDetails> GetAllCarried();

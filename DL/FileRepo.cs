@@ -69,13 +69,14 @@ public void AddStore(Store storeToAdd)
     string jsonString = JsonSerializer.Serialize(allStores);
     File.WriteAllText(filePath, jsonString);
 }
-public void ChangeStoreInfo(int storeIndex, string name, string city, string state)
+public void ChangeStoreInfo(int storeIndex, Store changeStoreInfo)///(int storeIndex, string name, string city, string state)
 {
     List<Store> allStores = GetAllStores();
     
-    allStores[storeIndex].StoreName = name;
-    allStores[storeIndex].City = city;
-    allStores[storeIndex].State = state;
+    allStores[storeIndex] = changeStoreInfo;
+    // allStores[storeIndex].StoreName = name;
+    // allStores[storeIndex].City = city;
+    // allStores[storeIndex].State = state;
 
     string jsonString = JsonSerializer.Serialize(allStores);
     File.WriteAllText(filePath, jsonString);
@@ -220,31 +221,32 @@ public List<Customers> GetAllCustomers()
 //     return allCustomers[index];
 // }
 
-public void AddCustomer(int custNum, string userName, string pass)
+public void AddCustomer(Customers addCust)//int custNum, string userName, string pass, bool employee)
 {
     int custNumbAssg = 0;
-    bool canMake = true; //Can make new account
+    //bool canMake = true; //Can make new account
 
     //1. Grab all customers
     List<Customers> allCustomers = GetAllCustomers();
     custNumbAssg = allCustomers.Count; //Get next customer number
 
-    if(canMake == true)
-    {
+    //if(canMake == true)
+    //{
         //2. Set new customer data
-        Customers newCust = new Customers {
-            CustNumb = custNumbAssg,
-            UserName = userName,
-            Pass = pass
-        };
+        // Customers newCust = new Customers {
+        //     CustNumb = custNumbAssg,
+        //     UserName = userName,
+        //     Pass = pass,
+        //     Employee = employee
+        // };
 
         //3. Append Customers 
-        allCustomers.Add(newCust);
+        allCustomers.Add(addCust);
 
         //4. Write to file
         string jsonString = JsonSerializer.Serialize(allCustomers);
         File.WriteAllText(filePathC, jsonString);
-    }
+    //}
 }
 
 
@@ -317,7 +319,7 @@ public void ChangeCarried(int itemNum, string itemName, int itemType, string ite
         //3. Change Carried
         allCarried[itemNum].Name = itemName;
         allCarried[itemNum].ItemType = itemType;
-        allCarried[itemNum].Desc = itemDesc;
+        allCarried[itemNum].Descr = itemDesc;
         allCarried[itemNum].Cost = itemCost;
         allCarried[itemNum].Weight = itemWeight;
         //allCarried.Add(newCarry);

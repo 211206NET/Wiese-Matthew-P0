@@ -29,14 +29,15 @@ public class StaticStorage : IRepo
     {
         StaticStorage._allStore.Add(storeToAdd);
     }
-    public void ChangeStoreInfo(int storeIndex, string name, string city, string state)
+    public void ChangeStoreInfo(int storeIndex, Store changeStoreInfo)//(int storeIndex, string name, string city, string state)
     {
-        if(name != null)
-        {
-            StaticStorage._allStore[storeIndex].StoreName = name;
-            StaticStorage._allStore[storeIndex].City = city;
-            StaticStorage._allStore[storeIndex].State = state;
-        }
+        StaticStorage._allStore[storeIndex] = changeStoreInfo;
+        // if(name != null)
+        // {
+        //     StaticStorage._allStore[storeIndex].StoreName = name;
+        //     StaticStorage._allStore[storeIndex].City = city;
+        //     StaticStorage._allStore[storeIndex].State = state;
+        // }
     }
     public void RemoveStore(int storeToRemove)
     {
@@ -71,11 +72,12 @@ public class StaticStorage : IRepo
         return StaticStorage._allCust;
     }
     
-    public void AddCustomer(int custNum, string userName, string pass)
+    public void AddCustomer(Customers addCust)
     {
-        if(userName != null){
-        StaticStorage._allCust[custNum].UserName = userName;
-        StaticStorage._allCust[custNum].Pass = pass;}
+        StaticStorage._allCust.Add(addCust);
+        // if(userName != null){
+        // StaticStorage._allCust[custNum].UserName = userName;
+        // StaticStorage._allCust[custNum].Pass = pass;}
     }
 
     //Carried Items
@@ -106,7 +108,7 @@ public class StaticStorage : IRepo
         {
             StaticStorage._allCarr[itemNum].Name = itemName;
             StaticStorage._allCarr[itemNum].ItemType = itemType;
-            StaticStorage._allCarr[itemNum].Desc = itemDesc;
+            StaticStorage._allCarr[itemNum].Descr = itemDesc;
             StaticStorage._allCarr[itemNum].Cost = itemCost;
             StaticStorage._allCarr[itemNum].Weight = itemWeight;
         }

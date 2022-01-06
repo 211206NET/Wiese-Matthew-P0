@@ -2,7 +2,7 @@ using DL;
 
 namespace UI;
 
-public class Management
+public class Management : IMenu
 {
 
     private IBL _bl;
@@ -45,26 +45,29 @@ public class Management
                     string userCity = Console.ReadLine() ?? "";
                     Console.WriteLine("Enter the state of the store:");
                     string userState = Console.ReadLine() ?? "";
-                    //Add user data to new store generation
+                    Console.WriteLine("Enter the salestax for the state the store is in:");
+                    decimal userST = Convert.ToDecimal(Int32.Parse(Console.ReadLine() ?? ""));
+                    //Add user data to new store generation //DISABLED because of row error
+
                     Store storeNew = new Store
                     {
                         StoreID = idStamp,
                         StoreName = userStoreName,
                         City = userCity,
-                        State = userState
+                        State = userState,
+                        SalesTax = userST
                     };
-                    //allStores.AddStore(storeNew);
 
                     _bl.AddStore(storeNew);
                     allStores = _bl.GetAllStores();
-                    //Add Inventory Obj for new store generation
-                    Inventory invNew = new Inventory
-                    {
-                        Id = idStamp,
-                        Store = idStamp
-                    };
-                    //allStores.AddStore(storeNew);
-                    _bl.AddInventory(invNew);
+                    // //Add Inventory Obj for new store generation   //Obsolete, inventory is now by item not store
+                    // Inventory invNew = new Inventory
+                    // {
+                    //     Id = idStamp,
+                    //     Store = idStamp
+                    // };
+                    // //allStores.AddStore(storeNew);
+                    // _bl.AddInventory(invNew);
                     //allStores.Add(storeNew); //Plug new store into store list
                     Console.WriteLine($"[{idStamp}] Store: {userStoreName} successfully created!\n");
                     //chosenStore = idStamp; //Set current store to store just made
@@ -104,14 +107,16 @@ public class Management
                 case "2":
                     Console.WriteLine("Change carried items.");
                     
-                    //Here, I instantiated an implementation of IRepo (FileRepo)
-                    IRepo repo = new FileRepo();
-                    //next, I instantiated CSBL (an implementation of IBL) and then injected IRepo implementation for IBL/CSBL
-                    IBL bl = new CSBL(repo);
-                    //Finally, I instantiate carrMenu that needs an instance that implements Business Logic class
-                    InventoryCtrl carrMenu = new InventoryCtrl(bl);
-                    //Reset local settings for when returning to this menu
-                    carrMenu.Start();
+                    // //Here, I instantiated an implementation of IRepo (FileRepo)
+                    // IRepo repo = new FileRepo();
+                    // //next, I instantiated CSBL (an implementation of IBL) and then injected IRepo implementation for IBL/CSBL
+                    // IBL bl = new CSBL(repo);
+                    // //Finally, I instantiate carrMenu that needs an instance that implements Business Logic class
+                    // InventoryCtrl carrMenu = new InventoryCtrl(bl);
+                    // //Reset local settings for when returning to this menu
+                    // carrMenu.Start();
+
+                    MenuFactory.GetMenu("inventory").Start();
                 break;
 
                 //Adjust/Add Store Info:
@@ -122,6 +127,7 @@ public class Management
                     string storeName = allStores[chosenStoreIndex].StoreName ?? "";
                     string city = allStores[chosenStoreIndex].City ?? "";
                     string state = allStores[chosenStoreIndex].State ?? "";
+                    decimal salesTax = allStores[chosenStoreIndex].SalesTax;
                     //chosenStore
                     //Ask manager to choose entry to modify
                     string change = ""; //Var to record manager changes
@@ -143,7 +149,23 @@ public class Management
                     change = Console.ReadLine() ?? "";
                     if(change != ""){state = change;} change = ""; //Change state 
 
-                    _bl.ChangeStoreInfo(chosenStoreIndex,storeName,city,state);
+                    //Offer to change sales tax
+                    Console.WriteLine($"\nChange sales tax: {allStores[chosenStoreIndex].SalesTax}?");
+                    change = Console.ReadLine() ?? "";
+                    if(change != ""){salesTax = Convert.ToDecimal(Int32.Parse(change));} change = ""; //Change sales tax 
+
+                //Disabled due to row error
+                    // Store storInf = new Store {
+                    //     //StoreAt = allStores[chosenStoreIndex].StoreID, 
+                    //     StoreID = chosenStoreIndex, 
+                    //     StoreName = storeName,
+                    //     City = city,
+                    //     State = state,
+                    //     SalesTax = salesTax
+                    // };
+
+                    // _bl.ChangeStoreInfo(chosenStoreIndex, storInf);
+                    // _bl.ChangeStoreInfo(chosenStoreIndex,storeName,city,state);
                     
                 break;
 
@@ -172,7 +194,7 @@ public class Management
                     {
                         Console.WriteLine($"APN: [{allInventory[targetInv].Items[i].APN}] {allInventory[targetInv].Items[i].Name},"+
                         $" Cost: {allInventory[targetInv].Items[i].Cost}, Weight: {allInventory[targetInv].Items[i].Weight}\n"+
-                        $"\tDescription: {allInventory[targetInv].Items[i].Desc}"); 
+                        $"\tDescription: {allInventory[targetInv].Items[i].Descr}"); 
                     }}
                     Console.WriteLine("\nEnter an APN to select item to change quantity of,\nor enter 'n' to add new product from carried list.");
                     string choice = Console.ReadLine() ?? "";
@@ -238,7 +260,7 @@ public class Management
                                 $"Item Type: {itemTypeStr}, "+
                                 $"Item Cost: {getAllCarried[i].Cost}, "+
                                 $"Item Weight: {getAllCarried[i].Weight}, \n"+
-                                $"\tItem Description: {getAllCarried[i].Desc}");
+                                $"\tItem Description: {getAllCarried[i].Descr}");
                             }
                             Console.WriteLine("Choose which item to add from the above list.");
                             choice = Console.ReadLine() ?? "";
@@ -279,7 +301,7 @@ public class Management
                                         APN = getAllCarried[choiceInt].APN,
                                         Name = getAllCarried[choiceInt].Name,
                                         ItemType = getAllCarried[choiceInt].ItemType,
-                                        Desc = getAllCarried[choiceInt].Desc,
+                                        Descr = getAllCarried[choiceInt].Descr,
                                         Cost = getAllCarried[choiceInt].Cost,
                                         Weight = getAllCarried[choiceInt].Weight
                                     };

@@ -1,3 +1,5 @@
+using System.Data;
+
 namespace Models;
 
 public class LineItems
@@ -6,6 +8,19 @@ public class LineItems
     //item name   /  qty  /   individual item cost   /    total cost for line
     //...
     //total items   /  total qty  /                      total cost for all item before tax  / after tax
+
+    public LineItems(DataRow row)
+    {
+        this.Id = (int) row["Id"];
+        //this.StoreId = (int) row["StoreId"];
+        this.InvId = (int) row["InvId"];
+        this.CustomerId = (int) row["CustomerId"];
+        this.Name = row["Name"].ToString() ?? "";
+        this.Qty = (int) row["Qty"];
+        this.CostPerItem = (decimal) row["Cost"];
+        this.SalesTax = (decimal) row["SalesTax"];
+    }
+
     public int Id { get; set; } //[PK]
     //public int Customer { get; set; } //[FK]
     //public int Store { get; set; } //[FK] 

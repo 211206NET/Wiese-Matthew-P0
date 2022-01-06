@@ -1,7 +1,7 @@
 using DL;
 
 namespace UI;
-public class MainMenu {
+public class MainMenu : IMenu {
 
 private IBL _bl;
 public MainMenu(IBL bl)
@@ -11,6 +11,9 @@ public MainMenu(IBL bl)
 
 public int chosenStore = 0; //Which store the user currently has chosen
 public int userId = 0; //Current user Id
+bool canLog = false; //For making new customer
+bool manager = false; //If Manager is logged in
+int pos = 0; //Position, where the user is currently in the application
 
 public void Start() 
 {
@@ -19,19 +22,17 @@ List<Store> allStores = _bl.GetAllStores();
 
 List<Inventory> allInventory = _bl.GetAllInventory();
 
-List<Customers> allCustomers = _bl.GetAllCustomers();
-
 List<LineItems> lineItemsList = _bl.GetAllLineItem();
+
+List<Customers> allCustomers = _bl.GetAllCustomers();
+//Console.WriteLine("Got here");
 
 //Clay Shop! Matthew Wiese: P0
 Console.WriteLine("Welcome to the plasticine clay shop.\n" +
 "Here we have the best clay for claymation.");
 
 bool exit = false;
-bool canLog = false; //For making new customer
 bool canMake = false; //For making new customer
-bool manager = false; //If Manager is logged in
-int pos = 0; //Position, where the user is currently in the application
 int whatItem = 0; //0 = Clay, 1 = Tools, 2 == Equipment (For showing item inventory by section)
 DateOnly dateOnlyVar = DateOnly.FromDateTime(DateTime.Now); 
 
@@ -54,6 +55,11 @@ DateOnly dateOnlyVar = DateOnly.FromDateTime(DateTime.Now);
 // sample = int.Parse(Console.ReadLine());
 // Console.WriteLine(sample);
 
+// string returnInt = "35"; 
+// string[] tokens = returnInt.Split();
+// Console.WriteLine($"tokens: {tokens}");
+
+
 //Main Loop
 while(!exit)
 {
@@ -69,33 +75,9 @@ while(!exit)
 
         switch(choose)
         {
-        case "1":
-        while(!canLog)
-        {
-            //Login Functionality here
-            Console.WriteLine("Enter user name here");
-            string userNL = Console.ReadLine() ?? "";
-            Console.WriteLine("Enter password here");
-            string pwL = Console.ReadLine() ?? "";
-
-            foreach(Customers custL in allCustomers)
-            {
-                if(custL.UserName == userNL && custL.Pass == pwL)
-                {       
-                    userId = custL.CustNumb;//Set the Id number of customer currently shopping
-                    canLog = true;
-                    //Check if manager login
-                    if(userNL.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
-                    if(manager == true){Console.WriteLine($"\nWelcome back manager {userNL}!\n");}else
-                    {Console.WriteLine($"\nWelcome back {userNL}!\n");}
-                }
-            }
             
-            if(!canLog){Console.WriteLine("\nUser name and/or password incorrect, please try again\n");}
-        }
-
-
-            pos = 1;
+        case "1":
+            Login();
         break;
 
         case "2":
@@ -129,14 +111,23 @@ while(!exit)
             }
             }else{canMake = false;}
 
-            if(canMake == true)
-            {
-                // _bl.AddCustomer(newCust);
-                _bl.AddCustomer(0,userN,pw1);
-            }
-
             //Check if manager login
             if(userN.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
+
+            if(canMake == true)
+            {
+            
+                Customers sendCust = new Customers
+                {
+                    CustNumb = allCustomers.Count,
+                    UserName = userN,
+                    Pass = pw1,
+                    Employee = manager
+                };
+
+                _bl.AddCustomer(sendCust);
+            }
+            
         }
         break;
 
@@ -263,7 +254,7 @@ while(!exit)
                         //inv2.ShowDesc(); //This should come from BL...?
                         Console.WriteLine($"Cost: {prodD.Cost}, APN: [{prodD.APN}],"+
                         $" Clay Product: {prodD.Name}, Weight: {prodD.Weight}"+
-                        $"\nDescription: {prodD.Desc}, Quantity left: {prodD.OnHand}"); 
+                        $"\nDescription: {prodD.Descr}, Quantity left: {prodD.OnHand}"); 
                         remAPN = prodD.APN;  remName = prodD.Name ?? "";  
                         remCost = prodD.Cost; 
                     }} 
@@ -288,19 +279,19 @@ while(!exit)
                     }
 
                     //Now to Save it
-                    LineItems newLI = new LineItems {
-                        Id = remAPN,   
-                        StoreId = allStores[chosenStore].StoreID, 
-                        InvId = targetProd, 
-                        CustomerId = userId,
-                        Name = remName,
-                        Qty = qtyToBuy,
-                        CostPerItem = remCost,
-                        SalesTax = sendTax
-                    };
+                    // LineItems newLI = new LineItems {  //DISABLED due to row error
+                    //     Id = remAPN,   
+                    //     StoreId = allStores[chosenStore].StoreID, 
+                    //     InvId = targetProd, 
+                    //     CustomerId = userId,
+                    //     Name = remName,
+                    //     Qty = qtyToBuy,
+                    //     CostPerItem = remCost,
+                    //     SalesTax = sendTax
+                    // };
                     
-                    _bl.AddLineItem(newLI); 
-                    //_bl.AddLineItem(remAPN, remName ?? "", qtyToBuy, remCost, sendTax);         
+                    //_bl.AddLineItem(newLI); //Disabled
+                            
                     pos = 2;
                     break;
                 }
@@ -330,7 +321,9 @@ while(!exit)
             //Reset local settings for when returning to this menu
             chosenStore = 0;
             pos = 1;
-            mngMenu.Start();
+            
+            MenuFactory.GetMenu("manage").Start();
+            //mngMenu.Start();
 
         break;
 
@@ -356,7 +349,9 @@ while(!exit)
                 cartMenu.userId = this.userId;
                 //Reset local settings for when returning to this menu
                 //chosenStore = 0;
-                cartMenu.Start();
+
+                MenuFactory.GetMenu("cart").Start();
+                //cartMenu.Start();
             }
             pos = 2;
 
@@ -375,6 +370,37 @@ while(!exit)
 }//End Main While Loop
 
 }//End Start
+
+private void Login()
+{
+    List<Customers> allCustomers = _bl.GetAllCustomers();
+    while(!canLog)
+    {
+        //Login Functionality here
+        Console.WriteLine("Enter user name here");
+        string userNL = Console.ReadLine() ?? "";
+        Console.WriteLine("Enter password here");
+        string pwL = Console.ReadLine() ?? "";
+
+        foreach(Customers custL in allCustomers)
+        {
+            Console.WriteLine($"Test: {custL.UserName}");
+            if(custL.UserName == userNL && custL.Pass == pwL)
+            {       
+                userId = custL.CustNumb;//Set the Id number of customer currently shopping
+                canLog = true;
+                //Check if manager login
+                if(userNL.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
+                if(manager == true){Console.WriteLine($"\nWelcome back manager {userNL}!\n");}else
+                {Console.WriteLine($"\nWelcome back {userNL}!\n");}
+            }
+        }
+        
+        if(!canLog){Console.WriteLine("\nUser name and/or password incorrect, please try again\n");}
+    }
+    pos = 1;
+    
+}
 
 }//End MainMenu Class
 

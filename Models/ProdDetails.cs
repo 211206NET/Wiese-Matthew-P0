@@ -1,3 +1,5 @@
+using System.Data;
+
 namespace Models;
 
 public class ProdDetails
@@ -8,16 +10,15 @@ public class ProdDetails
     //Product Objects will reference this object to retrive detailed information
     public ProdDetails(){}
 
-    public ProdDetails(int onHand, int itemType, int apn, string name, double weight, decimal cost, string desc) //int storeAt, 
+    public ProdDetails(DataRow row)
     {
-        //this.StoreAt = storeAt;
-        this.OnHand = onHand;
-        this.ItemType = itemType;
-        this.APN = apn;
-        this.Name = name;
-        this.Weight = weight;
-        this.Cost = cost;
-        this.Desc = desc;
+        this.APN = (int) row["Id"];
+        this.Name = row["Name"].ToString() ?? "";
+        this.OnHand = (int) row["Id"];
+        this.ItemType = (int) row["Id"];
+        this.Weight = (double) row["Cost"];
+        this.Cost = (decimal) row["Cost"];
+        this.Descr = row["Name"].ToString() ?? "";
     }
 
     // public void ShowDesc()
@@ -37,7 +38,19 @@ public class ProdDetails
     public int ItemType { get; set; }//0 = clay, 1 = tools, 2 = equip
     public double Weight { get; set; }//How many pounds one unit of this product weigh
     public decimal Cost { get; set; }//Amount the store sells for
-    public string? Desc { get; set; }//Description of product
+    public string? Descr { get; set; }//Description of product
+    
+    public void ToDataRow(ref DataRow row)
+    {
+        row["APN"] = this.APN;
+        row["Name"] = this.Name;
+        row["OnHand"] = this.OnHand;
+        row["ItemType"] = this.ItemType;
+        row["Weight"] = this.Weight;
+        row["Cost"] = this.Cost;
+        row["Descr"] = this.Descr;
+    }
+
     
 
 }

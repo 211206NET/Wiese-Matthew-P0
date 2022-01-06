@@ -3,7 +3,7 @@
 namespace UI;
 
 //This class is for adding/removing items from carried list and stocking stores based on items on carried list
-public class InventoryCtrl
+public class InventoryCtrl : IMenu
 {
 
     private IBL _bl;
@@ -52,7 +52,7 @@ public class InventoryCtrl
                             APN = carrNumbAssg,
                             Name = itemName ?? "",
                             ItemType = itemType,
-                            Desc = itemDesc ?? "",
+                            Descr = itemDesc ?? "",
                             Cost = itemCost,
                             Weight = itemWeight
                     };
@@ -80,7 +80,7 @@ public class InventoryCtrl
                         $"Item Type: {itemTypeStrD}, "+
                         $"Item Cost: {allCarriedDelete[i].Cost}, "+
                         $"Item Weight: {allCarriedDelete[i].Weight}, \n"+
-                        $"\tItem Description: {allCarriedDelete[i].Desc}");
+                        $"\tItem Description: {allCarriedDelete[i].Descr}");
                     }
 
                     Console.WriteLine("Choose from the above items in the carried list to permanently delete.");
@@ -131,7 +131,7 @@ public class InventoryCtrl
                         $"Item Type: {itemTypeStr}, "+
                         $"Item Cost: {getAllCarried2[i].Cost}, "+
                         $"Item Weight: {getAllCarried2[i].Weight}, \n"+
-                        $"\tItem Description: {getAllCarried2[i].Desc}");
+                        $"\tItem Description: {getAllCarried2[i].Descr}");
                     }
 
                     //Selecting item to change from list code
@@ -147,7 +147,7 @@ public class InventoryCtrl
                     string itemNameC = getAllCarried2[selChangeCarried].Name ?? "";
                     int itemTypeC = getAllCarried2[selChangeCarried].ItemType;
                     decimal itemCostC = getAllCarried2[selChangeCarried].Cost;
-                    string itemDescC = getAllCarried2[selChangeCarried].Desc ?? "";
+                    string itemDescC = getAllCarried2[selChangeCarried].Descr ?? "";
                     double itemWeightC = getAllCarried2[selChangeCarried].Weight;
 
                     //Changing value code 
@@ -185,7 +185,7 @@ public class InventoryCtrl
                     } changeDoub = 0; change = ""; 
                     
                     //Offer to change description
-                    Console.WriteLine($"\nChange description: {getAllCarried2[selChangeCarried].Desc}?");
+                    Console.WriteLine($"\nChange description: {getAllCarried2[selChangeCarried].Descr}?");
                     change = Console.ReadLine() ?? "";
                     if(change != ""){itemDescC = change;} change = ""; //Change description  getAllCarried2[selChangeCarried].Desc
 
