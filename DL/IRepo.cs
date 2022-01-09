@@ -24,9 +24,9 @@ public interface IRepo
     List<Inventory> GetAllInventory();
     void AddInventory(Inventory invToAdd);
     void AddItem(int invIndex, ProdDetails invToAdd);
-    void ChangeInventory(int invIndex, int apn, int itemQty);    
+    void ChangeInventory(int invIndex, int qtyToChange);//int invIndex, int apn, int itemQty);    
     void RemoveInventory(int invIndex);
-    void RemoveItem(int invIndex, int invIndexToRemove);
+    void RemoveItem(int apnToRemove);
 
     //Customers
     List<Customers> GetAllCustomers();
@@ -36,7 +36,7 @@ public interface IRepo
     List<ProdDetails> GetAllCarried();
     void AddCarried(ProdDetails itemNew);//(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
     void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
-    void RemoveCarried(int carriedIndexToRemove);
+    void RemoveCarried(int apnToRemove);
 
     //Line Items
     List<LineItems> GetAllLineItem();

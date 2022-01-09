@@ -24,10 +24,17 @@ public class Inventory
     public int Qty { get; set; } //How many of this item is stored here
 
     public List<ProdDetails> Items { get; set; }//Details from object ProdDetails stored in here [FK]
+    
     public void ToDataRow(ref DataRow row)
     {
         row["StoreId"] = this.Id;
         row["StoreName"] = this.Store;
+        row["Item"] = this.Item;
+        row["Qty"] = this.Qty;
+    }
+    public void ToDataRowChange(ref DataRow row)
+    {
+        row["StoreId"] = this.Id;
         row["Item"] = this.Item;
         row["Qty"] = this.Qty;
     }

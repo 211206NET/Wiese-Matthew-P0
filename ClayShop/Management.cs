@@ -18,6 +18,7 @@ public class Management : IMenu
     {
         List<Inventory> allInventory = _bl.GetAllInventory();
         List<Store> allStores = _bl.GetAllStores();
+        List<ProdDetails> allCarried = _bl.GetAllCarried();
         bool exit = false;
         int idStamp = allStores.Count+1;
         Console.WriteLine("Manage fired");
@@ -174,28 +175,55 @@ public class Management : IMenu
                     //Get list of stores to find current store
                     allStores = _bl.GetAllStores(); 
                     allInventory = _bl.GetAllInventory();
+                    allCarried = _bl.GetAllCarried();
                     //_bl.GetAllInventory();
 
                     //First show current inventory
-                    Console.WriteLine($"Inventory for {allStores[chosenStoreIndex].StoreName}, Inventory count: {allInventory.Count}\n");
+                    Console.WriteLine($"Inventory for {allStores[chosenStoreIndex].StoreName}");
                     //if(allStores[chosenStore].localInv.Count > 0){
      
                     Console.WriteLine($"allInventory.Count: {allInventory.Count}");
                     if(allInventory.Count > 0){
 
                     //Return what index of inventory we need to access
-                    for(int i = 0; i < allInventory.Count; i++)
-                    {
-                        if(allInventory[i].Store == allStores[chosenStoreIndex].StoreID){targetInv = i;}
-                    }
+                    //List<ProdDetails> thisStoreInv = new List<ProdDetails>();
+                    // int[] whatInv = new int[allInventory.Count]; int posInt = 0; //Store item number of inventory that belongs to this store
+                    // for(int i = 0; i < allInventory.Count; i++)
+                    // {
+                    //     if(allInventory[i].Store == allStores[chosenStoreIndex].StoreID){posInt += 1; whatInv[posInt] = allInventory[i].Item;}
+                    // }
 
-                    //foreach(ProdDetails inv in allInventory) //To find inventory of the store we want only
-                    for(int i = 0; i < allInventory[targetInv].Items.Count; i++)
-                    {
-                        Console.WriteLine($"APN: [{allInventory[targetInv].Items[i].APN}] {allInventory[targetInv].Items[i].Name},"+
-                        $" Cost: {allInventory[targetInv].Items[i].Cost}, Weight: {allInventory[targetInv].Items[i].Weight}\n"+
-                        $"\tDescription: {allInventory[targetInv].Items[i].Descr}"); 
+    //============== CODE FAILS HERE ==============\\
+
+                    //List<ProdDetails> thisStoreInv = new List<ProdDetails>();  
+                    // int[] thisStoreInv = new int[allCarried.Count];
+                    // for(int i = 0; i < allInventory.Count; i++)
+                    // {
+                    //     if(allInventory[i].Store == allStores[chosenStoreIndex].StoreID){thisStoreInv[i] = ???allCarried[i].APN;}
+                    // }
+
+                    //Show store inventory
+                    //Loop through inventory checking store assignment, then nest loop to get details from carried
+                    for(int i = 0; i < allInventory.Count; i++)
+                    {        
+                        if(allInventory[i].Store == allStores[chosenStoreIndex].StoreID)
+                        {
+                            //Console.WriteLine($"APN: [{allCarried[i].APN}]");
+                            for(int j = 0; j < allCarried.Count; j++){        //allCarried[i].StoreAt will never make sense
+                            if(allInventory[i].Item == allCarried[j].APN){
+                            Console.WriteLine($"APN: [{allCarried[j].APN}] {allCarried[j].Name},"+
+                            $" Cost: {allCarried[j].Cost}, Weight: {allCarried[j].Weight}\n"+
+                            $"\tDescription: {allCarried[j].Descr}"); }
+                            }
+                        }
                     }}
+
+                    // for(int i = 0; i < allInventory[targetInv].Items.Count; i++)
+                    // {
+                    //     Console.WriteLine($"APN: [{allInventory[targetInv].Items[i].APN}] {allInventory[targetInv].Items[i].Name},"+
+                    //     $" Cost: {allInventory[targetInv].Items[i].Cost}, Weight: {allInventory[targetInv].Items[i].Weight}\n"+
+                    //     $"\tDescription: {allInventory[targetInv].Items[i].Descr}"); 
+                    // }}
                     Console.WriteLine("\nEnter an APN to select item to change quantity of,\nor enter 'n' to add new product from carried list.");
                     string choice = Console.ReadLine() ?? "";
                     bool res; bool res2; bool res3; int a; int choiceInt = 0;  int choiceInt2 = 0;
@@ -203,40 +231,62 @@ public class Management : IMenu
 
                     if(res)
                     {
-                        //A number was selected, choose an item to change qty
+                        //A SINGLE number was selected, choose an item to change qty
                         choiceInt = Int32.Parse(choice); //Convert string to int
-                    
-                        //First get the actual index of the item
-                        int getIndex = 0;
-                        //foreach(ProdDetails inv in allInventory)
-                        for(int i = 0; i < allInventory[targetInv].Items.Count; i++) //-1 needed on Count?
+                        
+                        
+
+                        //STORE INVENTORY
+                        //First get the actual index of the item in Inventory for store inventory details
+                        int getIndexInv = 0; 
+                        for(int i = 0; i < allInventory.Count; i++) 
                         {   
-                            // Console.WriteLine($"i: {i}, Inventory.StoreAt: {allInventory[i].StoreAt}, "+
-                            // $"Store.StoreID: {allStores[chosenStoreIndex].StoreID}, Inventory.APN: {allInventory[i].APN}"+
-                            // $"Chosen APN: {choiceInt}");
-                            //     Inventory.StoreAt             Store.StoreID                          Inventory.APN           
-                            if(allInventory[targetInv].Store == allStores[chosenStoreIndex].StoreID &&  //allInventory[targetInv].Items[i].StoreAt
-                            allInventory[targetInv].Items[i].APN == choiceInt)
+                            // Console.WriteLine($"allInventory[i].Store: {allInventory[i].Store}, allStores[chosenStoreIndex].StoreID: "+
+                            //     $"{allStores[chosenStoreIndex].StoreID}, allInventory[i].Item: {allInventory[i].Item}, choiceInt: {choiceInt}"+
+                            //     $", chosenStoreIndex: {chosenStoreIndex}, allStores.Count: {allStores.Count}");
+                            if(allInventory[i].Store == allStores[chosenStoreIndex].StoreID &&  //allInventory[targetInv].Items[i].StoreAt
+                            allInventory[i].Item == choiceInt)
                             {
-                                getIndex = i;
-                                Console.WriteLine($"i: {i}, allInventory[i].APN: {allInventory[targetInv].Items[i].APN}");
+                                getIndexInv = i;
                             }
                         }
-
-                        // Console.WriteLine($"You selected: {allStores[chosenStoreIndex].localInv[choiceInt].Name}"+
-                        // $", Quantity: {allStores[chosenStoreIndex].localInv[choiceInt].OnHand}\nEnter new value:");
                         
-                        Console.WriteLine($"You selected: {allInventory[targetInv].Items[getIndex].Name}"+
-                        $", Quantity: {allInventory[targetInv].Items[getIndex].OnHand}\nEnter new value:");
+                        //CARRIED
+                        //Second get the actual index of the item in Carried for product details
+                        int getIndex = 0;
+                        if(getIndexInv > 0){
+                        for(int i = 0; i < allCarried.Count; i++) 
+                        {   
+                            if(allCarried[i].APN == choiceInt)
+                            {
+                                getIndex = i;
+                                Console.WriteLine($"i: {i}, allCarried[i].APN: {allCarried[i].APN}");
+                            }
+                        }
+                        }
+
+                        //Item
+                        Console.WriteLine($"You selected: {allCarried[getIndex].Name}, getIndexInv: {getIndexInv}, "+
+                        $", Quantity: {allInventory[getIndexInv].Qty}\nEnter amount to adjust by:"); //allInventory[targetInv].Items[getIndex].OnHand
                         choice = Console.ReadLine() ?? "";
                         res2 = Int32.TryParse(choice, out a);
                         if(res2)
                         {
-                            allInventory[targetInv].Items[getIndex].OnHand = Int32.Parse(choice); //Set new Qty
-                            if(Int32.Parse(choice) > 0){
-                            _bl.ChangeInventory(allStores[chosenStoreIndex].StoreID, getIndex, Int32.Parse(choice)); //Call method to adjust Qty of item already on hand
+
+                            int adjQty = Int32.Parse(choice); 
+
+                            Console.WriteLine($"adjQty: {adjQty}");
+                            //Get qty after adjustment
+                            int determineQty = allInventory[getIndexInv].Qty+adjQty;
+
+                            if(determineQty > -1){
+                                if(determineQty > 0){
+                                _bl.ChangeInventory(allInventory[getIndexInv].Id, determineQty);
+                                }
+                                else{_bl.RemoveInventory(allInventory[getIndexInv].Id);}
                             }
-                            else{_bl.RemoveItem(targetInv,getIndex);}
+                            else
+                            {Console.WriteLine($"Sorry, but there is insufficient inventory for you order");}
                         }
                         else{Console.WriteLine("Not a numeric value!");}
                     }

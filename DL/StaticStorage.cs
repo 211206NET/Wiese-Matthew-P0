@@ -51,17 +51,18 @@ public class StaticStorage : IRepo
     {
         StaticStorage._allInventory[invIndex].Items.Add(invToAdd);
     }
-    public void ChangeInventory(int invIndex, int itemIndex, int itemQty)
+    public void ChangeInventory(int invIndex, int qtyToChange)//int invIndex, int itemIndex, int itemQty)
     {
-        StaticStorage._allInventory[invIndex].Items[itemIndex].OnHand = itemQty;
+        //StaticStorage._allInventory[invIndex].Items[itemIndex].OnHand = itemQty;
+        StaticStorage._allInventory[invIndex].Qty += qtyToChange;
     }    
     public void RemoveInventory(int invIndex)
     {
         StaticStorage._allInventory.RemoveAt(invIndex);
     }
-    public void RemoveItem(int invIndex, int invIndexToRemove)
+    public void RemoveItem(int apnToRemove)
     {
-        StaticStorage._allInventory[invIndex].Items.RemoveAt(invIndexToRemove);
+        StaticStorage._allInventory.RemoveAt(apnToRemove);
     }
 
     //Customers
@@ -114,9 +115,9 @@ public class StaticStorage : IRepo
         }
     }
 
-    public void RemoveCarried(int carriedIndexToRemove)//Store storeToRemove)
+    public void RemoveCarried(int apnToRemove)//Store storeToRemove)
     {
-        StaticStorage._allCarried.RemoveAt(carriedIndexToRemove);
+        StaticStorage._allCarried.RemoveAt(apnToRemove);
     }
 
     //Line Items

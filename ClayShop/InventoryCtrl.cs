@@ -49,12 +49,12 @@ public class InventoryCtrl : IMenu
                     //Add user data to new carried items list
                     ProdDetails itemNew = new ProdDetails
                     {
-                            APN = carrNumbAssg,
-                            Name = itemName ?? "",
-                            ItemType = itemType,
-                            Descr = itemDesc ?? "",
-                            Cost = itemCost,
-                            Weight = itemWeight
+                        APN = carrNumbAssg,
+                        Name = itemName ?? "",
+                        ItemType = itemType,
+                        Descr = itemDesc ?? "",
+                        Cost = itemCost,
+                        Weight = itemWeight
                     };
 
                     _bl.AddCarried(itemNew);
@@ -101,16 +101,14 @@ public class InventoryCtrl : IMenu
                             //A nested loop is used here to delete all of this item from the inventory of all stores
                             for(int i = 0; i < allInventoryDelete.Count; i++)
                             {
-                            for(int j = 0; j < allInventoryDelete[i].Items.Count; j++)
-                            {
-                                if(allInventoryDelete[i].Items[j].APN == allCarriedDelete[chsDlyInt].APN) //Find the same item in the inventory list
+                                if(allInventoryDelete[i].Item == allCarriedDelete[chsDlyInt].APN) //Find the same item in the inventory list
                                 {
-                                    _bl.RemoveItem(i,j); //Delete the item from store inventories as well
+                                    _bl.RemoveItem(i); //Delete the item from store inventories as well
                                 }
-                            }
+                            
                             }
                             
-                            _bl.RemoveCarried(chsDlyInt); //Removes from carried list, delete last as previous delete references this list
+                           // _bl.RemoveCarried(chsDlyInt); //Removes from carried list, delete last as previous delete references this list
                         }
                     }
                 break;

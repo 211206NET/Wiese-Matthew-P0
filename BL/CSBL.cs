@@ -49,17 +49,17 @@ public class CSBL : IBL
     {
         _dl.AddItem(invIndex, invToAdd);
     }
-    public void ChangeInventory(int invIndex, int itemIndex, int itemQty)
+    public void ChangeInventory(int invIndex, int qtyToChange)//int invIndex, int itemIndex, int itemQty)
     {
-        _dl.ChangeInventory(invIndex, itemIndex, itemQty);
+        _dl.ChangeInventory(invIndex, qtyToChange);
     }
     public void RemoveInventory(int invIndexToRemove)
     {
         _dl.RemoveInventory(invIndexToRemove);
     }
-    public void RemoveItem(int invIndex, int invIndexToRemove)
+    public void RemoveItem(int apnToRemove)
     {
-        _dl.RemoveItem(invIndex, invIndexToRemove);
+        _dl.RemoveItem(apnToRemove);
     }
 
     ///<>Customers

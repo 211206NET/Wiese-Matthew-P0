@@ -1,9 +1,9 @@
 using DL;
 
 namespace UI;
-public static class MenuFactory
+public static class MenuFactoryUser
 {
-    public static IMenu GetMenu(string menuString)
+    public static IMenuUser GetMenuUser(string menuString)
     {
         menuString = menuString.ToLower();
         //This is full dep injection
@@ -20,18 +20,11 @@ public static class MenuFactory
         //Finally, I instantiate RestaurantMenu that needs an instance that implements Business Logic class
         switch (menuString)
         {
-            case "main":
-                return new MainMenu(bl);
-
-            case "manage":
-                return new Management(bl);
-            
-            case "inventory":
-                return new InventoryCtrl(bl);
-            
+            case "cart":
+                return new Cart(bl);
             default:
                 Console.WriteLine("User menu broken.");
-                return new MainMenu(bl);
+                return new Cart(bl);
         }
     }
 }

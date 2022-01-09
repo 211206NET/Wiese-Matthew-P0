@@ -1,6 +1,6 @@
 
 namespace UI;
-public class Cart : IMenu {
+public class Cart : IMenuUser {
 
 private IBL _bl;
 public Cart(IBL bl)
@@ -8,66 +8,156 @@ public Cart(IBL bl)
     _bl = bl;
 }
 
-public int chosenStore = 0; //Which store ID the user currently has chosen
-public int userId = 0;
+//Because the current store the user is in is not transferred to the cart, this will be returned as the first store that 
+//comes up while searching orders for the current customer
+//public int chosenStore = 0; //Which store ID the user currently has chosen //Moved to start
+//public int userId = 0; //Now passed from main menu
 
-public void Start() 
+public void Start(int userId)//int storeId, int userId) 
 {
+/*            
+OrderId = int.Parse(userId.ToString() + allOrders.Count.ToString()),   //Order Id is user Id concat with Order list count 
+CustomerId = userId,
+StoreId = chosenStore,
+OrderDate = dateOfPurchase,//.ToString(),
+lineQty = lineQty,
+TotalCost = totalCostAfterTax,*/
+bool exit = false; //Bool to control continuance of main while loop
 
-bool exit = false;
-int totalQty = 0;
-decimal totalCostBeforeTax = 0;
-decimal totalCostAfterTax = 0;
-List<Store> allStores = _bl.GetAllStores();  //Just learned about best practice for camelCaps vs PascalCaps, too late now
-List<Customers> allCustomers = _bl.GetAllCustomers(); //Don't think we need here
-int invIndex = -1; //Return index of inventory associated with currently shopped store
+//Information that will go into an order:
+int ordId = 0; //Keep id associated with current order, these are unique to customer/store pair //<>
+//Customer Id is userId parameter in Start()
+DateOnly dateOfPurchase = DateOnly.FromDateTime(DateTime.Now); //Date of purchase //<>
+int lineQty = 0; //Keep total quantity of all items in current line item
+decimal cost = 0; //Keep cost data  //<>
+decimal totalCostBeforeTax = 0; //Keep total cost data  
+decimal totalCostAfterTax = 0; //Keep total cost data with tax
+
+//Information from Inventory Object
+int invID = 0;
+int intAPN = -1; //Default as -1 as an APN might be 0 //<>
+int chosenStore = 0; //Which store ID the user currently has chosen //<>
+int qty = 0; //Quantity of item at the current store //<>
+
+//Information from Carried Objects
+string? name = ""; //<>
+double weight = 0; //<>
+
+//Information from Store Object
+string? storeName = ""; //<>
+decimal salesTax = 0; //<>
+
+//List of all models (except customer as we use userId parameter which is our pivoting data point)
+List<Store> allStores = _bl.GetAllStores();  //Just learned about best practice for camelCaps vs PascalCaps, too late now (actually I didn't learn it)
 List<Inventory> allInv = _bl.GetAllInventory();
-for(int i = 0; i < allInv.Count; i++)
-{if(allInv[i].Store == chosenStore){invIndex = i;}}
+List<Orders> allOrders = _bl.GetAllOrders();
+List<ProdDetails> allCarried = _bl.GetAllCarried();
+List<LineItems> lineItemsList = _bl.GetAllLineItem();
 
-DateOnly dateOfPurchase = DateOnly.FromDateTime(DateTime.Now); //Date of purchase
-Console.WriteLine($"dateOnlyVar: {dateOfPurchase}");
+//Obsolete approaches
+//List<Customers> allCustomers = _bl.GetAllCustomers(); //Don't think we need here
+//int invIndex = -1; //Return index of inventory associated with currently shopped store, stores have multiple inventory objs now
+// for(int i = 0; i < allInv.Count; i++)
+// {if(allInv[i].Store == chosenStore){invIndex = i;}} //Stores have multiple inventory items now
 
-while(!exit)
+
+while(!exit)//Cart mode is active = !exit, turns true to return to store menu or complete purchase
 {
 
-//Reset tally stats
-totalQty = 0;
+//Retrieve Order ID
+foreach(Orders ords in allOrders){if(ords.CustomerId == userId){ordId = ords.OrderId;}}
+
+//Reset tally stats (maybe redundant)
+intAPN = -1;
+lineQty = 0;
 totalCostBeforeTax = 0;
 totalCostAfterTax = 0;
-List<LineItems> lineItemsList = _bl.GetAllLineItem();
-List<LineItems> lineOrderList = new List<LineItems>();
-Console.WriteLine("Your cart:");
-//Show contents of shopper's cart
-foreach(LineItems lL in _bl.GetAllLineItem())
+lineItemsList = _bl.GetAllLineItem();
+//List<LineItems> lineOrderList = new List<LineItems>(); //Obsolete, we are not sending a list to SQL
+
+Console.WriteLine("Your cart:"); //Show contents of shopper's cart
+foreach(LineItems lL in _bl.GetAllLineItem()) //Cycle through all lien items
 {
-    if(lL.CustomerId == userId && lL.StoreId == chosenStore){
-    //apn  / item name   /  qty  /   individual item cost   /    total cost for line
-    Console.WriteLine($"APN [{lL.Id}], Name: [{lL.Name}], Qty: [{lL.Qty}], Cost: [{lL.CostPerItem}], Total Line Cost: [{lL.CostPerItem*lL.Qty}]" );
-    totalQty += lL.Qty;
-    totalCostBeforeTax += lL.CostPerItem*lL.Qty;
-    totalCostAfterTax = totalCostBeforeTax+(totalCostBeforeTax*lL.SalesTax);
-    lineOrderList.Add(lL); //Add item to local list for storing in Order object at the end, json contains all customer lineitems
-    
-    /*Here I must remove the purchased items from inventory.. But put back in if removed from list... 
-    So multiple customers don't try to order same thing, not a perfect solution though... [UNDER CONSTRUCTION]*/
-        //Re-get item index every time as list shrinks and doesn't match old index numbers
-        for(int i = 0; i < allInv[invIndex].Items.Count; i++)
-        {if(allInv[invIndex].Items[i].Name == lL.Name){lL.InvId = i;}}
-
-        Console.WriteLine($"allInv[invIndex].Items.Count: {allInv.Count}");
-        Console.WriteLine($"allInv[invIndex]: {allInv[invIndex].Items[lL.InvId].OnHand}");//Items list shows 0 qty even thought I just opened it to buy
-        int beforeQty = allInv[invIndex].Items[lL.InvId].OnHand;
-
-        Console.WriteLine($"invIndex: {invIndex}, lL.InvId: {lL.InvId}");
-        if(allInv.Count>=invIndex+1){_bl.ChangeInventory(invIndex,lL.InvId,beforeQty-lL.Qty);}
-        allInv = _bl.GetAllInventory();
-        Console.WriteLine("Inventory Deleted");
+    lineQty = lL.Qty; //Set the quantity for how much is ordered of this item
+    //First retrive the item ID from the corresponding 1 to 1 PK/FK inventory object
+    foreach(Inventory invLI in allInv)
+    {
+        if(invLI.Id == lL.InvId)//Current line item matches a result in the inventory list
+        {
+            invID = invLI.Id;
+            intAPN = invLI.Item;
+            chosenStore = invLI.Store;
+            qty = invLI.Qty;
+        } 
     }
 
-}
-Console.WriteLine($"\nTotal items: {totalQty}, total cost before tax: {totalCostBeforeTax}, total cost after tax: {totalCostAfterTax}");
+    //Go ahead and grab sales tax from store object
+    foreach(Store storo in allStores)
+    {
+        if(chosenStore == storo.StoreID)//Current Lien item matches a result in the inventory list
+        {
+            storeName = storo.StoreName;
+            salesTax = storo.SalesTax;
+        } 
+    }
 
+    //Get information from product details about item    
+    if(intAPN > -1)
+    {                                                  
+        foreach(ProdDetails prodD in allCarried)
+        {
+            if(prodD.APN == intAPN)//Display list of lien items
+            {
+                //inv2.ShowDesc(); //This should come from BL...?
+                Console.WriteLine($"Cost: {prodD.Cost}, APN: [{prodD.APN}],"+
+                $" Product: {prodD.Name}, Weight: {prodD.Weight}"+
+                $"\nDescription: {prodD.Descr}, Quantity left: {qty}"); 
+                name = prodD.Name ?? "";  weight = prodD.Weight;
+                cost = prodD.Cost; 
+            }
+        }//End Loop
+
+        // if(lL.OrderId == ordId)// && lL.StoreId == chosenStore //Redundant
+        // { 
+        //apn  / item name   /  qty  /   individual item cost   /    total cost for line
+        //DEBUG LINE
+        //Console.WriteLine($"APN [{lL.Id}], Name: [{lL.Name}], Qty: [{lL.Qty}], Cost: [{lL.CostPerItem}], Total Line Cost: [{lL.CostPerItem*lL.Qty}]" );
+   
+        //Establish the total cost and after tax
+        totalCostBeforeTax += cost*lineQty;
+        totalCostAfterTax = totalCostBeforeTax+(totalCostBeforeTax*salesTax);
+        //lineOrderList.Add(lL); //Add item to local list for storing in Order object at the end, json contains all customer lineitems//OBSOLETE
+    
+        /*Here I must remove the purchased items from inventory.. But put back in if removed from list... 
+        So multiple customers don't try to order same thing, not a perfect solution though... [UNDER CONSTRUCTION]*/
+        //Re-get item index every time as list shrinks and doesn't match old index numbers
+        // for(int i = 0; i < allInv.Count; i++)
+        // {if(allInv[i].Id == lL.InvId){invIndex = i;}} //Old attempt
+
+        Console.WriteLine($"allInv.Count: {allInv.Count}"); //DEBUGGING
+        Console.WriteLine($"allInv.Qty: {qty}");//Items list shows 0 qty even thought I just opened it to buy //DEBUGGING
+        int beforeQty = qty;//Store Qty before so we can make the change method adjustment
+
+        //Console.WriteLine($"invIndex: {invIndex}, lL.InvId: {lL.InvId}"); //OLD DEBUGGING
+        //DISABLED [UNDER CONSTRUCTION]
+        //if(allInv.Count>=invIndex+1){_bl.ChangeInventory(invIndex,lL.InvId,beforeQty-lL.Qty);}
+        //allInv = _bl.GetAllInventory();
+
+        //int invId, int qtyToChange: Do math before calling function, value will overwrite!
+        int qtyToChange = beforeQty-lineQty;
+        if(qtyToChange > -1){
+        _bl.ChangeInventory(invID,qtyToChange);
+        Console.WriteLine("Inventory items moved to order"); //DEBUGGING
+        }else{
+        Console.WriteLine("Attempting to generate order in cart but insufficient inventory!");}
+      //} //End lL.OrderId == ordId check, defunct
+
+    }//End check intAPN > -1
+    else{Console.WriteLine("Error: No matching item found in inventory for selected lineitem.");}
+
+}//End for each line item loop
+
+Console.WriteLine($"\nTotal items: {lineQty}, total cost before tax: {totalCostBeforeTax}, total cost after tax: {totalCostAfterTax}");
 Console.WriteLine("\n[0] Remove item from cart.");
 Console.WriteLine("[1] Return to shopping.");
 Console.WriteLine("[2] Complete purchase.\n");
@@ -78,7 +168,7 @@ switch(choose)
     case "0":
         //Select an item to remove [will remove all qty]
         Console.WriteLine("Enter the APN number of the item you want to remove \n[Removes all quantity of the item from cart]");
-        string tryPar = Console.ReadLine() ?? ""; int a; bool res;
+        string tryPar = Console.ReadLine() ?? ""; int a; bool res; //input validation present!
         res = Int32.TryParse(tryPar, out a);
         if(res && lineItemsList.Count > 0)
         {
@@ -87,37 +177,16 @@ switch(choose)
             //Remove APN chsDlyInt from line items
             for(int i = 0; i < lineItemsList.Count; i++)
             {
-                if(lineItemsList.Count > 0){
-                if(lineItemsList[i].Id == chsDlyInt){_bl.RemoveLineItem(i);}}   
-                /*Here I must add the removed items back to inventory [UNDER CONSTRUCTION]*/
-                //But this below condition checks that the idex isn't null, not that the item is contained within the list or not.....
-                //Solution is we never delete items from inventory, just set to 0
-                //if(allInv[invIndex].Items[lineItemsList[i].InvId] != null){//Check that this item exists in a list
-                int beforeQty = allInv[invIndex].Items[lineItemsList[i].InvId].OnHand;
-                if(allInv.Count>0){_bl.ChangeInventory(invIndex,lineItemsList[i].InvId,beforeQty+lineItemsList[i].Qty);}
-                allInv = _bl.GetAllInventory();
-                //}
-                //else
-                //{
-                    // ProdDetails addStock = new ProdDetails {
-                    //     //StoreAt = allStores[chosenStoreIndex].StoreID, 
-                    //     OnHand = choiceInt2, 
-                    //     APN = getAllCarried[choiceInt].APN,
-                    //     Name = getAllCarried[choiceInt].Name,
-                    //     ItemType = getAllCarried[choiceInt].ItemType,
-                    //     Desc = getAllCarried[choiceInt].Desc,
-                    //     Cost = getAllCarried[choiceInt].Cost,
-                    //     Weight = getAllCarried[choiceInt].Weight
-                    // };
+                if(lineItemsList.Count > 0){ //Add back the quantity to inventory and remove the line item
+                if(lineItemsList[i].Id == chsDlyInt){allInv[invID].Qty += lineItemsList[i].Qty; _bl.RemoveLineItem(i);}}
+                else{Console.WriteLine($"Error, total line items: {lineItemsList.Count}");}   
 
-                    // //allInventory[targetInv].Items.Add(addStock);  //DO I NEED THIS EVEN?
-                    // //Now to Save it
-                    // _bl.AddItem(targetInv, addStock);
-                //}
+                //It's possible a manager could remove an item from inventory right before a customer 
+                //goes to remove same item from order, this would result in a fatal error.
+                //To fully solidify this, there would need to be a check if the item exist still, if not remake it
             }
         }
         else{Console.WriteLine("Wrong input");}
-
 
     break;
     case "1":
@@ -130,34 +199,38 @@ switch(choose)
         //Payment processesing here
 
         //________________<> Make Order Object <>________________\\
-        
-        List<Orders> allOrders = _bl.GetAllOrders();
-        Orders newLI = new Orders {
-            OrderId = int.Parse(userId.ToString() + allOrders.Count.ToString()),   //Order Id is user Id concat with Order list count 
-            CustomerId = userId,
-            StoreId = chosenStore,
-            DateOfPurchase = dateOfPurchase.ToString(),
-            TotalQty = totalQty,
-            TotalCost = totalCostAfterTax,
-            OrderItems = lineOrderList
-        };
+        Dictionary<int, List<Orders>> allOrdersDict = new Dictionary<int,List<Orders>>();//This will need to be declared higher up to add in orders
+        foreach(KeyValuePair<int, List<Orders>> kv in allOrdersDict){
 
-        Console.WriteLine("Order Data Ready!");
-        _bl.AddOrder(newLI);
-        Console.WriteLine("Order Creation Complete!");
+        // List<Orders> allOrders = _bl.GetAllOrders();
+        // Orders newLI = new Orders {
+        //     OrderId = int.Parse(userId.ToString() + allOrders.Count.ToString()),   //Order Id is user Id concat with Order list count 
+        //     CustomerId = userId,
+        //     StoreId = chosenStore,
+        //     OrderDate = dateOfPurchase,//.ToString(),
+        //     lineQty = lineQty,
+        //     TotalCost = totalCostAfterTax,
+        //     //OrderItems = lineOrderList //I don't think we send this to SQL...
+        // };
+        //I have already made an order object though...
+
+        //Console.WriteLine("Order Data Ready!");
+        // _bl.AddOrder(newLI);
+        
+        }
+        //Console.WriteLine("Order Creation Complete!");
         //______________<> End Make Order Object <>______________\\
 
         //LineItems list cleared
         for(int i = lineItemsList.Count-1; i > -1; i--)//Delete from botton to prevent list shifting from messing up deletion sequence
         {
-            if(lineItemsList[i].CustomerId == userId && lineItemsList[i].InvId == chosenStore){
-                Console.WriteLine($"Index: {i}, lineItemsList.Count: {lineItemsList.Count}");
+            if(lineItemsList[i].InvId == invID){ //lineItemsList[i].CustomerId == userId && 
+                Console.WriteLine($"Index: {i}, lineItemsList.Count: {lineItemsList.Count}");//DEBUG
                 if(lineItemsList.Count>0){_bl.RemoveLineItem(i);}
                 lineItemsList = _bl.GetAllLineItem();
             }
         }
         
-
         exit = true;
 
     break;
@@ -169,10 +242,8 @@ switch(choose)
 
 
 
+
+
 }//End While
-
-
-
-
-}//End of main class and start
-}
+}//End of Start
+}//End Of Class

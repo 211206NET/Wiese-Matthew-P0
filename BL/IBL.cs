@@ -15,9 +15,9 @@ public interface IBL
 
     void AddInventory(Inventory invToAdd);
     void AddItem(int invIndex, ProdDetails invToAdd);
-    void ChangeInventory(int invIndex, int apn, int itemQty);    
+    void ChangeInventory(int invIndex, int qtyToChange);//int invIndex, int apn, int itemQty);    
     void RemoveInventory(int invIndex);
-    void RemoveItem(int invIndex, int invIndexToRemove);
+    void RemoveItem(int apnToRemove);
 
     //Customers
     List<Customers> GetAllCustomers();
