@@ -177,7 +177,12 @@ while(!exit)
             else
             {
                 //Normal customer login
-                chosenStore = Int32.Parse(Console.ReadLine() ?? "");   //User inputs a choice
+                string chosenS = Console.ReadLine();
+                bool res; int a;
+                res = Int32.TryParse(chosenS, out a);
+                if(res){
+                    chosenStore = Int32.Parse(chosenS);   //User inputs a choice
+                }
             }
             pos = 2;
         break;
@@ -273,7 +278,19 @@ while(!exit)
             }
             else
             {
-                int intAPN = Int32.Parse(chooseAPN); //Select APN   NEED INPUT VALIDATION
+                bool res = false; int a; int intAPN = 0; bool abort = false;
+                while(!res || abort == true)
+                {
+                    if(chooseAPN == "x"){pos = 2; abort = true; break;} //Give up selecting an APN
+                    res = Int32.TryParse(chooseAPN, out a);
+                    if(res)
+                    {
+                        intAPN = Int32.Parse(chooseAPN); //Select APN   
+                    }//End check for parse
+                    else{Console.WriteLine("Enter an APN or 'x' to go back"); chooseAPN = Console.ReadLine() ?? ""; }
+                }
+
+                if(!abort){
                 //Cost, APN, Name, Weight, Descr, OnHand                                                           
                 foreach(ProdDetails prodD in allCarried)
                 {
@@ -296,7 +313,12 @@ while(!exit)
                 if(buy == "y")
                 {
                     Console.WriteLine("\nHow many do you want to buy?");
-                    int qtyToBuy = Int32.Parse(Console.ReadLine() ?? ""); //need check for parse!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    
+                    string? chosenS = Console.ReadLine();
+                    res = Int32.TryParse(chosenS, out a);
+                    if(res)
+                    {
+                    int qtyToBuy = Int32.Parse(chosenS); 
 
                     decimal sendTax = Convert.ToDecimal(chosenStore*0.2); //[PLACE HOLDER]
 
@@ -354,6 +376,9 @@ while(!exit)
                             
                     Console.WriteLine("\nOrder made!");
 
+                    }//End parse check
+                    else{Console.WriteLine("Invalid input");}
+
                     pos = 2;
                     break;
                 }
@@ -362,6 +387,7 @@ while(!exit)
                     pos = 2;
                     break;
                 }
+            }//Abort
             }
 
             Console.WriteLine("\nEnter any value to return to main menu");
@@ -486,6 +512,14 @@ private void Login()
 private void ViewOrders(List<Orders> allTheOrders, List<Store> allTheStores, int uID)
 {
     int storeIndex = -1;
+
+    //Sort Dates
+    Console.WriteLine("Orders will be sorted by most recent by default, enter 'o' sort by oldest instead.");
+    string sortStr = Console.ReadLine() ?? "";
+    if(sortStr == "o")
+    {allTheOrders.Sort((x, y) => x.OrderDate.CompareTo(y.OrderDate));}
+    else{allTheOrders.Sort((x, y) => y.OrderDate.CompareTo(x.OrderDate));}
+    
     //Get Order Info
     foreach(Orders ordo in allTheOrders)//Loop through all orders
     {

@@ -32,9 +32,9 @@ public class CSBL : IBL
     {
         _dl.AddStore(storeToAdd);
     }
-    public void ChangeStoreInfo(int storeIndex, Store changeStoreInfo)//(int storeIndex, string name, string city, string state)
+    public void ChangeStoreInfo(Store changeStoreInfo)//(int storeIndex, string name, string city, string state)
     {
-       _dl.ChangeStoreInfo(storeIndex, changeStoreInfo);
+       _dl.ChangeStoreInfo(changeStoreInfo);
     }
     
     public void RemoveStore(int storeToRemove)

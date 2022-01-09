@@ -17,7 +17,7 @@ public interface IRepo
     //Store
     List<Store> GetAllStores();
     void AddStore(Store StoreToAdd);
-    void ChangeStoreInfo(int storeIndex, Store changeStoreInfo);//(int storeIndex, string name, string city, string state);
+    void ChangeStoreInfo(Store changeStoreInfo);//(int storeIndex, string name, string city, string state);
     void RemoveStore(int StoreToRemove);
 
     //Inventory

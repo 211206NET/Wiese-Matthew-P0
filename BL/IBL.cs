@@ -9,7 +9,7 @@ public interface IBL
     List<Inventory> GetAllInventory();
 
     void AddStore(Store storeToAdd);
-    void ChangeStoreInfo(int storeIndex, Store changeStoreInfo);//(int storeIndex, string name, string city, string state);
+    void ChangeStoreInfo(Store changeStoreInfo);//(int storeIndex, string name, string city, string state);
     void RemoveStore(int storeToRemove);
 
 

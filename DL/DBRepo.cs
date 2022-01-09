@@ -81,60 +81,106 @@ public class DBRepo : IRepo
     */
     public void AddStore(Store storeToAdd)
     {
-        DataSet storeSet = new DataSet(); //DataSet has multiple DataTables
-        //Check for duplicate first?
-        string selectedCmd = "SELECT * FROM Store";
+        
+        //         // newRow["StoreName"] = storeToAdd.StoreName ?? "";
+        //         // newRow["City"] = storeToAdd.City ?? "";
+        //         // newRow["State"] = storeToAdd.State ?? "";
+        //         // newRow["SalesTax"] = storeToAdd.SalesTax;
+        //throw new NotImplementedException();     
         using(SqlConnection connection = new SqlConnection(_connectionString))
         {
+            connection.Open();
+            string sqlCmd = "INSERT INTO Store (StoreName, City, State, SalesTax) VALUES (@p1, @p2, @p3, @p4)";
 
-            using(SqlDataAdapter dataAdapter = new SqlDataAdapter(selectedCmd, _connectionString))
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
             {
-                
-                //We can fill that DataSet using SqlDataAdapter.Fill method
-                dataAdapter.Fill(storeSet, "Store");
+                SqlParameter param = (new SqlParameter("@p1", storeToAdd.StoreName));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p2", storeToAdd.City));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p3", storeToAdd.State));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p4", storeToAdd.SalesTax));
+                cmd.Parameters.Add(param);
+                //...
 
-                DataTable storeTable = storeSet.Tables["Store"];
-                // foreach(DataRow row in storeTable.Rows)
-                // {
-                //     Console.WriteLine(row["StoreId"]);
-                // }
-
-                DataRow newRow = storeTable.NewRow();
-                // newRow["StoreName"] = storeToAdd.StoreName ?? "";
-                // newRow["City"] = storeToAdd.City ?? "";
-                // newRow["State"] = storeToAdd.State ?? "";
-                // newRow["SalesTax"] = storeToAdd.SalesTax;
-
-                storeToAdd.ToDataRow(ref newRow);
-                storeTable.Rows.Add(newRow);
-
-                string insertCmd = $"INSERT INTO Store (StoreName, City, State) VALUES "+
-                $"('{storeToAdd.StoreName}','{storeToAdd.City}','{storeToAdd.State}','{storeToAdd.SalesTax}'";
-
-                //Vaguely understand
-                //"INSERT INTO employee (FirstName, LastName, DateOfBirth /*etc*/) VALUES (@firstName, @lastName, @dateOfBirth /*etc*/)", con))
-                // best practice - always specify the database data type of the column you are using
-                // best practice - check for valid values in your code and/or use a database constraint, if inserting NULL then use System.DbNull.Value
-                // sc.Parameters.Add(new SqlParameter("@firstName", SqlDbType.VarChar, 200){Value = newEmployee.FirstName ?? 
-                // (object) System.DBNull.Value});
-                // sc.Parameters.Add(new SqlParameter("@lastName", SqlDbType.VarChar, 200){Value = newEmployee.LastName ?? 
-                // (object) System.DBNull.Value});
-
-                //Use @values ^
-
-                //dataAdapter.InsertCommand = new SqlCommand(insertCmd, connection);
-                SqlCommandBuilder cmdBuilder= new SqlCommandBuilder(dataAdapter);
-                dataAdapter.InsertCommand = cmdBuilder.GetInsertCommand();
-
-                dataAdapter.Update(storeTable);
+                cmd.ExecuteNonQuery();
             }
+            connection.Close();
         }
+
+        // DataSet storeSet = new DataSet(); //DataSet has multiple DataTables
+        // //Check for duplicate first?
+        // string selectedCmd = "SELECT * FROM Store";
+        // using(SqlConnection connection = new SqlConnection(_connectionString))
+        // {
+
+        //     using(SqlDataAdapter dataAdapter = new SqlDataAdapter(selectedCmd, _connectionString))
+        //     {
+                
+        //         //We can fill that DataSet using SqlDataAdapter.Fill method
+        //         dataAdapter.Fill(storeSet, "Store");
+
+        //         DataTable storeTable = storeSet.Tables["Store"];
+        //         // foreach(DataRow row in storeTable.Rows)
+        //         // {
+        //         //     Console.WriteLine(row["StoreId"]);
+        //         // }
+
+        //         DataRow newRow = storeTable.NewRow();
+        //         // newRow["StoreName"] = storeToAdd.StoreName ?? "";
+        //         // newRow["City"] = storeToAdd.City ?? "";
+        //         // newRow["State"] = storeToAdd.State ?? "";
+        //         // newRow["SalesTax"] = storeToAdd.SalesTax;
+
+        //         storeToAdd.ToDataRow(ref newRow);
+        //         storeTable.Rows.Add(newRow);
+
+        //         string insertCmd = $"INSERT INTO Store (StoreName, City, State) VALUES "+
+        //         $"('{storeToAdd.StoreName}','{storeToAdd.City}','{storeToAdd.State}','{storeToAdd.SalesTax}'";
+
+        //         //Vaguely understand
+        //         //"INSERT INTO employee (FirstName, LastName, DateOfBirth /*etc*/) VALUES (@firstName, @lastName, @dateOfBirth /*etc*/)", con))
+        //         // best practice - always specify the database data type of the column you are using
+        //         // best practice - check for valid values in your code and/or use a database constraint, if inserting NULL then use System.DbNull.Value
+        //         // sc.Parameters.Add(new SqlParameter("@firstName", SqlDbType.VarChar, 200){Value = newEmployee.FirstName ?? 
+        //         // (object) System.DBNull.Value});
+        //         // sc.Parameters.Add(new SqlParameter("@lastName", SqlDbType.VarChar, 200){Value = newEmployee.LastName ?? 
+        //         // (object) System.DBNull.Value});
+
+        //         //Use @values ^
+
+        //         //dataAdapter.InsertCommand = new SqlCommand(insertCmd, connection);
+        //         SqlCommandBuilder cmdBuilder= new SqlCommandBuilder(dataAdapter);
+        //         dataAdapter.InsertCommand = cmdBuilder.GetInsertCommand();
+
+        //         dataAdapter.Update(storeTable);
+        //     }
+        // }
     }
 
     //Low Priority
-    public void ChangeStoreInfo(int storeIndex, Store changeStoreInfo)//(int storeIndex, string name, string city, string state)
+    public void ChangeStoreInfo(Store changeStoreInfo)//(int storeIndex, string name, string city, string state)
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "UPDATE Store SET StoreName = @p1, City = @p2, State = @p3, SalesTax = @p4 WHERE StoreId = @p0";
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                cmd.Parameters.AddWithValue("@p0", changeStoreInfo.StoreID);
+                cmd.Parameters.AddWithValue("@p1", changeStoreInfo.StoreName);
+                cmd.Parameters.AddWithValue("@p2", changeStoreInfo.City);
+                cmd.Parameters.AddWithValue("@p3", changeStoreInfo.State);
+                cmd.Parameters.AddWithValue("@p4", changeStoreInfo.SalesTax);
+                //...
+
+                int changed = cmd.ExecuteNonQuery();
+                Console.WriteLine($"ChangeStoreInfo: changed: {changed}, invIndex: {changeStoreInfo.StoreID}");
+            }
+            connection.Close();
+        }
     }
 
     //Low Priority

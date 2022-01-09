@@ -159,18 +159,15 @@ public class Management : IMenu
                     if(change != ""){salesTax = Decimal.Parse(change);} change = ""; //Change sales tax 
                     //if(change != ""){salesTax = Convert.ToDecimal(Int32.Parse(change));} change = ""; //Change sales tax 
 
-                //Disabled due to row error
-                    // Store storInf = new Store {
-                    //     //StoreAt = allStores[chosenStoreIndex].StoreID, 
-                    //     StoreID = chosenStoreIndex, 
-                    //     StoreName = storeName,
-                    //     City = city,
-                    //     State = state,
-                    //     SalesTax = salesTax
-                    // };
+                    Store storInf = new Store {
+                        StoreID = chosenStoreIndex, 
+                        StoreName = storeName,
+                        City = city,
+                        State = state,
+                        SalesTax = salesTax
+                    };
 
-                    // _bl.ChangeStoreInfo(chosenStoreIndex, storInf);
-                    // _bl.ChangeStoreInfo(chosenStoreIndex,storeName,city,state);
+                    _bl.ChangeStoreInfo(storInf);
                     
                 break;
 
@@ -426,6 +423,14 @@ public class Management : IMenu
     {
         int storeIndex = -1;
         List<Orders> allOrders = _bl.GetAllOrders();
+        
+        //Sort Dates
+        Console.WriteLine("Orders will be sorted by most recent by default, enter 'o' sort by oldest instead.");
+        string sortStr = Console.ReadLine() ?? "";
+        if(sortStr == "o")
+        {allOrders.Sort((x, y) => x.OrderDate.CompareTo(y.OrderDate));}
+        else{allOrders.Sort((x, y) => y.OrderDate.CompareTo(x.OrderDate));}
+
         //Get Order Info
         Console.WriteLine("\n//---------------* List of Orders for current store: *---------------\\\\");
         foreach(Orders ordo in allOrders)//Loop through all orders
@@ -445,8 +450,8 @@ public class Management : IMenu
                 Console.WriteLine($"Id: [{ordo.OrderId}], Store Id: [{sID}], Store Name: {allTheStores[storeIndex].StoreName}, "+
                 $"Order Date: {ordo.OrderDate}, Total Items: {ordo.TotalQty}, Total Cost: {ordo.TotalCost}");
             }
-            Console.WriteLine("\n\n");
         }
+        Console.WriteLine("\n\n");
     }
 
 }//Class
