@@ -32,10 +32,10 @@ public class Inventory
         row["Item"] = this.Item;
         row["Qty"] = this.Qty;
     }
-    public void ToDataRowChange(ref DataRow row)
-    {
-        row["StoreId"] = this.Id;
-        row["Item"] = this.Item;
-        row["Qty"] = this.Qty;
-    }
+    // public void ToDataRowChange(ref DataRow row)
+    // {
+    //     row["StoreId"] = this.Id;
+    //     row["Item"] = this.Item;
+    //     row["Qty"] = this.Qty;
+    // }
 }

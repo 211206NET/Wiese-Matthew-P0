@@ -45,9 +45,9 @@ public class CSBL : IBL
     {
         _dl.AddInventory(invToAdd);
     }
-    public void AddItem(int invIndex, ProdDetails invToAdd)
+    public void AddItem(ProdDetails invToAdd) //int invIndex, 
     {
-        _dl.AddItem(invIndex, invToAdd);
+        _dl.AddItem(invToAdd);
     }
     public void ChangeInventory(int invIndex, int qtyToChange)//int invIndex, int itemIndex, int itemQty)
     {
@@ -128,6 +128,10 @@ public class CSBL : IBL
         _dl.AddOrder(orderItems);
     }
 
+    public void FinalizeOrder(int orderIndex, Orders finalDetails)
+    {
+        _dl.FinalizeOrder(orderIndex, finalDetails);
+    }
    
 
 }

@@ -47,9 +47,9 @@ public class StaticStorage : IRepo
     {
         StaticStorage._allInventory.Add(invToAdd);
     }
-    public void AddItem(int invIndex, ProdDetails invToAdd)
+    public void AddItem(ProdDetails invToAdd) //int invIndex, 
     {
-        StaticStorage._allInventory[invIndex].Items.Add(invToAdd);
+        StaticStorage._allCarried.Add(invToAdd);
     }
     public void ChangeInventory(int invIndex, int qtyToChange)//int invIndex, int itemIndex, int itemQty)
     {
@@ -154,6 +154,15 @@ public List<Orders> GetAllOrders()
 public void AddOrder(Orders orderItems)
 {
     StaticStorage._allOrders.Add(orderItems);
+}
+
+public void FinalizeOrder(int orderIndex, Orders finalDetails)//int storeIndex, Inventory changeInv)//int storeIndex, int apn, int qtyToAdjust
+{
+    StaticStorage._allOrders[orderIndex].TotalQty = finalDetails.TotalQty;
+    StaticStorage._allOrders[orderIndex].TotalCost = finalDetails.TotalCost;
+    StaticStorage._allOrders[orderIndex].OrderId = finalDetails.OrderId;
+    StaticStorage._allOrders[orderIndex].OrderCompleted = finalDetails.OrderCompleted;
+    StaticStorage._allOrders[orderIndex].OrderDate = finalDetails.OrderDate;
 }
 
 

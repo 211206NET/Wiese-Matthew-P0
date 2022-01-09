@@ -203,7 +203,7 @@ public class DBRepo : IRepo
     }
 
     //Add item to list of carried items
-    public void AddItem(int invIndex, ProdDetails invToAdd)//maybe first parameter becomes storeID
+    public void AddItem(ProdDetails invToAdd)//maybe first parameter becomes storeID  //int invIndex, 
     {
         throw new NotImplementedException();  
         // using(SqlConnection connection = new SqlConnection(_connectionString))
@@ -460,7 +460,34 @@ public class DBRepo : IRepo
     //End game
     public void AddLineItem(LineItems newLI)
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+        //Console.WriteLine($"DL: Adding a new item to lineitem,: {newLI}");//DEBUG
+
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "INSERT INTO LineItems (InvId, OrderId, Qty, Cost, SalesTax) VALUES (@p2, @p3, @p4, @p5, @p6)"; //Id, @p1, 
+
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                //SqlParameter param = (new SqlParameter("@p1", newLI.Id));
+                //cmd.Parameters.Add(param);
+                SqlParameter  param = (new SqlParameter("@p2", newLI.InvId));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p3", newLI.OrderId));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p4", newLI.Qty));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p5", newLI.CostPerItem));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p6", newLI.SalesTax));
+                cmd.Parameters.Add(param);
+                //...
+
+                cmd.ExecuteNonQuery();
+            }
+            connection.Close();
+        }
     }
 
     public void RemoveLineItem(int lineItemIndexToRemove)
@@ -469,7 +496,7 @@ public class DBRepo : IRepo
         using(SqlConnection connection = new SqlConnection(_connectionString))
         {
             connection.Open();
-            string sqlCmd = "DELETE FROM Carried WHERE Id = @p0";
+            string sqlCmd = "DELETE FROM LineItems WHERE Id = @p0";
             using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
             {
                 cmd.Parameters.AddWithValue("@p0", lineItemIndexToRemove);
@@ -520,10 +547,11 @@ public class DBRepo : IRepo
         using(SqlConnection connection = new SqlConnection(_connectionString))
         {
             connection.Open();
-            string sqlCmd = "INSERT INTO Orders (OrderId, CustomerId, StoreId, OrderDate, Total, TotalCost) VALUES (@p1, @p2, @p3, @p4, @p5, @p6)";
+            string sqlCmd = "SET IDENTITY_INSERT [dbo].[Orders] ON INSERT INTO Orders (OrderId, CustomerId, StoreId, OrderDate, Total, TotalCost, OrderCompleted) VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7) SET IDENTITY_INSERT [dbo].[Orders] OFF"; //OrderId, @p1,
 
             using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
             {
+                
                 SqlParameter param = (new SqlParameter("@p1", orderItems.OrderId));
                 cmd.Parameters.Add(param);
                 param = (new SqlParameter("@p2", orderItems.CustomerId));
@@ -536,9 +564,33 @@ public class DBRepo : IRepo
                 cmd.Parameters.Add(param);
                 param = (new SqlParameter("@p6", orderItems.TotalCost));
                 cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p7", orderItems.OrderCompleted));
+                cmd.Parameters.Add(param);
                 //...
 
                 cmd.ExecuteNonQuery();
+            }
+            connection.Close();
+        }
+    }
+
+    public void FinalizeOrder(int orderIndex, Orders finalDetails)
+    {
+        //throw new NotImplementedException();
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "UPDATE Orders SET Total = @p0, TotalCost = @p1, OrderCompleted = @p3, OrderDate = @p4 WHERE OrderId = @p2";
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                cmd.Parameters.AddWithValue("@p0", finalDetails.TotalQty);
+                cmd.Parameters.AddWithValue("@p1", finalDetails.TotalCost);
+                cmd.Parameters.AddWithValue("@p2", finalDetails.OrderId);
+                cmd.Parameters.AddWithValue("@p3", finalDetails.OrderCompleted);
+                cmd.Parameters.AddWithValue("@p4", finalDetails.OrderDate);
+                //...
+
+                int changed = cmd.ExecuteNonQuery();
             }
             connection.Close();
         }

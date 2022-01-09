@@ -26,8 +26,10 @@ bool exit = false; //Bool to control continuance of main while loop
 
 //Information that will go into an order:
 int ordId = 0; //Keep id associated with current order, these are unique to customer/store pair //<>
+int ordIndex = 0; //For repo access
 //Customer Id is userId parameter in Start()
-DateOnly dateOfPurchase = DateOnly.FromDateTime(DateTime.Now); //Date of purchase //<>
+//DateOnly dateOfPurchase = DateOnly.FromDateTime(DateTime.Now); //Date of purchase //<>
+DateTime dateOfPurchase = DateTime.Now; //Date of purchase (SQL complains too much to use dateonly) //<>
 int lineQty = 0; //Keep total quantity of all items in current line item
 decimal cost = 0; //Keep cost data  //<>
 decimal totalCostBeforeTax = 0; //Keep total cost data  
@@ -65,7 +67,8 @@ while(!exit)//Cart mode is active = !exit, turns true to return to store menu or
 {
 
 //Retrieve Order ID
-foreach(Orders ords in allOrders){if(ords.CustomerId == userId){ordId = ords.OrderId;}}
+//foreach(Orders ords in allOrders){if(ords.CustomerId == userId){ordId = ords.OrderId;}}  //changed to for, need index
+for(int i = 0; i< allOrders.Count; i++){if(allOrders[i].CustomerId == userId){ordId = allOrders[i].OrderId; ordIndex = i;}}
 
 //Reset tally stats (maybe redundant)
 intAPN = -1;
@@ -199,8 +202,20 @@ switch(choose)
         //Payment processesing here
 
         //________________<> Make Order Object <>________________\\
-        Dictionary<int, List<Orders>> allOrdersDict = new Dictionary<int,List<Orders>>();//This will need to be declared higher up to add in orders
-        foreach(KeyValuePair<int, List<Orders>> kv in allOrdersDict){
+        //Dictionary<int, List<Orders>> allOrdersDict = new Dictionary<int,List<Orders>>();//This will need to be declared higher up to add in orders
+        //foreach(KeyValuePair<int, List<Orders>> kv in allOrdersDict){
+
+        //Finalize order object before deleting line item objects
+        Orders newLI = new Orders {
+            OrderId = ordId,   //Order Id is user Id concat with Order list count 
+            OrderDate = DateTime.Now,//.ToString(),
+            TotalQty = lineQty,
+            TotalCost = totalCostAfterTax,
+            OrderCompleted = 1
+            //OrderItems = lineOrderList //I don't think we send this to SQL...
+        };
+
+        _bl.FinalizeOrder(ordIndex, newLI);
 
         // List<Orders> allOrders = _bl.GetAllOrders();
         // Orders newLI = new Orders {
@@ -217,16 +232,18 @@ switch(choose)
         //Console.WriteLine("Order Data Ready!");
         // _bl.AddOrder(newLI);
         
-        }
+        //}//End dictionary attempt
         //Console.WriteLine("Order Creation Complete!");
         //______________<> End Make Order Object <>______________\\
 
         //LineItems list cleared
+        int toDelete = 0; //What line items to delete
         for(int i = lineItemsList.Count-1; i > -1; i--)//Delete from botton to prevent list shifting from messing up deletion sequence
         {
-            if(lineItemsList[i].InvId == invID){ //lineItemsList[i].CustomerId == userId && 
-                Console.WriteLine($"Index: {i}, lineItemsList.Count: {lineItemsList.Count}");//DEBUG
-                if(lineItemsList.Count>0){_bl.RemoveLineItem(i);}
+            if(lineItemsList[i].OrderId == ordId){ //lineItemsList[i].CustomerId == userId && 
+                //Console.WriteLine($"Index: {i}, lineItemsList.Count: {lineItemsList.Count}");//DEBUG
+                toDelete = lineItemsList[i].Id;
+                if(lineItemsList.Count>0){_bl.RemoveLineItem(toDelete);}
                 lineItemsList = _bl.GetAllLineItem();
             }
         }

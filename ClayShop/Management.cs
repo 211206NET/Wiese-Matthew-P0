@@ -358,7 +358,7 @@ public class Management : IMenu
 
                                     //allInventory[targetInv].Items.Add(addStock);  //DO I NEED THIS EVEN?
                                     //Now to Save it
-                                    _bl.AddItem(targetInv, addStock);
+                                    _bl.AddItem(addStock);//targetInv, 
                                     abort = false; //reset
                                 }}
                             }

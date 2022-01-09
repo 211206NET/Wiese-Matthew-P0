@@ -23,7 +23,7 @@ public interface IRepo
     //Inventory
     List<Inventory> GetAllInventory();
     void AddInventory(Inventory invToAdd);
-    void AddItem(int invIndex, ProdDetails invToAdd);
+    void AddItem(ProdDetails invToAdd); //int invIndex, 
     void ChangeInventory(int invIndex, int qtyToChange);//int invIndex, int apn, int itemQty);    
     void RemoveInventory(int invIndex);
     void RemoveItem(int apnToRemove);
@@ -46,5 +46,6 @@ public interface IRepo
     //Orders
     List<Orders> GetAllOrders();
     void AddOrder(Orders orderItems);
+    void FinalizeOrder(int orderIndex, Orders finalDetails);
 
 }

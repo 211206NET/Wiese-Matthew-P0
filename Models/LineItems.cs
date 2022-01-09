@@ -26,7 +26,7 @@ public class LineItems
     //public int Store { get; set; } //[FK] 
     //public int StoreId { get; set; }//[FK]
     public int InvId { get; set; } //[FK] 
-    public int OrderId { get; set; }
+    public int OrderId { get; set; } //[FK]
     public int Qty { get; set; }
     public decimal CostPerItem { get; set; } //Just storing this, but result can be taken from base cost in carried and tax in store
     //Total for line with just be Qty*CostPerItem, 
@@ -36,7 +36,7 @@ public class LineItems
     
     public void ToDataRow(ref DataRow row)
     {
-        row["Id"] = this.Id;
+        //row["Id"] = this.Id;
         //row["StoreName"] = this.StoreId;
         row["InvId"] = this.InvId; //1 for 1 with Inventory [FK]
         row["OrderId"] = this.OrderId;

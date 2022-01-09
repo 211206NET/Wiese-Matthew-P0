@@ -224,6 +224,7 @@ while(!exit)
         case 3:
             int remAPN = 0; string remName = ""; decimal remCost = 0; int remOrdId = 0;
             lineItemsList = _bl.GetAllLineItem();//Update shopping list
+            allOrders = _bl.GetAllOrders(); //Update Orders
             if(whatItem == 0){Console.WriteLine("Clay Inventory");}
             if(whatItem == 1){Console.WriteLine("Tools Inventory");}
             if(whatItem == 2){Console.WriteLine("Equipment Inventory");}
@@ -282,6 +283,7 @@ while(!exit)
                 }//End Loop
 
                 //--------------------------   Add to cart option here:   --------------------------\\
+                //Add check for duplicates here
                 Console.WriteLine("\nDo you want to buy this item? y/n");
                 string buy = Console.ReadLine() ?? "";
                 if(buy == "y")
@@ -296,7 +298,8 @@ while(!exit)
                     int targetProd = 0;
                     for(int i = 0; i < allInventory.Count; i++)
                     {
-                        if(allInventory[i].Item == remAPN){targetProd = i;}
+                        if(allInventory[i].Item == remAPN && allInventory[i].Store == allStores[chosenStore].StoreID)
+                        {targetProd = allInventory[i].Id;}
                     }
 
                     //First Make An order object if one does not yet exists for this customer/store
@@ -304,27 +307,30 @@ while(!exit)
                     foreach(Orders ord in allOrders)
                     {
                         if(ord.CustomerId == userId && ord.StoreId == allStores[chosenStore].StoreID)
-                        {isOrder = true; remOrdId = ord.OrderId;}
+                        {isOrder = true; remOrdId = ord.OrderId;  Console.WriteLine($"Order was found, remOrdId: {remOrdId}");}
                     }  
 
                     if(!isOrder)
                     {
                         remOrdId = allOrders.Count;
+                        Console.WriteLine($"New order is made, remOrdId: {remOrdId}");
                         //No order currently exists for this customer/store so make one
                         Orders newOrd = new Orders {  //DISABLED due to row error
                             OrderId = allOrders.Count,   
                             CustomerId = userId,
                             StoreId = allStores[chosenStore].StoreID,  
-                            OrderDate = DateOnly.FromDateTime(DateTime.Now),
-                            TotalQty = 0,
-                            TotalCost = 0
+                            OrderDate = DateTime.Now,//DateOnly.FromDateTime(DateTime.Now),
+                            TotalQty = 0, //Adjusted later
+                            TotalCost = 0,
+                            OrderCompleted = 0
                         };
-                        _bl.AddOrder(newOrd); //Disabled
+                        _bl.AddOrder(newOrd); 
                     }
 
+                    Console.WriteLine($"remOrdId: {remOrdId}");
                     //Now to Save it
                     LineItems newLI = new LineItems {  //DISABLED due to row error
-                        Id = remAPN,   
+                        //Id = remAPN,   
                         //StoreId = allStores[chosenStore].StoreID, 
                         InvId = targetProd, 
                         OrderId = remOrdId, 
@@ -333,8 +339,10 @@ while(!exit)
                         SalesTax = sendTax
                     };
                     
-                    _bl.AddLineItem(newLI); //Disabled
+                    _bl.AddLineItem(newLI); 
                             
+                    Console.WriteLine("\nOrder made!");
+
                     pos = 2;
                     break;
                 }
