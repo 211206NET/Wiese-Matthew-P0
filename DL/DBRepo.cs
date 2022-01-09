@@ -140,7 +140,20 @@ public class DBRepo : IRepo
     //Low Priority
     public void RemoveStore(int StoreToRemove)
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "DELETE FROM Store WHERE StoreId = @p0";
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                cmd.Parameters.AddWithValue("@p0", StoreToRemove);
+
+                int changed = cmd.ExecuteNonQuery();
+                //Console.WriteLine($"changed: {changed}, invIndex: {apnToRemove}");
+            }
+            connection.Close();
+        }
     }
 
 
@@ -169,9 +182,34 @@ public class DBRepo : IRepo
     }
 
     //Adds an inventory object when a store object is added
-    public void AddInventory(Inventory invToAdd)
+    public void AddInventory(Inventory invToAdd) //Id, Store, Item, Qty
     {
-        throw new NotImplementedException();        
+        //throw new NotImplementedException();     
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "SET IDENTITY_INSERT [dbo].[Inventory] ON  INSERT INTO Inventory (Id, Store, Item, Qty) VALUES (@p1, @p2, @p3, @p4) SET IDENTITY_INSERT [dbo].[Inventory] OFF";
+
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                SqlParameter param = (new SqlParameter("@p1", invToAdd.Id));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p2", invToAdd.Store));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p3", invToAdd.Item));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p4", invToAdd.Qty));
+                cmd.Parameters.Add(param);
+                //...
+
+                cmd.ExecuteNonQuery();
+            }
+            connection.Close();
+        }
+
+        
+
+        //Incomprehensible adapter   
         // DataSet invSet = new DataSet(); //DataSet has multiple DataTables
         // //Check for duplicate first?
         // string selectedCmd = "SELECT * FROM Inventory";
@@ -191,8 +229,8 @@ public class DBRepo : IRepo
         //         invToAdd.ToDataRow(ref newRow);
         //         invTable.Rows.Add(newRow);
 
-        //         string insertCmd = $"INSERT INTO Inventory (Id, Inventory) VALUES "+ //Wrong
-        //         $"('{invToAdd.Id}','{invToAdd.Store}'";
+        //         string insertCmd = $"INSERT INTO Inventory (Id, Inventory) VALUES "+ 
+        //         $"(@p0, @p1)"; //('{invToAdd.Id}','{invToAdd.Store}')
 
         //         SqlCommandBuilder cmdBuilder= new SqlCommandBuilder(dataAdapter);
         //         dataAdapter.InsertCommand = cmdBuilder.GetInsertCommand();
@@ -205,53 +243,51 @@ public class DBRepo : IRepo
     //Add item to list of carried items
     public void AddItem(ProdDetails invToAdd)//maybe first parameter becomes storeID  //int invIndex, 
     {
-        throw new NotImplementedException();  
-        // using(SqlConnection connection = new SqlConnection(_connectionString))
-        // {
-        //     connection.Open();
-        //     string sqlCmd = "INSERT INTO Carried (APN, Name, OnHand, ItemType, Weight, Cost, Descript) VALUES (@p1, @p2, @p3, @p4, @5, @6, @7)";
+        //throw new NotImplementedException();  
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "INSERT INTO Carried (APN, Name, ItemType, Weight, Cost, Descript) VALUES (@p1, @p2, @p4, @5, @6, @7)";
 
-        //     using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
-        //     {
-        //         SqlParameter param = (new SqlParameter("@p1", invToAdd.APN));
-        //         cmd.Parameters.Add(param);
-        //         param = (new SqlParameter("@p2", invToAdd.Name));
-        //         cmd.Parameters.Add(param);
-        //         param = (new SqlParameter("@p3", invToAdd.OnHand));
-        //         cmd.Parameters.Add(param);
-        //         param = (new SqlParameter("@p4", invToAdd.ItemType));
-        //         cmd.Parameters.Add(param);
-        //         param = (new SqlParameter("@p4", invToAdd.Weight));
-        //         cmd.Parameters.Add(param);
-        //         param = (new SqlParameter("@p4", invToAdd.Cost));
-        //         cmd.Parameters.Add(param);
-        //         param = (new SqlParameter("@p4", invToAdd.Descr));
-        //         cmd.Parameters.Add(param);
-        //         //...
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                SqlParameter param = (new SqlParameter("@p1", invToAdd.APN));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p2", invToAdd.Name));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p4", invToAdd.ItemType));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p5", invToAdd.Weight));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p6", invToAdd.Cost));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p7", invToAdd.Descr));
+                cmd.Parameters.Add(param);
+                //...
 
-        //         cmd.ExecuteNonQuery();
-        //     }
-        //     connection.Close();
-        // }
+                cmd.ExecuteNonQuery();
+            }
+            connection.Close();
+        }
     }   
 
-    //Remove item to list of carried items
+    //Remove item in list of carried items
     public void RemoveItem(int apnToRemove)
     {
-        throw new NotImplementedException();
-        // using(SqlConnection connection = new SqlConnection(_connectionString))
-        // {
-        //     connection.Open();
-        //     string sqlCmd = "DELETE FROM Carried WHERE APN = @invId";
-        //     using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
-        //     {
-        //         cmd.Parameters.AddWithValue("@invId", apnToRemove);
+        //throw new NotImplementedException();
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "DELETE FROM Carried WHERE APN = @p0";
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                cmd.Parameters.AddWithValue("@p0", apnToRemove);
 
-        //         int changed = cmd.ExecuteNonQuery();
-        //         //Console.WriteLine($"changed: {changed}, invIndex: {apnToRemove}");
-        //     }
-        //     connection.Close();
-        // }
+                int changed = cmd.ExecuteNonQuery();
+                Console.WriteLine($"Removed item: changed: {changed}, invIndex: {apnToRemove}");
+            }
+            connection.Close();
+        }
     }
 
     //This is for changing the Qty of an item in inventory
@@ -284,15 +320,15 @@ public class DBRepo : IRepo
         using(SqlConnection connection = new SqlConnection(_connectionString))
         {
             connection.Open();
-            string sqlCmd = "DELETE FROM Inventory WHERE Id = @invId";
+            string sqlCmd = "DELETE FROM Inventory WHERE Id = @p0"; //Where store is wrong?
             using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
             {
                 //SqlParameter param = (new SqlParameter("@p1", qtyToChange));
-                cmd.Parameters.AddWithValue("@invId", invId);
+                cmd.Parameters.AddWithValue("@p0", invId);
                 //...
 
                 int changed = cmd.ExecuteNonQuery();
-                Console.WriteLine($"changed: {changed}, invIndex: {invId}");
+                Console.WriteLine($"Remove Inventory: changed: {changed}, invIndex: {invId}");
             }
             connection.Close();
         }
@@ -341,7 +377,7 @@ public class DBRepo : IRepo
         using(SqlConnection connection = new SqlConnection(_connectionString))
         {
             connection.Open();
-            string sqlCmd = "INSERT INTO Inventory (CustNumb, UserName, Pass, Employee) VALUES (@p1, @p2, @p3, @p4)";
+            string sqlCmd = "SET IDENTITY_INSERT [dbo].[Customers] ON INSERT INTO Customers (CustNumb, UserName, Pass, Employee) VALUES (@p1, @p2, @p3, @p4) SET IDENTITY_INSERT [dbo].[Customers] OFF";
 
             using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
             {
@@ -393,15 +429,13 @@ public class DBRepo : IRepo
         using(SqlConnection connection = new SqlConnection(_connectionString))
         {
             connection.Open();
-            string sqlCmd = "INSERT INTO Inventory (APN, Name, OnHand, ItemType, Weight, Cost, Desc) VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7)";
+            string sqlCmd = "SET IDENTITY_INSERT [dbo].[Carried] ON INSERT INTO Carried (APN, Name, ItemType, Weight, Cost, Descript) VALUES (@p1, @p2, @p4, @p5, @p6, @p7) SET IDENTITY_INSERT [dbo].[Carried] OFF";
 
             using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
             {
                 SqlParameter param = (new SqlParameter("@p1", itemNew.APN));
                 cmd.Parameters.Add(param);
                 param = (new SqlParameter("@p2", itemNew.Name));
-                cmd.Parameters.Add(param);
-                param = (new SqlParameter("@p3", itemNew.OnHand));
                 cmd.Parameters.Add(param);
                 param = (new SqlParameter("@p4", itemNew.ItemType));
                 cmd.Parameters.Add(param);
@@ -420,15 +454,29 @@ public class DBRepo : IRepo
     }
 
     //Low Priority
-    public void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, decimal itemCost, double itemWeight)
+    public void ChangeCarried(ProdDetails changeCarriedItem)//int itemNum, string itemName, int itemType, string itemDesc, decimal itemCost, double itemWeight)
     {
-        throw new NotImplementedException();
-    }
+        //throw new NotImplementedException();
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            Console.WriteLine($"changeCarriedItem.APN: {changeCarriedItem.APN}, changeCarriedItem.Cost: {changeCarriedItem.Cost}");
+            connection.Open(); 
+            string sqlCmd = "UPDATE Carried SET Name = @p1, ItemType = @p2, Weight = @p3, Cost = @p4, Descript = @p5 WHERE APN = @p0";
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                cmd.Parameters.AddWithValue("@p0", changeCarriedItem.APN);
+                cmd.Parameters.AddWithValue("@p1", changeCarriedItem.Name);
+                cmd.Parameters.AddWithValue("@p2", changeCarriedItem.ItemType);
+                cmd.Parameters.AddWithValue("@p3", changeCarriedItem.Weight);
+                cmd.Parameters.AddWithValue("@p4", changeCarriedItem.Cost);
+                cmd.Parameters.AddWithValue("@p5", changeCarriedItem.Descr);
+                //...
 
-    //Low Priority   Obsolete?
-    public void RemoveCarried(int carriedIndexToRemove)
-    {
-        throw new NotImplementedException();
+                int changed = cmd.ExecuteNonQuery();
+                Console.WriteLine($"Change Carried: changed: {changed}, invIndex: {changeCarriedItem}");
+            }
+            connection.Close();
+        }
     }
 
     //_____________________________ <> Line Items <> _____________________________\\
@@ -490,27 +538,26 @@ public class DBRepo : IRepo
         }
     }
 
-    public void RemoveLineItem(int lineItemIndexToRemove)
+    public void RemoveLineItem(int lineItemIdToRemove)
     {
         //throw new NotImplementedException();
         using(SqlConnection connection = new SqlConnection(_connectionString))
         {
             connection.Open();
-            string sqlCmd = "DELETE FROM LineItems WHERE Id = @p0";
+            string sqlCmd = "DELETE FROM LineItems WHERE InvId = @p0";
             using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
             {
-                cmd.Parameters.AddWithValue("@p0", lineItemIndexToRemove);
+                cmd.Parameters.AddWithValue("@p0", lineItemIdToRemove);
                 //...
 
                 int changed = cmd.ExecuteNonQuery();
-                Console.WriteLine($"changed: {changed}, invIndex: {lineItemIndexToRemove}");//DEBUGGING
+                Console.WriteLine($"changed: {changed}, invIndex: {lineItemIdToRemove}");//DEBUGGING
             }
             connection.Close();
         }
     }
 
     //_____________________________ <> Orders <> _____________________________\\
-
     public List<Orders> GetAllOrders()
     {
         //throw new NotImplementedException();
@@ -591,6 +638,26 @@ public class DBRepo : IRepo
                 //...
 
                 int changed = cmd.ExecuteNonQuery();
+            }
+            connection.Close();
+        }
+    }
+
+    //In the event a store is closed, all it's records are deleted
+    public void DeleteOrders(int ordersToDelete)
+    {
+        //throw new NotImplementedException();
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "DELETE FROM Orders WHERE StoreId = @p0";
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                cmd.Parameters.AddWithValue("@p0", ordersToDelete);
+                //...
+
+                int changed = cmd.ExecuteNonQuery();
+                //Console.WriteLine($"changed: {changed}, ordersToDelete: {ordersToDelete}");//DEBUGGING
             }
             connection.Close();
         }

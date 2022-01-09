@@ -73,9 +73,9 @@ while(!exit)
         case 0:
         //public DateOnly dateOnlyVar = DateOnly.Today; 
         Console.WriteLine($"dateOnlyVar: {dateOnlyVar}");
-        Console.WriteLine("1.) Login Here");
-        Console.WriteLine("2.) No account? Create an account.");//1.)
-        string choose = Console.ReadLine() ?? ""; //PLACE HOLDER
+        Console.WriteLine("1.) Login Here"); //
+        Console.WriteLine("2.) No account? Create an account.");//
+        string choose = Console.ReadLine() ?? ""; 
 
         switch(choose)
         {
@@ -96,7 +96,7 @@ while(!exit)
             string pw1 = Console.ReadLine() ?? "";
             Console.WriteLine("Re-enter new password here");
             string pw2 = Console.ReadLine() ?? "";
-
+            int newCustNumb = -1;
             //Note: to make a manager login, the user name must contain the string "MNG"
             //The system for restricting a manager account to be created is not built yet
 
@@ -106,6 +106,10 @@ while(!exit)
             //Check if this customer already exists
             foreach(Customers custo in allCustomers)
             {
+                //Get unique customer number
+                newCustNumb = allCustomers.Count+1; userId = newCustNumb;
+                if(custo.CustNumb == newCustNumb){newCustNumb++; userId = newCustNumb;}
+
                 if(custo.UserName == userN)
                 {
                 //An account with this name already exists
@@ -113,17 +117,16 @@ while(!exit)
                 Console.WriteLine("Sorry, but an account with this name already exists.");
                 }else{canMake = true;}    
             }
-            }else{canMake = false;}
+            }else{Console.WriteLine("The passwords do not match."); canMake = false;}
 
             //Check if manager login
-            if(userN.IndexOf("MNG",2)>0){manager = true;}else{manager = false;}
+            if(userN.IndexOf("MNG",0)>0){manager = true;}else{manager = false;}
 
             if(canMake == true)
             {
-            
                 Customers sendCust = new Customers
                 {
-                    CustNumb = allCustomers.Count,
+                    CustNumb = newCustNumb,
                     UserName = userN,
                     Pass = pw1,
                     Employee = manager
@@ -182,11 +185,12 @@ while(!exit)
         //Store Customer Main Menu 
         case 2:
             Console.WriteLine($"\nWelcome to {allStores[chosenStore].StoreName}\nWhat would you like to do?");
-            Console.WriteLine("1.) Shop Clays");//1.)
-            Console.WriteLine("2.) Shop Professional Clay Tools");//2.) 
-            Console.WriteLine("3.) Shop Claymation Studio Accessories");//3.) 
-            Console.WriteLine("4.) Return to Store Selection [ Warning: This will clear items in your cart! ]");//4.)   
-            Console.WriteLine("5.) Checkout");//5.)  
+            Console.WriteLine("1.) Shop Clays");//1.) //
+            Console.WriteLine("2.) Shop Professional Clay Tools");//2.) //
+            Console.WriteLine("3.) Shop Claymation Studio Accessories");//3.) //
+            Console.WriteLine("4.) Return to Store Selection [ Warning: This will clear items in your cart! ]");//4.) //  
+            Console.WriteLine("5.) Checkout");//5.) // 
+            Console.WriteLine("6.) See Customer Orders");//6.) // 
             Console.WriteLine("x.) Exit");//x.) 
 
             string input = Console.ReadLine() ?? "";
@@ -211,6 +215,9 @@ while(!exit)
                 case "5":
                     pos = 7;//Checkout
                 break;
+                case "6":
+                    pos = 8;//See Customer Orders
+                break;
                 case "x":
                     exit = true;//Exit App
                 break;
@@ -222,7 +229,7 @@ while(!exit)
 
         //Display Inventory for Selected Store
         case 3:
-            int remAPN = 0; string remName = ""; decimal remCost = 0; int remOrdId = 0;
+            int remAPN = 0; string remName = ""; decimal remCost = 0; int remOrdId = 0; int remQty = 0; 
             lineItemsList = _bl.GetAllLineItem();//Update shopping list
             allOrders = _bl.GetAllOrders(); //Update Orders
             if(whatItem == 0){Console.WriteLine("Clay Inventory");}
@@ -238,7 +245,7 @@ while(!exit)
                     {
                         if(allPD.APN == allInv.Item && allPD.ItemType == whatItem)//Find each Id match
                         {
-                            Console.WriteLine($"[{allPD.APN}] Clay Product: {allPD.Name}");
+                            Console.WriteLine($"[{allPD.APN}] Product: {allPD.Name}, In Stock: {allInv.Qty}");
                         }
                     }
                 }
@@ -274,9 +281,9 @@ while(!exit)
                     if(prodD.APN == intAPN)
                     {
                         //inv2.ShowDesc(); //This should come from BL...?
-                        Console.WriteLine($"Cost: {prodD.Cost}, APN: [{prodD.APN}],"+
+                        Console.WriteLine($"\nCost: {prodD.Cost}, APN: [{prodD.APN}],"+
                         $" Clay Product: {prodD.Name}, Weight: {prodD.Weight}"+
-                        $"\nDescription: {prodD.Descr}, Quantity left: {prodD.OnHand}"); 
+                        $"\nDescription: {prodD.Descr}\n"); 
                         remAPN = prodD.APN;  remName = prodD.Name ?? "";  
                         remCost = prodD.Cost; 
                     }} 
@@ -306,14 +313,18 @@ while(!exit)
                     bool isOrder = false;
                     foreach(Orders ord in allOrders)
                     {
-                        if(ord.CustomerId == userId && ord.StoreId == allStores[chosenStore].StoreID)
+                        //Get unique order number
+                        remOrdId = allOrders.Count;
+                        if(ord.OrderId == remOrdId){remOrdId++;}
+
+                        //Check if there is already an order started for this customer
+                        if(ord.CustomerId == userId && ord.StoreId == allStores[chosenStore].StoreID && ord.OrderCompleted == 0)
                         {isOrder = true; remOrdId = ord.OrderId;  Console.WriteLine($"Order was found, remOrdId: {remOrdId}");}
                     }  
 
                     if(!isOrder)
                     {
-                        remOrdId = allOrders.Count;
-                        Console.WriteLine($"New order is made, remOrdId: {remOrdId}");
+                        Console.WriteLine($"New order is made, remOrdId: {remOrdId}, userId: {userId}");
                         //No order currently exists for this customer/store so make one
                         Orders newOrd = new Orders {  //DISABLED due to row error
                             OrderId = allOrders.Count,   
@@ -388,7 +399,7 @@ while(!exit)
             //Retrieve customer ID
             foreach(Orders ords in allOrders)
             {
-                if(ords.CustomerId == userId){ordId = ords.OrderId; custID = ords.CustomerId; break;}
+                if(ords.CustomerId == userId && ords.OrderCompleted == 0){ordId = ords.OrderId; custID = ords.CustomerId; break;}
             }
 
             //Make sure items are selected by user to buy before going to checkout
@@ -418,6 +429,13 @@ while(!exit)
             else{Console.WriteLine("You haven't selected anything to buy");}
             pos = 2;
 
+        break;
+
+        //See Customer Orders
+        case 8:
+            allOrders = _bl.GetAllOrders();
+            allStores = _bl.GetAllStores();
+            ViewOrders(allOrders, allStores, userId);
         break;
 
         //pos var is set wrong
@@ -463,6 +481,27 @@ private void Login()
     }
     pos = 1;
     
+}
+
+private void ViewOrders(List<Orders> allTheOrders, List<Store> allTheStores, int uID)
+{
+    int storeIndex = -1;
+    //Get Order Info
+    foreach(Orders ordo in allTheOrders)//Loop through all orders
+    {
+        //Get Store Info
+        for(int i = 0; i < allTheStores.Count; i++)
+        {
+            if(allTheStores[i].StoreID == ordo.StoreId){storeIndex = i;}
+        }
+
+        if(ordo.CustomerId == uID)//Find orders filtered by ones for current customer
+        {
+            Console.WriteLine($"Id: [{ordo.OrderId}], Customer Id: [{uID}], Store Name: {allTheStores[storeIndex].StoreName}, "+
+            $"Order Date: {ordo.OrderDate}, Total Items: {ordo.TotalQty}, Total Cost: {ordo.TotalCost}");
+        }
+    }
+    pos = 2;
 }
 
 }//End MainMenu Class

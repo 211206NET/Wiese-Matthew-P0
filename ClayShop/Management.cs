@@ -27,13 +27,14 @@ public class Management : IMenu
         {
             //Management Menu
             Console.WriteLine("Select an action:");
-            Console.WriteLine("[0] Add store:"); //Done
-            Console.WriteLine("[1] Select current store:"); //Done
-            Console.WriteLine("[2] Manage company carried items:"); //Done
-            Console.WriteLine($"[3] Adjust/Add store info [Current store number: {chosenStore}]:"); //Done
-            Console.WriteLine($"[4] Manage store inventory [Current store number: {chosenStore}]:"); //Done
-            Console.WriteLine($"[5] Delete store [Current store number: {chosenStore}]:"); //Done
-            Console.WriteLine("[x] Return to main menu:"); //Done
+            Console.WriteLine("[0] Add store:"); //
+            Console.WriteLine("[1] Select current store:"); //
+            Console.WriteLine("[2] Manage company carried items:"); //
+            Console.WriteLine($"[3] Adjust/Add store info [Current store number: {chosenStore}]:"); //
+            Console.WriteLine($"[4] Manage store inventory [Current store number: {chosenStore}]:"); //
+            Console.WriteLine($"[5] Delete store [Current store number: {chosenStore}]:"); //
+            Console.WriteLine($"[6] See store order history for: {chosenStore}]:"); //
+            Console.WriteLine("[x] Return to main menu:"); //
             string choose = Console.ReadLine() ?? "";
             switch(choose)
             {
@@ -47,8 +48,10 @@ public class Management : IMenu
                     Console.WriteLine("Enter the state of the store:");
                     string userState = Console.ReadLine() ?? "";
                     Console.WriteLine("Enter the salestax for the state the store is in:");
-                    decimal userST = Convert.ToDecimal(Int32.Parse(Console.ReadLine() ?? ""));
+                    //decimal userST = Convert.ToDecimal(Int32.Parse(Console.ReadLine() ?? ""));
+                    decimal userST = Decimal.Parse(Console.ReadLine() ?? "");
                     //Add user data to new store generation //DISABLED because of row error
+                    //bool res = Decimal.TryParse(lclVersion, out localVersion);
 
                     Store storeNew = new Store
                     {
@@ -153,7 +156,8 @@ public class Management : IMenu
                     //Offer to change sales tax
                     Console.WriteLine($"\nChange sales tax: {allStores[chosenStoreIndex].SalesTax}?");
                     change = Console.ReadLine() ?? "";
-                    if(change != ""){salesTax = Convert.ToDecimal(Int32.Parse(change));} change = ""; //Change sales tax 
+                    if(change != ""){salesTax = Decimal.Parse(change);} change = ""; //Change sales tax 
+                    //if(change != ""){salesTax = Convert.ToDecimal(Int32.Parse(change));} change = ""; //Change sales tax 
 
                 //Disabled due to row error
                     // Store storInf = new Store {
@@ -192,8 +196,6 @@ public class Management : IMenu
                     // {
                     //     if(allInventory[i].Store == allStores[chosenStoreIndex].StoreID){posInt += 1; whatInv[posInt] = allInventory[i].Item;}
                     // }
-
-    //============== CODE FAILS HERE ==============\\
 
                     //List<ProdDetails> thisStoreInv = new List<ProdDetails>();  
                     // int[] thisStoreInv = new int[allCarried.Count];
@@ -286,7 +288,7 @@ public class Management : IMenu
                                 else{_bl.RemoveInventory(allInventory[getIndexInv].Id);}
                             }
                             else
-                            {Console.WriteLine($"Sorry, but there is insufficient inventory for you order");}
+                            {Console.WriteLine($"Sorry, but there is insufficient inventory for you change request,\nresult would be less than zero");}
                         }
                         else{Console.WriteLine("Not a numeric value!");}
                     }
@@ -298,6 +300,7 @@ public class Management : IMenu
                             //Add new item to stock
                             List<ProdDetails> getAllCarried = _bl.GetAllCarried();
                             //Add new item
+                            int newID = 0;
                             string itemTypeStr; itemTypeStr = "";
                             //Show list of all carried items, manager can select which one to modify
                             for(int i = 0; i < getAllCarried.Count; i++)  
@@ -324,14 +327,18 @@ public class Management : IMenu
                                 // Console.WriteLine($"Items.Count {allInventory[targetInv].Items.Count}");
                                 //First check that this item isn't already in stock
                                 //foreach(ProdDetails inv in allStores[chosenStore].localInv)
-                                foreach(ProdDetails inv in allInventory[targetInv].Items)
+                                newID = allInventory.Count+1;
+                                foreach(Inventory inv in allInventory)
                                 {   
+                                    //Check for duplicate Ids
+                                    if(inv.Id == newID){newID++;}//Same id exists, keep interating id until it has no match
+
                                     // Console.WriteLine($"(Inside Foreach) targetInv: {targetInv}, chosenStore: {chosenStore}");
                                     // Console.WriteLine($"allinv.Store: {allInventory[targetInv].Store}");
                                     // Console.WriteLine($"chosenStore: {chosenStore},");
                                     // Console.WriteLine($"inv.APN: {inv.APN}, Carried APN: {getAllCarried[choiceInt].APN}");
                                     if(allInventory[targetInv].Store == chosenStore){            //inv.StoreAt
-                                    if(inv.APN == getAllCarried[choiceInt].APN){abort = true;}}//This item is already in stock, abort
+                                    if(inv.Item == getAllCarried[choiceInt].APN){abort = true;}}//This item is already in stock, abort
                                 }
 
                                 // Console.WriteLine($"abort: {abort}");
@@ -339,28 +346,26 @@ public class Management : IMenu
                                 //Continue with adding item
                                 if(!abort){
                                 Console.WriteLine($"You chose {getAllCarried[choiceInt].Name}, Now enter quantity for the item:");
-
                                 choice = Console.ReadLine() ?? "";
                                 res3 = Int32.TryParse(choice, out a);
+
+                                
+                                Console.WriteLine($"newID {allInventory.Count}, totally 10");
                                 if(res3)
                                 {
                                     choiceInt2 = Int32.Parse(choice);//Qty
-                                    ProdDetails addStock = new ProdDetails {
-                                        //StoreAt = allStores[chosenStoreIndex].StoreID, 
-                                        OnHand = choiceInt2, 
-                                        APN = getAllCarried[choiceInt].APN,
-                                        Name = getAllCarried[choiceInt].Name,
-                                        ItemType = getAllCarried[choiceInt].ItemType,
-                                        Descr = getAllCarried[choiceInt].Descr,
-                                        Cost = getAllCarried[choiceInt].Cost,
-                                        Weight = getAllCarried[choiceInt].Weight
+                                    Inventory addStock = new Inventory {
+                                        Id = newID, 
+                                        Store = allStores[chosenStoreIndex].StoreID, 
+                                        Item = getAllCarried[choiceInt].APN,
+                                        Qty = choiceInt2
                                     };
 
                                     //allInventory[targetInv].Items.Add(addStock);  //DO I NEED THIS EVEN?
                                     //Now to Save it
-                                    _bl.AddItem(addStock);//targetInv, 
+                                    _bl.AddInventory(addStock);//targetInv, 
                                     abort = false; //reset
-                                }}
+                                }}else{Console.WriteLine("This store already has this item, you can go back and change the quantity.");}
                             }
                         }
                     }
@@ -371,25 +376,38 @@ public class Management : IMenu
                 case "5":
                     List<Store> allStoresB = _bl.GetAllStores();
                     allInventory = _bl.GetAllInventory();
-                    int useInv = -1;
+                    int getInvID = -1;
                     Console.WriteLine($"Are you sure you want to remove the store: {allStoresB[chosenStoreIndex].StoreName}? [y,n]");
                     string decide = Console.ReadLine() ?? "";
                     //Get Inventory Index
                     for(int i = 0; i < allInventory.Count; i++)
                     {
                         if(allInventory[i].Store == allStoresB[chosenStoreIndex].StoreID)
-                        {useInv = i; break;}
+                        {getInvID = allInventory[i].Id; break;}
                     }
 
                     if(decide == "y")
                     {
                         Console.WriteLine($"The store: {allStoresB[chosenStoreIndex].StoreName} has been removed."+
                         "\nMake sure to allocate inventory where needed.\n");
-                        _bl.RemoveStore(chosenStoreIndex);
+                        //Delete down the PK/FK dependency from most dependant to least
+                        //Line
+                        _bl.RemoveLineItem(getInvID);
+                        //Orders
+                        _bl.DeleteOrders(chosenStoreIndex);
+                        //Inventory
                         if(allInventory.Count > -1){
-                        _bl.RemoveInventory(useInv);//Deletes the store inventory
+                        _bl.RemoveInventory(chosenStoreIndex);//Deletes the store inventory, for the purpose of this project
                         }
+                        //Store
+                        _bl.RemoveStore(chosenStoreIndex); //Store is deleted last as it has PK/FK connections
                     }
+                break;
+
+                //See store order history
+                case "6":
+                    allStores = _bl.GetAllStores();
+                    ViewOrders(allStores, allStores[chosenStoreIndex].StoreID);
                 break;
 
                 case "x":
@@ -400,7 +418,35 @@ public class Management : IMenu
                 default:
                     Console.WriteLine("Input error, try again.");
                 break;
+            }//Switch
+        }//Loop
+    }//Start
+
+    private void ViewOrders(List<Store> allTheStores, int sID)
+    {
+        int storeIndex = -1;
+        List<Orders> allOrders = _bl.GetAllOrders();
+        //Get Order Info
+        Console.WriteLine("\n//---------------* List of Orders for current store: *---------------\\\\");
+        foreach(Orders ordo in allOrders)//Loop through all orders
+        {
+            //Get Store Info
+            for(int i = 0; i < allTheStores.Count; i++)
+            {
+                if(allTheStores[i].StoreID == ordo.StoreId && allTheStores[i].StoreID == sID){storeIndex = i;}
+                //Console.WriteLine($"allTheStores[i].StoreID : {allTheStores[i].StoreID }, ordo.StoreId: {ordo.StoreId}");
             }
+
+            //Console.WriteLine($"sID: {sID}, storeIndex: {storeIndex}");
+            //Console.ReadLine();
+
+            if(ordo.StoreId == sID && storeIndex > -1)//Find orders filtered by ones for current customer
+            {
+                Console.WriteLine($"Id: [{ordo.OrderId}], Store Id: [{sID}], Store Name: {allTheStores[storeIndex].StoreName}, "+
+                $"Order Date: {ordo.OrderDate}, Total Items: {ordo.TotalQty}, Total Cost: {ordo.TotalCost}");
+            }
+            Console.WriteLine("\n\n");
         }
     }
-}
+
+}//Class

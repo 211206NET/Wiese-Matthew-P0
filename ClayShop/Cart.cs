@@ -36,7 +36,7 @@ decimal totalCostBeforeTax = 0; //Keep total cost data
 decimal totalCostAfterTax = 0; //Keep total cost data with tax
 
 //Information from Inventory Object
-int invID = 0;
+int invID = 0; //Inventory ID for each inventory object, not a single object, not consistant
 int intAPN = -1; //Default as -1 as an APN might be 0 //<>
 int chosenStore = 0; //Which store ID the user currently has chosen //<>
 int qty = 0; //Quantity of item at the current store //<>
@@ -100,7 +100,7 @@ foreach(LineItems lL in _bl.GetAllLineItem()) //Cycle through all lien items
         if(chosenStore == storo.StoreID)//Current Lien item matches a result in the inventory list
         {
             storeName = storo.StoreName;
-            salesTax = storo.SalesTax;
+            salesTax = storo.SalesTax/100;
         } 
     }
 
@@ -127,6 +127,7 @@ foreach(LineItems lL in _bl.GetAllLineItem()) //Cycle through all lien items
         //Console.WriteLine($"APN [{lL.Id}], Name: [{lL.Name}], Qty: [{lL.Qty}], Cost: [{lL.CostPerItem}], Total Line Cost: [{lL.CostPerItem*lL.Qty}]" );
    
         //Establish the total cost and after tax
+        //Console.WriteLine($"totalCostBeforeTax: {totalCostBeforeTax}, salesTax {salesTax}");
         totalCostBeforeTax += cost*lineQty;
         totalCostAfterTax = totalCostBeforeTax+(totalCostBeforeTax*salesTax);
         //lineOrderList.Add(lL); //Add item to local list for storing in Order object at the end, json contains all customer lineitems//OBSOLETE
@@ -177,11 +178,19 @@ switch(choose)
         {
             int chsDlyInt = Int32.Parse(tryPar);
             Console.WriteLine($"You chose to remove APN: {chsDlyInt}");
+
+            //Get specific Inventory ID for this line item
+            int invItemId = -1; int invIndex = 0;
+            for(int i = 0; i < allInv.Count; i++)
+            {
+                if(allInv[i].Item == chsDlyInt){invItemId = allInv[i].Id; invIndex = i;}
+            }
+
             //Remove APN chsDlyInt from line items
             for(int i = 0; i < lineItemsList.Count; i++)
             {
                 if(lineItemsList.Count > 0){ //Add back the quantity to inventory and remove the line item
-                if(lineItemsList[i].Id == chsDlyInt){allInv[invID].Qty += lineItemsList[i].Qty; _bl.RemoveLineItem(i);}}
+                if(lineItemsList[i].InvId == invItemId){ Console.WriteLine($"Removing here!!!!!!!!!!!!!!!!"); allInv[invIndex].Qty += lineItemsList[i].Qty; _bl.RemoveLineItem(invItemId);}}
                 else{Console.WriteLine($"Error, total line items: {lineItemsList.Count}");}   
 
                 //It's possible a manager could remove an item from inventory right before a customer 
@@ -242,7 +251,7 @@ switch(choose)
         {
             if(lineItemsList[i].OrderId == ordId){ //lineItemsList[i].CustomerId == userId && 
                 //Console.WriteLine($"Index: {i}, lineItemsList.Count: {lineItemsList.Count}");//DEBUG
-                toDelete = lineItemsList[i].Id;
+                toDelete = lineItemsList[i].InvId;
                 if(lineItemsList.Count>0){_bl.RemoveLineItem(toDelete);}
                 lineItemsList = _bl.GetAllLineItem();
             }

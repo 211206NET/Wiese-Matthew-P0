@@ -169,7 +169,7 @@ public void ChangeInventory(int invIndex, int itemIndex, int itemQty)//Change st
 
     if(allInv[invIndex].Items.Count > 0)//Must have an entry to change an entry
     {
-        allInv[invIndex].Items[itemIndex].OnHand = itemQty; //Override to new value
+        //allInv[invIndex].Items[itemIndex].OnHand = itemQty; //Override to new value
         Console.WriteLine($"\n{allInv[invIndex].Items[itemIndex].Name} qty changed to {itemQty} for this store\n");
     }
     else

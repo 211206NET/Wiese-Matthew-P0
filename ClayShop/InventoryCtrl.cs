@@ -20,10 +20,10 @@ public class InventoryCtrl : IMenu
         {
             //Management Menu
             Console.WriteLine("Select an action:");
-            Console.WriteLine("[0] Add item to list of carried items:");//Done
-            Console.WriteLine("[1] Remove item from list of carried items and purge from all stores:");//Done
-            Console.WriteLine("[2] Make changes to item on carried items list:");//Done
-            Console.WriteLine("[x] Return to management menu:");//Done
+            Console.WriteLine("[0] Add item to list of carried items:");//
+            Console.WriteLine("[1] Remove item from list of carried items and purge from all stores:");//
+            Console.WriteLine("[2] Make changes to item on carried items list:");//
+            Console.WriteLine("[x] Return to management menu:");//
 
             string choose = Console.ReadLine() ?? "";
             switch(choose)
@@ -45,16 +45,22 @@ public class InventoryCtrl : IMenu
                     Double itemWeight = Convert.ToDouble(Int32.Parse(Console.ReadLine() ?? ""));
 
                     int carrNumbAssg = 0;
-                    carrNumbAssg = getAllCarried.Count; //Get next customer number
+                    //Get unique APN for new item
+                    foreach(ProdDetails newAPN in getAllCarried)
+                    {
+                        carrNumbAssg = 100+getAllCarried.Count; //Get next customer number
+                        if(newAPN.APN == carrNumbAssg){carrNumbAssg++;}
+                    }
+
                     //Add user data to new carried items list
                     ProdDetails itemNew = new ProdDetails
                     {
                         APN = carrNumbAssg,
                         Name = itemName ?? "",
                         ItemType = itemType,
-                        Descr = itemDesc ?? "",
+                        Weight = itemWeight,
                         Cost = itemCost,
-                        Weight = itemWeight
+                        Descr = itemDesc ?? ""
                     };
 
                     _bl.AddCarried(itemNew);
@@ -83,7 +89,8 @@ public class InventoryCtrl : IMenu
                         $"\tItem Description: {allCarriedDelete[i].Descr}");
                     }
 
-                    Console.WriteLine("Choose from the above items in the carried list to permanently delete.");
+                    Console.WriteLine("Choose from the above items in the carried list to permanently delete.\n"+
+                    "Note: This will remove this item from all store inventories.");
                     string? chooseDlt = Console.ReadLine();
                     bool resD; int aD;
                     resD = Int32.TryParse(chooseDlt, out aD);
@@ -95,17 +102,47 @@ public class InventoryCtrl : IMenu
                         string decideD = Console.ReadLine() ?? "";
                         if(decideD == "y")
                         {
+                            //If this item is currently being purchased, the manager must wait before deleting it
+                            List<LineItems> allLineItems = _bl.GetAllLineItem(); //Get a list of the inventory
+                            List<Inventory> allInventoryDelete = _bl.GetAllInventory(); //Get a list of the inventory
+                            //List<Orders> allOrders = _bl.GetAllOrders(); //Get a list of the inventory
+                            bool abort = false;
+                            foreach(LineItems li in allLineItems)
+                            {
+                                foreach(Inventory allInv in allInventoryDelete)
+                                {
+                                    if(allInv.Id == li.InvId)//Find APN of any current line items
+                                    {
+                                        if(allInv.Item == allCarriedDelete[chsDlyInt].APN)
+                                        {
+                                            abort = true; //This item is currently being purchased, you can't remove it right now you maniac!
+                                        }
+                                    }
+                                }      
+                            }
+
                             // Console.WriteLine($"The item: {allCarriedDelete[chsDlyInt].Name} has been removed."+
                             // "\nIt has been purged from all store inventories.\n");
-                            List<Inventory> allInventoryDelete = _bl.GetAllInventory(); //Get a list of the inventory
                             //A nested loop is used here to delete all of this item from the inventory of all stores
-                            for(int i = 0; i < allInventoryDelete.Count; i++)
-                            {
-                                if(allInventoryDelete[i].Item == allCarriedDelete[chsDlyInt].APN) //Find the same item in the inventory list
+                            if(!abort){
+
+                                //Remove the inventory rows 
+                                foreach(Inventory allInv2 in allInventoryDelete)
                                 {
-                                    _bl.RemoveItem(i); //Delete the item from store inventories as well
+                                    if(allInv2.Item == allCarriedDelete[chsDlyInt].APN) //Find the same item in the inventory list
+                                    {
+                                        _bl.RemoveInventory(allInv2.Id); //Delete the item from store inventories as well
+                                    }
                                 }
-                            
+
+                                //Remove the carried row
+                                for(int i = 0; i < allInventoryDelete.Count; i++)
+                                {
+                                    if(allInventoryDelete[i].Item == allCarriedDelete[chsDlyInt].APN) //Find the same item in the inventory list
+                                    {
+                                        _bl.RemoveItem(allCarriedDelete[chsDlyInt].APN); //Delete the item from store inventories as well
+                                    }
+                                }
                             }
                             
                            // _bl.RemoveCarried(chsDlyInt); //Removes from carried list, delete last as previous delete references this list
@@ -187,18 +224,19 @@ public class InventoryCtrl : IMenu
                     change = Console.ReadLine() ?? "";
                     if(change != ""){itemDescC = change;} change = ""; //Change description  getAllCarried2[selChangeCarried].Desc
 
-                    
-                    // ProdDetails changeCarry = new ProdDetails {
-                    //     APN = selChangeCarried,
-                    //     Name = itemNameC,
-                    //     ItemType = itemTypeC,
-                    //     Desc = itemDescC,
-                    //     Cost = itemCostC,
-                    //     Weight = itemWeightC
-                    // };
+                    //Console.WriteLine($"itemCostC: {itemCostC}");
+                    ProdDetails changeCarry = new ProdDetails {
+                        APN = getAllCarried2[selChangeCarried].APN,
+                        Name = itemNameC,
+                        ItemType = itemTypeC,
+                        Descr = itemDescC,
+                        Cost = itemCostC,
+                        Weight = itemWeightC
+                    };
                     // string jsonStringC = JsonSerializer.Serialize(changeCarry);
 
-                    _bl.ChangeCarried(selChangeCarried,itemNameC,itemTypeC,itemDescC,itemCostC,itemWeightC);
+                    _bl.ChangeCarried(changeCarry);
+                    //_bl.ChangeCarried(selChangeCarried,itemNameC,itemTypeC,itemDescC,itemCostC,itemWeightC);
                     //FileRepo.SaveCarried();
                 break;
 

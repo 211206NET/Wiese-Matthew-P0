@@ -53,9 +53,9 @@ public class CSBL : IBL
     {
         _dl.ChangeInventory(invIndex, qtyToChange);
     }
-    public void RemoveInventory(int invIndexToRemove)
+    public void RemoveInventory(int invId)
     {
-        _dl.RemoveInventory(invIndexToRemove);
+        _dl.RemoveInventory(invId);
     }
     public void RemoveItem(int apnToRemove)
     {
@@ -90,15 +90,10 @@ public class CSBL : IBL
     }
 
     //public void AddCarried(ProdDetails addDetails)
-    public void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
+    public void ChangeCarried(ProdDetails changeCarriedItem)//int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight)
     {
-        _dl.ChangeCarried(itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
+        _dl.ChangeCarried(changeCarriedItem);//itemNum, itemName, itemType, itemDesc, itemCost, itemWeight);
     }
-
-    public void RemoveCarried(int carriedIndexToRemove)
-    {
-        _dl.RemoveCarried(carriedIndexToRemove);
-    }  
 
     //Line Items
     public List<LineItems> GetAllLineItem()
@@ -131,6 +126,12 @@ public class CSBL : IBL
     public void FinalizeOrder(int orderIndex, Orders finalDetails)
     {
         _dl.FinalizeOrder(orderIndex, finalDetails);
+    }
+
+    //In the event a store is closed, all it's records are deleted
+    public void DeleteOrders(int ordersToDelete)
+    {
+        _dl.DeleteOrders(ordersToDelete);
     }
    
 

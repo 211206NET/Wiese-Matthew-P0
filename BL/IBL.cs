@@ -16,7 +16,7 @@ public interface IBL
     void AddInventory(Inventory invToAdd);
     void AddItem(ProdDetails invToAdd); //int invIndex, 
     void ChangeInventory(int invIndex, int qtyToChange);//int invIndex, int apn, int itemQty);    
-    void RemoveInventory(int invIndex);
+    void RemoveInventory(int invId);
     void RemoveItem(int apnToRemove);
 
     //Customers
@@ -26,8 +26,7 @@ public interface IBL
     //Carried Items
     List<ProdDetails> GetAllCarried();
     void AddCarried(ProdDetails itemNew);//(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
-    void ChangeCarried(int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
-    void RemoveCarried(int carriedIndexToRemove);
+    void ChangeCarried(ProdDetails changeCarriedItem);//int itemNum, string itemName, int itemType, string itemDesc, Decimal itemCost, Double itemWeight);
 
     //Line Items
     List<LineItems> GetAllLineItem();
@@ -38,6 +37,9 @@ public interface IBL
     void AddOrder(Orders orderItems);
 
     void FinalizeOrder(int orderIndex, Orders finalDetails);
+
+    //In the event a store is closed, all it's records are deleted
+    void DeleteOrders(int ordersToDelete);
 
 
 }
