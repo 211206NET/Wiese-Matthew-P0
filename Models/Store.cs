@@ -9,6 +9,10 @@ public class Store
     
     public Store(){}
 
+    /// <summary>
+    /// Convert store table data to data row
+    /// </summary>
+    /// <param name="row"></param>
     public Store(DataRow row)
     {
         this.StoreID = (int) row["StoreId"];
@@ -24,6 +28,10 @@ public class Store
     public string? State { get; set; }
     public decimal SalesTax { get; set; }//Percent tax rate  [NOT IMPLEMENTED YET]
     
+    /// <summary>
+    /// Fill in columns in database row with this instance
+    /// </summary>
+    /// <param name="row"></param>
     public void ToDataRow(ref DataRow row)
     {
         row["StoreId"] = this.StoreID;

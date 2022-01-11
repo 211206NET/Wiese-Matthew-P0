@@ -57,6 +57,10 @@ public class CSBL : IBL
     {
         _dl.RemoveInventory(invId);
     }
+    public void RemoveOrphanInventory(int storePK)
+    {
+        _dl.RemoveOrphanInventory(storePK);
+    }
     public void RemoveItem(int apnToRemove)
     {
         _dl.RemoveItem(apnToRemove);
@@ -109,6 +113,11 @@ public class CSBL : IBL
     public void RemoveLineItem(int lineItemIndexToRemove)
     {
         _dl.RemoveLineItem(lineItemIndexToRemove);
+    }   
+
+    public void RemoveOrphanLineItem(int storePK)
+    {
+        _dl.RemoveOrphanLineItem(storePK);
     }
 
     //AddOrder

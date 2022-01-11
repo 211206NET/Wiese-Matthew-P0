@@ -10,6 +10,10 @@ public class LineItems
     //total items   /  total qty  /                      total cost for all item before tax  / after tax
     public LineItems(){}
 
+    /// <summary>
+    /// Convert line item table data to data row
+    /// </summary>
+    /// <param name="row"></param>
     public LineItems(DataRow row)
     {
         this.Id = (int) row["Id"];
@@ -33,7 +37,10 @@ public class LineItems
     //total would not be here, but in the code working with the line item objects in the cart/checkout
     public decimal SalesTax { get; set; }//Just storing this, but result can be taken from tax in store
 
-    
+    /// <summary>
+    /// Fill in columns in database row with this instance
+    /// </summary>
+    /// <param name="row"></param>
     public void ToDataRow(ref DataRow row)
     {
         //row["Id"] = this.Id;

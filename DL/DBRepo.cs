@@ -3,6 +3,10 @@ using System.Data;
 
 namespace DL;
 
+/// <summary>
+/// One massive repo that I wanted to split into smaller ones but ran of time.
+/// This handles all my communication to the SQL server.
+/// </summary>
 public class DBRepo : IRepo
 {
 
@@ -15,6 +19,10 @@ public class DBRepo : IRepo
     }
     
     //_____________________________ <> Store <> _____________________________\\
+    /// <summary>
+    /// Returns a list of all stores
+    /// </summary>
+    /// <returns>allStoreSQL</returns>
     public List<Store> GetAllStores()
     {
         List<Store> allStoreSQL = new List<Store>();
@@ -35,58 +43,14 @@ public class DBRepo : IRepo
             }
         }
         return allStoreSQL;
-
-
-        //Old not great design principle way to do it
-        //throw new NotImplementedException();
-        // List<Store> allStoreSQL = new List<Store>();
-        
-        // using(SqlConnection connection = new SqlConnection(_connectionString))
-        // {
-        //     connection.Open();
-            
-        //     string queryTxt = "SELECT * FROM Store";
-        //     using(SqlCommand cmd = new SqlCommand(queryTxt, connection))
-        //     {
-        //         using(SqlDataReader reader = cmd.ExecuteReader())
-        //         {
-        //             while(reader.Read())//One of those design principles
-        //             {
-        //                 Store storeObj = new Store();
-        //                 storeObj.StoreID = reader.GetInt32(0);
-        //                 storeObj.StoreName = reader.GetString(1);
-        //                 storeObj.City = reader.GetString(2);
-        //                 storeObj.State = reader.GetString(3);
-        //                 storeObj.SalesTax = reader.GetDecimal(4);
-        //                 // Console.WriteLine(reader.GetInt32(0));
-        //                 // Console.WriteLine(reader.GetString(1));
-        //                 // Console.WriteLine(reader.GetString(2));
-        //                 // Console.WriteLine(reader.GetString(3));
-        //                 // Console.WriteLine(reader.GetDecimal(4));
-        //             }
-        //         }
-        //     }
-
-        //     connection.Close();
-        // }
-        // //Console.ReadLine(); //Stop compiler, code is broke beyond this point
-        // return allStoreSQL;
     }
 
-    /*Disconnected Architecture saves data in memory
-    in Dataset, that persists outside of connection using DataAdapters
-    Data Adapters also manage connection for us so we don't have to 
-    connect/disconnect manually, Useful for complex manipulation.
-    C,U,D ops (create, update, delete)
-    */
+    /// <summary>
+    /// Adds a store to the database
+    /// </summary>
+    /// <param name="storeToAdd"></param>
     public void AddStore(Store storeToAdd)
-    {
-        
-        //         // newRow["StoreName"] = storeToAdd.StoreName ?? "";
-        //         // newRow["City"] = storeToAdd.City ?? "";
-        //         // newRow["State"] = storeToAdd.State ?? "";
-        //         // newRow["SalesTax"] = storeToAdd.SalesTax;
-        //throw new NotImplementedException();     
+    {    
         using(SqlConnection connection = new SqlConnection(_connectionString))
         {
             connection.Open();
@@ -108,58 +72,12 @@ public class DBRepo : IRepo
             }
             connection.Close();
         }
-
-        // DataSet storeSet = new DataSet(); //DataSet has multiple DataTables
-        // //Check for duplicate first?
-        // string selectedCmd = "SELECT * FROM Store";
-        // using(SqlConnection connection = new SqlConnection(_connectionString))
-        // {
-
-        //     using(SqlDataAdapter dataAdapter = new SqlDataAdapter(selectedCmd, _connectionString))
-        //     {
-                
-        //         //We can fill that DataSet using SqlDataAdapter.Fill method
-        //         dataAdapter.Fill(storeSet, "Store");
-
-        //         DataTable storeTable = storeSet.Tables["Store"];
-        //         // foreach(DataRow row in storeTable.Rows)
-        //         // {
-        //         //     Console.WriteLine(row["StoreId"]);
-        //         // }
-
-        //         DataRow newRow = storeTable.NewRow();
-        //         // newRow["StoreName"] = storeToAdd.StoreName ?? "";
-        //         // newRow["City"] = storeToAdd.City ?? "";
-        //         // newRow["State"] = storeToAdd.State ?? "";
-        //         // newRow["SalesTax"] = storeToAdd.SalesTax;
-
-        //         storeToAdd.ToDataRow(ref newRow);
-        //         storeTable.Rows.Add(newRow);
-
-        //         string insertCmd = $"INSERT INTO Store (StoreName, City, State) VALUES "+
-        //         $"('{storeToAdd.StoreName}','{storeToAdd.City}','{storeToAdd.State}','{storeToAdd.SalesTax}'";
-
-        //         //Vaguely understand
-        //         //"INSERT INTO employee (FirstName, LastName, DateOfBirth /*etc*/) VALUES (@firstName, @lastName, @dateOfBirth /*etc*/)", con))
-        //         // best practice - always specify the database data type of the column you are using
-        //         // best practice - check for valid values in your code and/or use a database constraint, if inserting NULL then use System.DbNull.Value
-        //         // sc.Parameters.Add(new SqlParameter("@firstName", SqlDbType.VarChar, 200){Value = newEmployee.FirstName ?? 
-        //         // (object) System.DBNull.Value});
-        //         // sc.Parameters.Add(new SqlParameter("@lastName", SqlDbType.VarChar, 200){Value = newEmployee.LastName ?? 
-        //         // (object) System.DBNull.Value});
-
-        //         //Use @values ^
-
-        //         //dataAdapter.InsertCommand = new SqlCommand(insertCmd, connection);
-        //         SqlCommandBuilder cmdBuilder= new SqlCommandBuilder(dataAdapter);
-        //         dataAdapter.InsertCommand = cmdBuilder.GetInsertCommand();
-
-        //         dataAdapter.Update(storeTable);
-        //     }
-        // }
     }
 
-    //Low Priority
+    /// <summary>
+    /// Allows the manager to make changes to store information
+    /// </summary>
+    /// <param name="changeStoreInfo"></param>
     public void ChangeStoreInfo(Store changeStoreInfo)//(int storeIndex, string name, string city, string state)
     {
         //throw new NotImplementedException();
@@ -183,7 +101,11 @@ public class DBRepo : IRepo
         }
     }
 
-    //Low Priority
+    /// <summary>
+    /// Allows manager to remove a store, all inventory of store, and all orders etc. of that store
+    /// The removal of associated inventory, orders, and line items are each handeled with their own methods
+    /// </summary>
+    /// <param name="StoreToRemove"></param>
     public void RemoveStore(int StoreToRemove)
     {
         //throw new NotImplementedException();
@@ -196,7 +118,7 @@ public class DBRepo : IRepo
                 cmd.Parameters.AddWithValue("@p0", StoreToRemove);
 
                 int changed = cmd.ExecuteNonQuery();
-                //Console.WriteLine($"changed: {changed}, invIndex: {apnToRemove}");
+                Console.WriteLine($"RemoveStore: changed: {changed}, invIndex: {StoreToRemove}");
             }
             connection.Close();
         }
@@ -204,6 +126,10 @@ public class DBRepo : IRepo
 
 
     //_____________________________ <> Inventory <> _____________________________\\
+    /// <summary>
+    /// Returns a list od all inventory for all stores from the database
+    /// </summary>
+    /// <returns>allInvSQL</returns>
     public List<Inventory> GetAllInventory()
     {
         List<Inventory> allInvSQL = new List<Inventory>();
@@ -227,7 +153,10 @@ public class DBRepo : IRepo
         return allInvSQL;
     }
 
-    //Adds an inventory object when a store object is added
+    /// <summary>
+    /// Adds an inventory object to a store
+    /// </summary>
+    /// <param name="invToAdd"></param>
     public void AddInventory(Inventory invToAdd) //Id, Store, Item, Qty
     {
         //throw new NotImplementedException();     
@@ -252,41 +181,12 @@ public class DBRepo : IRepo
             }
             connection.Close();
         }
-
-        
-
-        //Incomprehensible adapter   
-        // DataSet invSet = new DataSet(); //DataSet has multiple DataTables
-        // //Check for duplicate first?
-        // string selectedCmd = "SELECT * FROM Inventory";
-        // using(SqlConnection connection = new SqlConnection(_connectionString))
-        // {
-
-        //     using(SqlDataAdapter dataAdapter = new SqlDataAdapter(selectedCmd, _connectionString))
-        //     {
-                
-        //         //We can fill that DataSet using SqlDataAdapter.Fill method
-        //         dataAdapter.Fill(invSet, "Inventory");
-
-        //         DataTable invTable = invSet.Tables["Inventory"];
-
-        //         DataRow newRow = invTable.NewRow();
-
-        //         invToAdd.ToDataRow(ref newRow);
-        //         invTable.Rows.Add(newRow);
-
-        //         string insertCmd = $"INSERT INTO Inventory (Id, Inventory) VALUES "+ 
-        //         $"(@p0, @p1)"; //('{invToAdd.Id}','{invToAdd.Store}')
-
-        //         SqlCommandBuilder cmdBuilder= new SqlCommandBuilder(dataAdapter);
-        //         dataAdapter.InsertCommand = cmdBuilder.GetInsertCommand();
-
-        //         dataAdapter.Update(invTable);
-        //     }
-        // }
     }
 
-    //Add item to list of carried items
+    /// <summary>
+    /// Add item to list of carried items
+    /// </summary>
+    /// <param name="invToAdd"></param>
     public void AddItem(ProdDetails invToAdd)//maybe first parameter becomes storeID  //int invIndex, 
     {
         //throw new NotImplementedException();  
@@ -317,7 +217,10 @@ public class DBRepo : IRepo
         }
     }   
 
-    //Remove item in list of carried items
+    /// <summary>
+    /// Remove item in list of carried items
+    /// </summary>
+    /// <param name="apnToRemove"></param>
     public void RemoveItem(int apnToRemove)
     {
         //throw new NotImplementedException();
@@ -336,8 +239,12 @@ public class DBRepo : IRepo
         }
     }
 
-    //This is for changing the Qty of an item in inventory
-    //Final Qty calculations are done prior to calling this and qtyToChange is final value
+    /// <summary>
+    /// This is for changing the Qty of an item in inventory 
+    /// Final Qty calculations are done prior to calling this and qtyToChange is final value
+    /// </summary>
+    /// <param name="invId"></param>
+    /// <param name="qtyToChange"></param>
     public void ChangeInventory(int invId, int qtyToChange)//int storeIndex, Inventory changeInv)//int storeIndex, int apn, int qtyToAdjust
     {
         //throw new NotImplementedException();
@@ -359,7 +266,10 @@ public class DBRepo : IRepo
         }
     }
 
-    //The job of this method is to remove an entire row from inventory when qty equals 0
+    /// <summary>
+    /// The job of this method is to remove an entire row from inventory when qty equals 0
+    /// </summary>
+    /// <param name="invId"></param>
     public void RemoveInventory(int invId)
     {
         //throw new NotImplementedException();
@@ -374,14 +284,41 @@ public class DBRepo : IRepo
                 //...
 
                 int changed = cmd.ExecuteNonQuery();
-                Console.WriteLine($"Remove Inventory: changed: {changed}, invIndex: {invId}");
+                Console.WriteLine($"Remove Inventory: changed: {changed}, invId: {invId}");
+            }
+            connection.Close();
+        }
+    }
+
+    /// <summary>
+    /// The job of this method is to remove an entire row from inventory when store is deleted
+    /// </summary>
+    /// <param name="storePK"></param>
+    public void RemoveOrphanInventory(int storePK)
+    {
+        //throw new NotImplementedException();
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "DELETE FROM Inventory WHERE Store = @p0"; //Where store is wrong?
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                //SqlParameter param = (new SqlParameter("@p1", qtyToChange));
+                cmd.Parameters.AddWithValue("@p0", storePK);
+                //...
+
+                int changed = cmd.ExecuteNonQuery();
+                Console.WriteLine($"Remove Orphan Inventory: changed: {changed}, storePK: {storePK}");
             }
             connection.Close();
         }
     }
 
     //_____________________________ <> Customers <> _____________________________\\
-
+    /// <summary>
+    /// Returns a list from database of all customers
+    /// </summary>
+    /// <returns>allcusSQL</returns>
     public List<Customers> GetAllCustomers()
     {
         //throw new NotImplementedException();
@@ -406,17 +343,10 @@ public class DBRepo : IRepo
         return allcusSQL;
     }
     
-    // //Return if this userID is in customer list
-    // public Customers GetCurCustomerID(int userId){
-    //     List<Customers> allUsers = GetAllCustomers();
-    //     foreach(Customers user in allUsers){
-    //         if(user.CustNumb == userId){return user;}
-    //     }
-    //     //If no result
-    //     return new Customers();
-    // }
-
-
+    /// <summary>
+    /// Adds a customer to the database
+    /// </summary>
+    /// <param name="addCust"></param>
     public void AddCustomer(Customers addCust)//int custNum, string userName, string pass
     {
         //throw new NotImplementedException();
@@ -444,6 +374,10 @@ public class DBRepo : IRepo
     }
 
     //_____________________________ <> Carried Items <> _____________________________\\
+    /// <summary>
+    /// Returns a list of all carried items from the database
+    /// </summary>
+    /// <returns></returns>
     public List<ProdDetails> GetAllCarried()
     {
         //throw new NotImplementedException();
@@ -463,15 +397,15 @@ public class DBRepo : IRepo
                 allcarSQL.Add(carto);
             }
         }
-          
         return allcarSQL;
     }
 
+    /// <summary>
+    /// Adds a new item to list of current items in database
+    /// </summary>
+    /// <param name="itemNew"></param>
     public void AddCarried(ProdDetails itemNew)
     {
-        //throw new NotImplementedException();
-        Console.WriteLine($"DL: Adding a new item to inventory: {itemNew}");
-
         using(SqlConnection connection = new SqlConnection(_connectionString))
         {
             connection.Open();
@@ -499,7 +433,10 @@ public class DBRepo : IRepo
         }
     }
 
-    //Low Priority
+    /// <summary>
+    /// Allows manager to make changes to a carried item
+    /// </summary>
+    /// <param name="changeCarriedItem"></param>
     public void ChangeCarried(ProdDetails changeCarriedItem)//int itemNum, string itemName, int itemType, string itemDesc, decimal itemCost, double itemWeight)
     {
         //throw new NotImplementedException();
@@ -526,7 +463,10 @@ public class DBRepo : IRepo
     }
 
     //_____________________________ <> Line Items <> _____________________________\\
-
+    /// <summary>
+    /// Returns a list of all line items from the database
+    /// </summary>
+    /// <returns>List of line items</returns>
     public List<LineItems> GetAllLineItem()
     {
         //throw new NotImplementedException();
@@ -546,12 +486,14 @@ public class DBRepo : IRepo
                 LineItems lio = new LineItems(row);
                 allLISQL.Add(lio);
             }
-        }
-        //Console.WriteLine("Finished Get LineItems");    
+        }   
         return allLISQL;
     }
 
-    //End game
+    /// <summary>
+    /// Allows manager to add a new line item in the database
+    /// </summary>
+    /// <param name="newLI"></param>
     public void AddLineItem(LineItems newLI)
     {
         //throw new NotImplementedException();
@@ -564,8 +506,6 @@ public class DBRepo : IRepo
 
             using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
             {
-                //SqlParameter param = (new SqlParameter("@p1", newLI.Id));
-                //cmd.Parameters.Add(param);
                 SqlParameter  param = (new SqlParameter("@p2", newLI.InvId));
                 cmd.Parameters.Add(param);
                 param = (new SqlParameter("@p3", newLI.OrderId));
@@ -584,6 +524,10 @@ public class DBRepo : IRepo
         }
     }
 
+    /// <summary>
+    /// Allows manager to remove an item from line items in teh database
+    /// </summary>
+    /// <param name="lineItemIdToRemove"></param>
     public void RemoveLineItem(int lineItemIdToRemove)
     {
         //throw new NotImplementedException();
@@ -597,13 +541,40 @@ public class DBRepo : IRepo
                 //...
 
                 int changed = cmd.ExecuteNonQuery();
-                Console.WriteLine($"changed: {changed}, invIndex: {lineItemIdToRemove}");//DEBUGGING
+                Console.WriteLine($"RemoveLineItem: changed: {changed}, lineToRemove: {lineItemIdToRemove}");//DEBUGGING
+            }
+            connection.Close();
+        }
+    }
+
+    /// <summary>
+    /// Removes a line item from database when the associated store is also removed
+    /// </summary>
+    /// <param name="orderId"></param>
+    public void RemoveOrphanLineItem(int orderId)
+    {
+        //throw new NotImplementedException();
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "DELETE FROM LineItems WHERE OrderId = @p0";
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                cmd.Parameters.AddWithValue("@p0", orderId);
+                //...
+
+                int changed = cmd.ExecuteNonQuery();
+                Console.WriteLine($"RemoveOrphanLineItem: changed: {changed}, orderId: {orderId}");//DEBUGGING
             }
             connection.Close();
         }
     }
 
     //_____________________________ <> Orders <> _____________________________\\
+    /// <summary>
+    /// Returns a list of all orders from the database
+    /// </summary>
+    /// <returns>list of all orders</returns>
     public List<Orders> GetAllOrders()
     {
         //throw new NotImplementedException();
@@ -629,6 +600,10 @@ public class DBRepo : IRepo
         return allOrdSQL;
     }
 
+    /// <summary>
+    /// Adds a new order to the database
+    /// </summary>
+    /// <param name="orderItems"></param>
     public void AddOrder(Orders orderItems)
     {
         //throw new NotImplementedException();
@@ -667,6 +642,12 @@ public class DBRepo : IRepo
         }
     }
 
+    /// <summary>
+    /// Adds total quantity and cost to the order and makes the order as completed
+    /// This is called after a purchase is confirmed
+    /// </summary>
+    /// <param name="orderIndex"></param>
+    /// <param name="finalDetails"></param>
     public void FinalizeOrder(int orderIndex, Orders finalDetails)
     {
         //throw new NotImplementedException();
@@ -689,7 +670,10 @@ public class DBRepo : IRepo
         }
     }
 
-    //In the event a store is closed, all it's records are deleted
+    /// <summary>
+    /// In the event a store is closed, all it's records are deleted
+    /// </summary>
+    /// <param name="ordersToDelete"></param>
     public void DeleteOrders(int ordersToDelete)
     {
         //throw new NotImplementedException();

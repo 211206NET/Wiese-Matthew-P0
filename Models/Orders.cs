@@ -12,6 +12,10 @@ public class Orders
         //this.OrderItems = new List<LineItems>();
     }
 
+    /// <summary>
+    /// Convert order table data to data row
+    /// </summary>
+    /// <param name="row"></param>
     public Orders(DataRow row)
     {
         this.OrderId = (int) row["OrderId"];
@@ -43,7 +47,10 @@ public class Orders
     //public List<LineItems> OrderItems { get; set; }//List of all items ordered [FK]
     public int OrderCompleted { get; set; } //1/0 because SQL is fussing over bool
 
-    
+    /// <summary>
+    /// Fill in columns in database row with this instance
+    /// </summary>
+    /// <param name="row"></param>
     public void ToDataRow(ref DataRow row)
     {
         //row["OrderId"] = this.OrderId;

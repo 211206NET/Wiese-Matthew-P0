@@ -31,6 +31,7 @@ int ordIndex = 0; //For repo access
 //DateOnly dateOfPurchase = DateOnly.FromDateTime(DateTime.Now); //Date of purchase //<>
 DateTime dateOfPurchase = DateTime.Now; //Date of purchase (SQL complains too much to use dateonly) //<>
 int lineQty = 0; //Keep total quantity of all items in current line item
+int tallyQty = 0; //Total Qty for all order
 decimal cost = 0; //Keep cost data  //<>
 decimal totalCostBeforeTax = 0; //Keep total cost data  
 decimal totalCostAfterTax = 0; //Keep total cost data with tax
@@ -73,6 +74,7 @@ for(int i = 0; i< allOrders.Count; i++){if(allOrders[i].CustomerId == userId){or
 //Reset tally stats (maybe redundant)
 intAPN = -1;
 lineQty = 0;
+tallyQty = 0;
 totalCostBeforeTax = 0;
 totalCostAfterTax = 0;
 lineItemsList = _bl.GetAllLineItem();
@@ -81,7 +83,8 @@ lineItemsList = _bl.GetAllLineItem();
 Console.WriteLine("Your cart:"); //Show contents of shopper's cart
 foreach(LineItems lL in _bl.GetAllLineItem()) //Cycle through all lien items
 {
-    lineQty = lL.Qty; //Set the quantity for how much is ordered of this item
+    Console.WriteLine($"lL.OrderId: {lL.OrderId}, ordId: {ordId}"); //DEBUG THIS
+    if(lL.OrderId == ordId){lineQty = lL.Qty;} //Set the quantity for how much is ordered of this item
     //First retrive the item ID from the corresponding 1 to 1 PK/FK inventory object
     foreach(Inventory invLI in allInv)
     {
@@ -127,9 +130,12 @@ foreach(LineItems lL in _bl.GetAllLineItem()) //Cycle through all lien items
         //Console.WriteLine($"APN [{lL.Id}], Name: [{lL.Name}], Qty: [{lL.Qty}], Cost: [{lL.CostPerItem}], Total Line Cost: [{lL.CostPerItem*lL.Qty}]" );
    
         //Establish the total cost and after tax
-        //Console.WriteLine($"totalCostBeforeTax: {totalCostBeforeTax}, salesTax {salesTax}");
-        totalCostBeforeTax += cost*lineQty;
-        totalCostAfterTax = totalCostBeforeTax+(totalCostBeforeTax*salesTax);
+        Console.WriteLine($"totalCostBeforeTax: {totalCostBeforeTax}, salesTax {salesTax}, cost: {cost}, lineQty: {lineQty}");
+        if(lineQty > 0){
+            totalCostBeforeTax += cost*lineQty;
+            totalCostAfterTax = totalCostBeforeTax+(totalCostBeforeTax*salesTax);
+            tallyQty += lineQty;
+        }
         //lineOrderList.Add(lL); //Add item to local list for storing in Order object at the end, json contains all customer lineitems//OBSOLETE
     
         /*Here I must remove the purchased items from inventory.. But put back in if removed from list... 
@@ -218,7 +224,7 @@ switch(choose)
         Orders newLI = new Orders {
             OrderId = ordId,   //Order Id is user Id concat with Order list count 
             OrderDate = DateTime.Now,//.ToString(),
-            TotalQty = lineQty,
+            TotalQty = tallyQty,
             TotalCost = totalCostAfterTax,
             OrderCompleted = 1
             //OrderItems = lineOrderList //I don't think we send this to SQL...

@@ -172,17 +172,32 @@ while(!exit)
                     pos = 6;
                     break;
                 }
-                else{chosenStore = Int32.Parse(select);}
+                else
+                {
+                    bool res; int a;
+                    res = Int32.TryParse(select, out a);
+                    if(res){
+                        chosenStore = Int32.Parse(select);
+                        if(chosenStore >= allStores.Count)
+                        {chosenStore = 0; Console.WriteLine("Invalid input"); pos = 1; break;}
+                    }
+                    else
+                    {Console.WriteLine("Invalid input"); pos = 1; break;}
+                }
             }
             else
             {
                 //Normal customer login
-                string chosenS = Console.ReadLine();
+                string chosenS = Console.ReadLine() ?? "";
                 bool res; int a;
                 res = Int32.TryParse(chosenS, out a);
-                if(res){
+                if(res){                  
                     chosenStore = Int32.Parse(chosenS);   //User inputs a choice
+                    if(chosenStore >= allStores.Count)
+                    {chosenStore = 0; Console.WriteLine("Invalid input"); pos = 1; break;}
                 }
+                else
+                {Console.WriteLine("Invalid input"); pos = 1; break;}
             }
             pos = 2;
         break;
@@ -234,7 +249,7 @@ while(!exit)
 
         //Display Inventory for Selected Store
         case 3:
-            int remAPN = 0; string remName = ""; decimal remCost = 0; int remOrdId = 0; int remQty = 0; 
+            int remAPN = 0; string remName = ""; decimal remCost = 0; int remOrdId = 0; //int remQty = 0; 
             lineItemsList = _bl.GetAllLineItem();//Update shopping list
             allOrders = _bl.GetAllOrders(); //Update Orders
             if(whatItem == 0){Console.WriteLine("Clay Inventory");}
@@ -314,7 +329,7 @@ while(!exit)
                 {
                     Console.WriteLine("\nHow many do you want to buy?");
                     
-                    string? chosenS = Console.ReadLine();
+                    string? chosenS = Console.ReadLine() ?? "";
                     res = Int32.TryParse(chosenS, out a);
                     if(res)
                     {
@@ -491,7 +506,7 @@ private void Login()
 
         foreach(Customers custL in allCustomers)
         {
-            Console.WriteLine($"Test: {custL.UserName}");
+            //Console.WriteLine($"Test: {custL.UserName}");
             if(custL.UserName == userNL && custL.Pass == pwL)
             {       
                 userId = custL.CustNumb;//Set the Id number of customer currently shopping

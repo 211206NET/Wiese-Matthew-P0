@@ -26,6 +26,7 @@ public interface IRepo
     void AddItem(ProdDetails invToAdd); //int invIndex, 
     void ChangeInventory(int invIndex, int qtyToChange);//int invIndex, int apn, int itemQty);    
     void RemoveInventory(int invId);
+    void RemoveOrphanInventory(int storePK);
     void RemoveItem(int apnToRemove);
 
     //Customers
@@ -41,6 +42,7 @@ public interface IRepo
     List<LineItems> GetAllLineItem();
     void AddLineItem(LineItems newLI);//(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax);
     void RemoveLineItem(int lineItemIndexToRemove);
+    void RemoveOrphanLineItem(int storePK);
 
     //Orders
     List<Orders> GetAllOrders();

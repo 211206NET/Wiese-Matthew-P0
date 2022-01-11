@@ -15,6 +15,10 @@ public class Customers
     //     this.Employee = em;
     // }
     
+    /// <summary>
+    /// Convert customer table data to data row
+    /// </summary>
+    /// <param name="row"></param>
     public Customers(DataRow row)
     {
         this.CustNumb = (int) row["CustNumb"];
@@ -28,6 +32,10 @@ public class Customers
     public string? Pass { get; set; } //Password
     public bool Employee { get; set; }
 
+    /// <summary>
+    /// Fill in columns in database row with this instance
+    /// </summary>
+    /// <param name="row"></param>
     public void ToDataRow(ref DataRow row)
     {
         row["CustNumb"] = this.CustNumb;

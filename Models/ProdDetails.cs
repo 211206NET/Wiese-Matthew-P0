@@ -10,6 +10,10 @@ public class ProdDetails
     //Product Objects will reference this object to retrive detailed information
     public ProdDetails(){}
 
+    /// <summary>
+    /// Convert product details table data to data row
+    /// </summary>
+    /// <param name="row"></param>
     public ProdDetails(DataRow row)
     {
         this.APN = (int) row["APN"];
@@ -41,6 +45,10 @@ public class ProdDetails
     public decimal Cost { get; set; }//Amount the store sells for
     public string? Descr { get; set; }//Description of product
     
+    /// <summary>
+    /// Fill in columns in database row with this instance
+    /// </summary>
+    /// <param name="row"></param>
     public void ToDataRow(ref DataRow row)
     {
         row["APN"] = this.APN;

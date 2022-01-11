@@ -13,9 +13,11 @@ public class InventoryCtrl : IMenu
     }
 
     bool exit = false;
-
     public void Start()
     {
+        bool res = false; //For try parse stuff
+        int a = 0; decimal d = 0; double dd = 0;
+
         while(!exit)
         {
             //Management Menu
@@ -36,13 +38,39 @@ public class InventoryCtrl : IMenu
                     Console.WriteLine("Enter an item name:");
                     string itemName = Console.ReadLine() ?? "";
                     Console.WriteLine("Enter what type of item it is [0 = clay, 1 = tools, 2 = equip]:");
-                    int itemType = Int32.Parse(Console.ReadLine() ?? "");
+
+                    //Input validation parse to int
+                    int itemType = 0; string trySelect = "";
+                    while(!res){
+                    trySelect = Console.ReadLine() ?? "";
+                    res = Int32.TryParse(trySelect, out a);
+                    if(res){
+                    itemType = Int32.Parse(trySelect); }
+                    else{Console.WriteLine("Invalid input, try again");}} res = false;
+
                     Console.WriteLine("Enter a description of the item:");
                     string itemDesc = Console.ReadLine() ?? "";
                     Console.WriteLine("Enter the cost of the item");
-                    Decimal itemCost = Convert.ToDecimal(Int32.Parse(Console.ReadLine() ?? ""));
+
+                    //Input validation parse to decimal
+                    Decimal itemCost = 0; trySelect = "";
+                    while(!res){
+                    trySelect = Console.ReadLine() ?? "";
+                    res = Decimal.TryParse(trySelect, out d);
+                    if(res){
+                    itemCost = Convert.ToDecimal(trySelect);}
+                    else{Console.WriteLine("Invalid input, try again");}} res = false;
+
                     Console.WriteLine("Enter the weight of the item");
-                    Double itemWeight = Convert.ToDouble(Int32.Parse(Console.ReadLine() ?? ""));
+
+                    //Input validation parse to double
+                    Double itemWeight = 0; trySelect = "";
+                    while(!res){
+                    trySelect = Console.ReadLine() ?? "";
+                    res = Double.TryParse(trySelect, out dd);
+                    if(res){
+                    itemWeight = Convert.ToDouble(trySelect);}
+                    else{Console.WriteLine("Invalid input, try again");}} res = false;
 
                     int carrNumbAssg = 0;
                     //Get unique APN for new item
@@ -173,7 +201,16 @@ public class InventoryCtrl : IMenu
                     //Ask manager to choose entry to modify
                     string change = ""; int changeInt = 0; decimal changeDec = 0; double changeDoub = 0; //Vars to record manager changes
                     Console.WriteLine("\nSelect which number you want to modify.");
-                    int selChangeCarried = Int32.Parse(Console.ReadLine() ?? "");
+                    
+                    //Input validation parse to int
+                    int selChangeCarried = 0; trySelect = "";
+                    while(!res){
+                    trySelect = Console.ReadLine() ?? "";
+                    res = Int32.TryParse(trySelect, out a);
+                    if(res){
+                    selChangeCarried = Int32.Parse(trySelect); }
+                    else{Console.WriteLine("Invalid input, try again");}} res = false;
+
                     //Show manager what item was selected
                     Console.WriteLine($"\nYou chose: {getAllCarried2[selChangeCarried].Name} "+
                     "\nEnter a new value for each field or leave blank to keep the same.\n");
@@ -194,7 +231,7 @@ public class InventoryCtrl : IMenu
                     //Offer to change type
                     Console.WriteLine($"\nChange type: {getAllCarried2[selChangeCarried].ItemType}? [0 = clay, 1 = tools, 2 = equip]:");
                     change = Console.ReadLine() ?? "";
-                    bool res; int a;
+
                     res = Int32.TryParse(change, out a);
                     if(res){
                         changeInt = Int32.Parse(change);

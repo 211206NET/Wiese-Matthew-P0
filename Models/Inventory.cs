@@ -8,8 +8,13 @@ public class Inventory
     //This will serve as a prefab to be added to the Inventory Table
     public Inventory()
     {
-        this.Items = new List<ProdDetails>();
+        //this.Items = new List<ProdDetails>();
     }
+
+    /// <summary>
+    /// Convert inventory table data to data row
+    /// </summary>
+    /// <param name="row"></param>
     public Inventory(DataRow row)
     {
         this.Id = (int) row["Id"];
@@ -23,8 +28,12 @@ public class Inventory
     public int Item { get; set; } //What APN item this is [FK] 
     public int Qty { get; set; } //How many of this item is stored here
 
-    public List<ProdDetails> Items { get; set; }//Details from object ProdDetails stored in here [FK]
+    //public List<ProdDetails> Items { get; set; }//Details from object ProdDetails stored in here [FK]
     
+    /// <summary>
+    /// Fill in columns in database row with this instance
+    /// </summary>
+    /// <param name="row"></param>
     public void ToDataRow(ref DataRow row)
     {
         row["StoreId"] = this.Id;
