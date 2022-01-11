@@ -23,6 +23,7 @@ public class LineItems
         this.Qty = (int) row["Qty"];
         this.CostPerItem = (decimal) row["Cost"];
         this.SalesTax = (decimal) row["SalesTax"];
+        this.PastOrder = (bool) row["PastOrder"];
     }
 
     public int Id { get; set; } //[PK]
@@ -36,6 +37,7 @@ public class LineItems
     //Total for line with just be Qty*CostPerItem, 
     //total would not be here, but in the code working with the line item objects in the cart/checkout
     public decimal SalesTax { get; set; }//Just storing this, but result can be taken from tax in store
+    public bool PastOrder { get; set; }
 
     /// <summary>
     /// Fill in columns in database row with this instance
@@ -50,6 +52,7 @@ public class LineItems
         row["Qty"] = this.Qty;
         row["Cost"] = this.CostPerItem;
         row["SalesTax"] = this.SalesTax;
+        row["PastOrder"] = this.PastOrder;
     }
 
 }

@@ -502,7 +502,7 @@ public class DBRepo : IRepo
         using(SqlConnection connection = new SqlConnection(_connectionString))
         {
             connection.Open();
-            string sqlCmd = "INSERT INTO LineItems (InvId, OrderId, Qty, Cost, SalesTax) VALUES (@p2, @p3, @p4, @p5, @p6)"; //Id, @p1, 
+            string sqlCmd = "INSERT INTO LineItems (InvId, OrderId, Qty, Cost, SalesTax, PastOrder) VALUES (@p2, @p3, @p4, @p5, @p6, @p7)"; //Id, @p1, 
 
             using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
             {
@@ -515,6 +515,8 @@ public class DBRepo : IRepo
                 param = (new SqlParameter("@p5", newLI.CostPerItem));
                 cmd.Parameters.Add(param);
                 param = (new SqlParameter("@p6", newLI.SalesTax));
+                cmd.Parameters.Add(param);
+                param = (new SqlParameter("@p7", newLI.PastOrder));
                 cmd.Parameters.Add(param);
                 //...
 
@@ -570,6 +572,25 @@ public class DBRepo : IRepo
         }
     }
 
+    public void FinalizeLineItem(LineItems finalLineItem)
+    {
+        //throw new NotImplementedException();
+        using(SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            string sqlCmd = "UPDATE LineItems SET PastOrder = @p0 WHERE OrderId = @p1";
+            using(SqlCommand cmd = new SqlCommand(sqlCmd, connection))
+            {
+                cmd.Parameters.AddWithValue("@p0", finalLineItem.PastOrder);
+                cmd.Parameters.AddWithValue("@p1", finalLineItem.OrderId);
+                //...
+
+                int changed = cmd.ExecuteNonQuery();
+            }
+            connection.Close();
+        }
+    }
+    
     //_____________________________ <> Orders <> _____________________________\\
     /// <summary>
     /// Returns a list of all orders from the database

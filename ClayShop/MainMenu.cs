@@ -29,7 +29,6 @@ List<Inventory> allInventory = _bl.GetAllInventory();
 List<LineItems> lineItemsList = _bl.GetAllLineItem();
 
 List<Customers> allCustomers = _bl.GetAllCustomers();
-//Console.WriteLine("Got here");
 
 //Clay Shop! Matthew Wiese: P0
 Console.WriteLine("Welcome to the plasticine clay shop.\n" +
@@ -39,30 +38,6 @@ bool exit = false;
 bool canMake = false; //For making new customer
 int whatItem = 0; //0 = Clay, 1 = Tools, 2 == Equipment (For showing item inventory by section)
 DateOnly dateOnlyVar = DateOnly.FromDateTime(DateTime.Now); 
-
-// string[] testA = new string[8];
-// testA[1] = "abCDef";
-// Console.WriteLine($"Easy Way: {testA[1][0]}");
-
-// //int index = testA[1].IndexOf("C");
-// char[] chars = testA[1].ToCharArray();
-// char first = chars[0];
-// Console.WriteLine($"result of tets string: {first}");
-
-// List<string> Strlist = new List<string>();  
-// Strlist.Add("ZbCDef");
-// Console.WriteLine($"Easy List Way: {Strlist[0][0]}");
-
-//Console.WriteLine($"{(32 / 8 * 2)}");
-// int sample = 0;
-// Console.WriteLine("Enter error string here");
-// sample = int.Parse(Console.ReadLine());
-// Console.WriteLine(sample);
-
-// string returnInt = "35"; 
-// string[] tokens = returnInt.Split();
-// Console.WriteLine($"tokens: {tokens}");
-
 
 //Main Loop
 while(!exit)
@@ -156,16 +131,15 @@ while(!exit)
             //Cycle through all stores show a list of them
             for(int i = 0; i < allStores.Count; i++)  
             {
-                //Console.WriteLine($"allStores.Count: {allStores.Count}");
                 Console.WriteLine($"[{i}], Store ID: {allStores[i].StoreID}, "+
                 $"Store Name: {allStores[i].StoreName}, "+
                 $"City: {allStores[i].City}, "+
                 $"State: {allStores[i].State}");
-                //allStores[i].SetUp(); //Tell store to generate inventory PLACE HOLDER
             }
 
-            //Console.WriteLine("[ADMIN] Add a store: enter 'a'");//Go to case 6 main switch
-            if(manager == true){Console.WriteLine("[a], <ADMIN> Management menu");//Go to case 6 main switch
+            //Check if manager first
+            if(manager == true){
+                Console.WriteLine("[a], <ADMIN> Management menu");//Go to case 6 main switch
                 string select = Console.ReadLine() ?? "";
                 if(select == "a" || select == "A") //User wants to add a store
                 {
@@ -271,19 +245,6 @@ while(!exit)
                 }
             }
 
-            //Old way when there was one inventory per store object
-            // int targetInv = 0;
-            // for(int i = 0; i < allInventory.Count; i++)
-            // {
-            //     if(allInventory[i].Store == allStores[chosenStore].StoreID){targetInv = i;}
-            // }
-
-            // foreach(ProdDetails pDet in allInventory[targetInv].Items)
-            // {
-            //     if(pDet.ItemType == whatItem && allInventory[targetInv].Store == allStores[chosenStore].StoreID)  //pDet.StoreAt
-            //     {Console.WriteLine($"[{pDet.APN}] Clay Product: {pDet.Name}");}
-            // }
-
             Console.WriteLine("Select product for more details or 'x' to return to menu:\n");
             //int chooseAPN = Int32.Parse(Console.ReadLine()); 
             string chooseAPN = Console.ReadLine() ?? ""; 
@@ -351,20 +312,21 @@ while(!exit)
                     foreach(Orders ord in allOrders)
                     {
                         //Get unique order number
-                        remOrdId = allOrders.Count;
+                        remOrdId = allOrders.Count+1;
                         if(ord.OrderId == remOrdId){remOrdId++;}
 
                         //Check if there is already an order started for this customer
                         if(ord.CustomerId == userId && ord.StoreId == allStores[chosenStore].StoreID && ord.OrderCompleted == 0)
-                        {isOrder = true; remOrdId = ord.OrderId;  Console.WriteLine($"Order was found, remOrdId: {remOrdId}");}
+                        {isOrder = true; remOrdId = ord.OrderId;}//  Console.WriteLine($"Order was found, remOrdId: {remOrdId}");}
                     }  
 
                     if(!isOrder)
                     {
-                        Console.WriteLine($"New order is made, remOrdId: {remOrdId}, userId: {userId}");
+                        remOrdId = allOrders.Count+1;
+                        //Console.WriteLine($"New order is made, remOrdId: {remOrdId}, userId: {userId}");
                         //No order currently exists for this customer/store so make one
                         Orders newOrd = new Orders {  //DISABLED due to row error
-                            OrderId = allOrders.Count,   
+                            OrderId = remOrdId,   
                             CustomerId = userId,
                             StoreId = allStores[chosenStore].StoreID,  
                             OrderDate = DateTime.Now,//DateOnly.FromDateTime(DateTime.Now),
@@ -375,7 +337,6 @@ while(!exit)
                         _bl.AddOrder(newOrd); 
                     }
 
-                    Console.WriteLine($"remOrdId: {remOrdId}");
                     //Now to Save it
                     LineItems newLI = new LineItems {  //DISABLED due to row error
                         //Id = remAPN,   
@@ -405,29 +366,16 @@ while(!exit)
             }//Abort
             }
 
-            Console.WriteLine("\nEnter any value to return to main menu");
-            Console.ReadLine(); //For now take user input to continue
+            //Console.WriteLine("\nEnter any value to return to main menu");
+            //Console.ReadLine(); //For now take user input to continue
             pos = 2;
         break;
 
         //Management Menu
         case 6:
-        
-            Console.WriteLine($"Pos: {pos}");
-            //Here, I instantiated an implementation of IRepo (FileRepo)
-            //IRepo repo = new FileRepo();
-            //next, I instantiated CSBL (an implementation of IBL) and then injected IRepo implementation for IBL/CSBL
-            //IBL bl = new CSBL(repo);
-            //Finally, I instantiate MngMenu that needs an instance that implements Business Logic class
-            //Management mngMenu = new Management(bl);
-            //mngMenu.chosenStore = allStores[this.chosenStore].StoreID;
-            //Reset local settings for when returning to this menu
             chosenStore = 0;
             pos = 1;
-            
             MenuFactory.GetMenu("manage").Start();
-            //mngMenu.Start();
-
         break;
 
         //Checkout/Shopping Cart
@@ -451,21 +399,9 @@ while(!exit)
                 }
             }
 
+            //Go to cart
             if(buyListQty > 0){
-                //Here, I instantiated an implementation of IRepo (FileRepo)
-                //IRepo repoCart = new FileRepo();
-                //IRepo repoCart = new DBRepo();
-                //next, I instantiated CSBL (an implementation of IBL) and then injected IRepo implementation for IBL/CSBL
-                //IBL blCart = new CSBL(repoCart);
-                //Finally, I instantiate repoCart that needs an instance that implements Business Logic class
-                //Cart cartMenu = new Cart(blCart);
-                //cartMenu.chosenStore = allStores[this.chosenStore].StoreID; //--
-                //cartMenu.userId = this.userId; //<>
-                //Reset local settings for when returning to this menu
-                //chosenStore = 0;
-
-                MenuFactoryUser.GetMenuUser("cart").Start((int)custID!);//(int)allStores[this.chosenStore].StoreID!, (int)custID!);
-                //cartMenu.Start();
+                MenuFactoryUser.GetMenuUser("cart").Start((int)custID!);
             }
             else{Console.WriteLine("You haven't selected anything to buy");}
             pos = 2;
@@ -476,7 +412,10 @@ while(!exit)
         case 8:
             allOrders = _bl.GetAllOrders();
             allStores = _bl.GetAllStores();
-            ViewOrders(allOrders, allStores, userId);
+            lineItemsList = _bl.GetAllLineItem();
+            allInventory = _bl.GetAllInventory();
+            allCarried = _bl.GetAllCarried();
+            ViewOrders(allOrders, allStores, lineItemsList, allInventory, allCarried, userId);
         break;
 
         //pos var is set wrong
@@ -506,7 +445,6 @@ private void Login()
 
         foreach(Customers custL in allCustomers)
         {
-            //Console.WriteLine($"Test: {custL.UserName}");
             if(custL.UserName == userNL && custL.Pass == pwL)
             {       
                 userId = custL.CustNumb;//Set the Id number of customer currently shopping
@@ -524,9 +462,19 @@ private void Login()
     
 }
 
-private void ViewOrders(List<Orders> allTheOrders, List<Store> allTheStores, int uID)
+private void ViewOrders(List<Orders> allTheOrders, List<Store> allTheStores, 
+List<LineItems> allTheLineItems, List<Inventory> allInventory, List<ProdDetails> allCarried, int uID)
 {
     int storeIndex = -1;
+    string? orderStatus = "";
+
+    //Get customer name
+    string? customerName = "";
+    List<Customers> allCustomers = _bl.GetAllCustomers();
+    foreach(Customers cust in allCustomers)
+    {
+        if(cust.CustNumb == uID){customerName = cust.UserName;}
+    }
 
     //Sort Dates
     Console.WriteLine("Orders will be sorted by most recent by default, enter 'o' sort by oldest instead.");
@@ -538,16 +486,50 @@ private void ViewOrders(List<Orders> allTheOrders, List<Store> allTheStores, int
     //Get Order Info
     foreach(Orders ordo in allTheOrders)//Loop through all orders
     {
+        //Set order status
+        if(ordo.OrderCompleted == 1){orderStatus = "Completed";}else{orderStatus = "Active";}
+
         //Get Store Info
         for(int i = 0; i < allTheStores.Count; i++)
         {
             if(allTheStores[i].StoreID == ordo.StoreId){storeIndex = i;}
         }
-
+    
         if(ordo.CustomerId == uID)//Find orders filtered by ones for current customer
         {
-            Console.WriteLine($"Id: [{ordo.OrderId}], Customer Id: [{uID}], Store Name: {allTheStores[storeIndex].StoreName}, "+
-            $"Order Date: {ordo.OrderDate}, Total Items: {ordo.TotalQty}, Total Cost: {ordo.TotalCost}");
+            Console.WriteLine($"\n\n<>===================// Order Record \\\\===================<>\n"+
+            $"Id: [{ordo.OrderId}], Customer Name: [{customerName}], Store Name: {allTheStores[storeIndex].StoreName}, "+
+            $"Order Date: {ordo.OrderDate},"+
+            $"\nTotal Items: {ordo.TotalQty}, Total Cost: {ordo.TotalCost}, Order status: {orderStatus}\n");
+        }
+
+        //Next list line items for each order
+        string? itemName = "";
+        Console.WriteLine($"*-----------------------/ Line Item(s) \\-----------------------*");
+        foreach(LineItems li in allTheLineItems)
+        {
+            //If line item matches
+            if(li.OrderId == ordo.OrderId)
+            {        
+            //Get name of item
+            foreach(Inventory inv in allInventory)
+            {
+                if(inv.Id == li.InvId)
+                {
+                    foreach(ProdDetails pd in allCarried)
+                    {
+                        if(inv.Item == pd.APN)
+                        {
+                            itemName = pd.Name; //So easy to get that name, just need 4 level nested loops
+                        }
+                    }
+                }
+            }
+
+            //Finally show message    
+            Console.WriteLine($"Id: [{li.Id}], Product Name: [{itemName}], Quantity Ordered: {li.Qty}, "+
+            $"Total line cost: {li.CostPerItem}");
+            }
         }
     }
     pos = 2;

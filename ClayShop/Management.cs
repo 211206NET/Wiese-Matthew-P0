@@ -454,7 +454,10 @@ public class Management : IMenu
                 //See store order history
                 case "6":
                     allStores = _bl.GetAllStores();
-                    ViewOrders(allStores, allStores[chosenStoreIndex].StoreID);
+                    allOrders = _bl.GetAllOrders();
+                    allInventory = _bl.GetAllInventory();
+                    allCarried = _bl.GetAllCarried();
+                    ViewOrders(allStores, allOrders, allInventory, allCarried, allStores[chosenStoreIndex].StoreID);
                 break;
 
                 case "x":
@@ -469,39 +472,70 @@ public class Management : IMenu
         }//Loop
     }//Start
 
-    private void ViewOrders(List<Store> allTheStores, int sID)
-    {
-        int storeIndex = -1;
-        List<Orders> allOrders = _bl.GetAllOrders();
-        
-        //Sort Dates
-        Console.WriteLine("Orders will be sorted by most recent by default, enter 'o' sort by oldest instead.");
-        string sortStr = Console.ReadLine() ?? "";
-        if(sortStr == "o")
-        {allOrders.Sort((x, y) => x.OrderDate.CompareTo(y.OrderDate));}
-        else{allOrders.Sort((x, y) => y.OrderDate.CompareTo(x.OrderDate));}
+private void ViewOrders(List<Store> allTheStores, List<Orders> allTheOrders, 
+List<Inventory> allInventory, List<ProdDetails> allCarried, int storeID)
+{
+    int storeIndex = -1;
+    string? orderStatus = "";
+    List<LineItems> lineItemsList = _bl.GetAllLineItem();
 
-        //Get Order Info
-        Console.WriteLine("\n//---------------* List of Orders for current store: *---------------\\\\");
-        foreach(Orders ordo in allOrders)//Loop through all orders
+    //Sort Dates
+    Console.WriteLine("Orders will be sorted by most recent by default, enter 'o' sort by oldest instead.");
+    string sortStr = Console.ReadLine() ?? "";
+    if(sortStr == "o")
+    {allTheOrders.Sort((x, y) => x.OrderDate.CompareTo(y.OrderDate));}
+    else{allTheOrders.Sort((x, y) => y.OrderDate.CompareTo(x.OrderDate));}
+    
+    //Get Order Info
+    foreach(Orders ordo in allTheOrders)//Loop through all orders
+    {
+        //Set order status
+        if(ordo.OrderCompleted == 1){orderStatus = "Completed";}else{orderStatus = "Active";}
+
+        //Get Store Info
+        for(int i = 0; i < allTheStores.Count; i++)
         {
-            //Get Store Info
-            for(int i = 0; i < allTheStores.Count; i++)
+            if(allTheStores[i].StoreID == ordo.StoreId){storeIndex = i;}
+        }
+    
+        if(ordo.StoreId == storeID)//Find orders filtered by ones for current store
+        {
+            Console.WriteLine($"\n\n<>===================// Order Record \\\\===================<>\n"+
+            $"Id: [{ordo.OrderId}], Store Id: [{storeID}], Store Name: {allTheStores[storeIndex].StoreName}, "+
+            $"Order Date: {ordo.OrderDate},"+
+            $"\nTotal Items: {ordo.TotalQty}, Total Cost: {ordo.TotalCost}, Order status: {orderStatus}\n");
+        }
+
+        //Next list line items for each order
+        string? itemName = "";
+        Console.WriteLine($"*-----------------------/ Line Item(s) \\-----------------------*");
+        foreach(LineItems li in lineItemsList)
+        {
+            //If line item matches
+            if(li.OrderId == ordo.OrderId)
+            {        
+            //Get name of item
+            foreach(Inventory inv in allInventory)
             {
-                if(allTheStores[i].StoreID == ordo.StoreId && allTheStores[i].StoreID == sID){storeIndex = i;}
-                //Console.WriteLine($"allTheStores[i].StoreID : {allTheStores[i].StoreID }, ordo.StoreId: {ordo.StoreId}");
+                if(inv.Id == li.InvId)
+                {
+                    foreach(ProdDetails pd in allCarried)
+                    {
+                        if(inv.Item == pd.APN)
+                        {
+                            itemName = pd.Name; //So easy to get that name, just need 4 level nested loops
+                        }
+                    }
+                }
             }
 
-            //Console.WriteLine($"sID: {sID}, storeIndex: {storeIndex}");
-            //Console.ReadLine();
-
-            if(ordo.StoreId == sID && storeIndex > -1)//Find orders filtered by ones for current customer
-            {
-                Console.WriteLine($"Id: [{ordo.OrderId}], Store Id: [{sID}], Store Name: {allTheStores[storeIndex].StoreName}, "+
-                $"Order Date: {ordo.OrderDate}, Total Items: {ordo.TotalQty}, Total Cost: {ordo.TotalCost}");
+            //Finally show message    
+            Console.WriteLine($"Id: [{li.Id}], Product Name: [{itemName}], Quantity Ordered: {li.Qty}, "+
+            $"Total line cost: {li.CostPerItem}");
             }
         }
-        Console.WriteLine("\n\n");
     }
+
+}
 
 }//Class

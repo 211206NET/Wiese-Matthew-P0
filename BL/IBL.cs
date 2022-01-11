@@ -34,6 +34,7 @@ public interface IBL
     void AddLineItem(LineItems newLI);//int apn, string name, int qty, Decimal costPerItem, Decimal salesTax);
     void RemoveLineItem(int lineItemIndexToRemove);
     void RemoveOrphanLineItem(int storePK);
+    void FinalizeLineItem(LineItems finalLineItem);
     List<Orders> GetAllOrders();
     void AddOrder(Orders orderItems);
 

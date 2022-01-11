@@ -11,6 +11,9 @@ namespace UnitTests;
     It returns void.
 
     It cannot have parameters.
+
+    For code coverage:
+    dotnet test --collect"XPlat Code Coverage"
 */
 
 public class TestModels

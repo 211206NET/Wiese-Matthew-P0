@@ -43,6 +43,7 @@ public interface IRepo
     void AddLineItem(LineItems newLI);//(int apn, string name, int qty, Decimal costPerItem, Decimal salesTax);
     void RemoveLineItem(int lineItemIndexToRemove);
     void RemoveOrphanLineItem(int storePK);
+    void FinalizeLineItem(LineItems finalLineItem);
 
     //Orders
     List<Orders> GetAllOrders();

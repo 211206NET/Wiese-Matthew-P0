@@ -120,6 +120,11 @@ public class CSBL : IBL
         _dl.RemoveOrphanLineItem(storePK);
     }
 
+    public void FinalizeLineItem(LineItems finalLineItem)
+    {
+        _dl.FinalizeLineItem(finalLineItem);
+    }
+
     //AddOrder
     public List<Orders> GetAllOrders()
     {

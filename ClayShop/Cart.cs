@@ -69,7 +69,11 @@ while(!exit)//Cart mode is active = !exit, turns true to return to store menu or
 
 //Retrieve Order ID
 //foreach(Orders ords in allOrders){if(ords.CustomerId == userId){ordId = ords.OrderId;}}  //changed to for, need index
-for(int i = 0; i< allOrders.Count; i++){if(allOrders[i].CustomerId == userId){ordId = allOrders[i].OrderId; ordIndex = i;}}
+for(int i = 0; i< allOrders.Count; i++)
+{
+    if(allOrders[i].CustomerId == userId && allOrders[i].OrderCompleted == 0 && ordId == 0)
+    {ordId = allOrders[i].OrderId; ordIndex = i;}
+}
 
 //Reset tally stats (maybe redundant)
 intAPN = -1;
@@ -83,8 +87,10 @@ lineItemsList = _bl.GetAllLineItem();
 Console.WriteLine("Your cart:"); //Show contents of shopper's cart
 foreach(LineItems lL in _bl.GetAllLineItem()) //Cycle through all lien items
 {
-    Console.WriteLine($"lL.OrderId: {lL.OrderId}, ordId: {ordId}"); //DEBUG THIS
+    if(lL.PastOrder == false){
+    //Console.WriteLine($"lL.OrderId: {lL.OrderId}, ordId: {ordId}"); //DEBUG THIS
     if(lL.OrderId == ordId){lineQty = lL.Qty;} //Set the quantity for how much is ordered of this item
+    //Console.WriteLine($"lineQty: {lineQty}, lL.Qty: {lL.Qty}"); //DEBUG
     //First retrive the item ID from the corresponding 1 to 1 PK/FK inventory object
     foreach(Inventory invLI in allInv)
     {
@@ -115,9 +121,9 @@ foreach(LineItems lL in _bl.GetAllLineItem()) //Cycle through all lien items
             if(prodD.APN == intAPN)//Display list of lien items
             {
                 //inv2.ShowDesc(); //This should come from BL...?
-                Console.WriteLine($"Cost: {prodD.Cost}, APN: [{prodD.APN}],"+
+                Console.WriteLine($"\n//------------------< Item >------------------\\\\\nCost: {prodD.Cost}, APN: [{prodD.APN}],"+
                 $" Product: {prodD.Name}, Weight: {prodD.Weight}"+
-                $"\nDescription: {prodD.Descr}, Quantity left: {qty}"); 
+                $"\nDescription: {prodD.Descr}, Quantity left: {qty}\n"); 
                 name = prodD.Name ?? "";  weight = prodD.Weight;
                 cost = prodD.Cost; 
             }
@@ -130,12 +136,13 @@ foreach(LineItems lL in _bl.GetAllLineItem()) //Cycle through all lien items
         //Console.WriteLine($"APN [{lL.Id}], Name: [{lL.Name}], Qty: [{lL.Qty}], Cost: [{lL.CostPerItem}], Total Line Cost: [{lL.CostPerItem*lL.Qty}]" );
    
         //Establish the total cost and after tax
-        Console.WriteLine($"totalCostBeforeTax: {totalCostBeforeTax}, salesTax {salesTax}, cost: {cost}, lineQty: {lineQty}");
+        //Console.WriteLine($"tallyQty: {tallyQty}, totalCostBeforeTax: {totalCostBeforeTax}, salesTax {salesTax}, cost: {cost}, lineQty: {lineQty}");
         if(lineQty > 0){
             totalCostBeforeTax += cost*lineQty;
             totalCostAfterTax = totalCostBeforeTax+(totalCostBeforeTax*salesTax);
             tallyQty += lineQty;
         }
+        //Console.WriteLine($"tallyQty: {tallyQty}"); //DEBUG
         //lineOrderList.Add(lL); //Add item to local list for storing in Order object at the end, json contains all customer lineitems//OBSOLETE
     
         /*Here I must remove the purchased items from inventory.. But put back in if removed from list... 
@@ -144,8 +151,8 @@ foreach(LineItems lL in _bl.GetAllLineItem()) //Cycle through all lien items
         // for(int i = 0; i < allInv.Count; i++)
         // {if(allInv[i].Id == lL.InvId){invIndex = i;}} //Old attempt
 
-        Console.WriteLine($"allInv.Count: {allInv.Count}"); //DEBUGGING
-        Console.WriteLine($"allInv.Qty: {qty}");//Items list shows 0 qty even thought I just opened it to buy //DEBUGGING
+        //Console.WriteLine($"allInv.Count: {allInv.Count}"); //DEBUGGING
+        //Console.WriteLine($"allInv.Qty: {qty}");//Items list shows 0 qty even thought I just opened it to buy //DEBUGGING
         int beforeQty = qty;//Store Qty before so we can make the change method adjustment
 
         //Console.WriteLine($"invIndex: {invIndex}, lL.InvId: {lL.InvId}"); //OLD DEBUGGING
@@ -157,17 +164,17 @@ foreach(LineItems lL in _bl.GetAllLineItem()) //Cycle through all lien items
         int qtyToChange = beforeQty-lineQty;
         if(qtyToChange > -1){
         _bl.ChangeInventory(invID,qtyToChange);
-        Console.WriteLine("Inventory items moved to order"); //DEBUGGING
+        //Console.WriteLine("Inventory items moved to order"); //DEBUGGING
         }else{
         Console.WriteLine("Attempting to generate order in cart but insufficient inventory!");}
       //} //End lL.OrderId == ordId check, defunct
 
     }//End check intAPN > -1
     else{Console.WriteLine("Error: No matching item found in inventory for selected lineitem.");}
-
+    }//End check if Line item is ordered past
 }//End for each line item loop
 
-Console.WriteLine($"\nTotal items: {lineQty}, total cost before tax: {totalCostBeforeTax}, total cost after tax: {totalCostAfterTax}");
+Console.WriteLine($"\nTotal items: {tallyQty}, total cost before tax: {totalCostBeforeTax}, total cost after tax: {totalCostAfterTax}");
 Console.WriteLine("\n[0] Remove item from cart.");
 Console.WriteLine("[1] Return to shopping.");
 Console.WriteLine("[2] Complete purchase.\n");
@@ -196,8 +203,13 @@ switch(choose)
             for(int i = 0; i < lineItemsList.Count; i++)
             {
                 if(lineItemsList.Count > 0){ //Add back the quantity to inventory and remove the line item
-                if(lineItemsList[i].InvId == invItemId){ Console.WriteLine($"Removing here!!!!!!!!!!!!!!!!"); allInv[invIndex].Qty += lineItemsList[i].Qty; _bl.RemoveLineItem(invItemId);}}
-                else{Console.WriteLine($"Error, total line items: {lineItemsList.Count}");}   
+                if(lineItemsList[i].PastOrder == false){
+                if(lineItemsList[i].InvId == invItemId)
+                { 
+                    //Console.WriteLine($"Removing here!!!!!!!!!!!!!!!!"); 
+                    allInv[invIndex].Qty += lineItemsList[i].Qty; _bl.RemoveLineItem(invItemId);
+                }
+                else{Console.WriteLine($"Error, total line items: {lineItemsList.Count}");}}}
 
                 //It's possible a manager could remove an item from inventory right before a customer 
                 //goes to remove same item from order, this would result in a fatal error.
@@ -219,6 +231,19 @@ switch(choose)
         //________________<> Make Order Object <>________________\\
         //Dictionary<int, List<Orders>> allOrdersDict = new Dictionary<int,List<Orders>>();//This will need to be declared higher up to add in orders
         //foreach(KeyValuePair<int, List<Orders>> kv in allOrdersDict){
+
+        //Finalize Line Items
+        foreach(LineItems finishLI in lineItemsList)
+        {
+            if(finishLI.OrderId == ordId)
+            {
+                LineItems saveLI = new LineItems {
+                    PastOrder = true,   
+                    OrderId = ordId
+                };
+                _bl.FinalizeLineItem(saveLI);
+            }
+        }
 
         //Finalize order object before deleting line item objects
         Orders newLI = new Orders {
@@ -251,17 +276,18 @@ switch(choose)
         //Console.WriteLine("Order Creation Complete!");
         //______________<> End Make Order Object <>______________\\
 
+        //Disabled this as perhaps I want to keep line items in memory to reference for order lookups
         //LineItems list cleared
-        int toDelete = 0; //What line items to delete
-        for(int i = lineItemsList.Count-1; i > -1; i--)//Delete from botton to prevent list shifting from messing up deletion sequence
-        {
-            if(lineItemsList[i].OrderId == ordId){ //lineItemsList[i].CustomerId == userId && 
-                //Console.WriteLine($"Index: {i}, lineItemsList.Count: {lineItemsList.Count}");//DEBUG
-                toDelete = lineItemsList[i].InvId;
-                if(lineItemsList.Count>0){_bl.RemoveLineItem(toDelete);}
-                lineItemsList = _bl.GetAllLineItem();
-            }
-        }
+        // int toDelete = 0; //What line items to delete
+        // for(int i = lineItemsList.Count-1; i > -1; i--)//Delete from botton to prevent list shifting from messing up deletion sequence
+        // {
+        //     if(lineItemsList[i].OrderId == ordId){ //lineItemsList[i].CustomerId == userId && 
+        //         //Console.WriteLine($"Index: {i}, lineItemsList.Count: {lineItemsList.Count}");//DEBUG
+        //         toDelete = lineItemsList[i].InvId;
+        //         if(lineItemsList.Count>0){_bl.RemoveLineItem(toDelete);}
+        //         lineItemsList = _bl.GetAllLineItem();
+        //     }
+        // }
         
         exit = true;
 
