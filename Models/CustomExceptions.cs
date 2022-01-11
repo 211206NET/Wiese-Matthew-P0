@@ -1,5 +1,5 @@
 namespace CustomExceptions;
-[System.Serializable]
+//[System.Serializable]
 public class DuplicateRecordException : System.Exception//Can't get this to work
 {
     public DuplicateRecordException() { }

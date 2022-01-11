@@ -1,4 +1,3 @@
-using CustomExceptions;
 
 namespace UI;
 
@@ -11,7 +10,7 @@ public class Management : IMenu
         _bl = bl;
     }
 
-    int targetInv = 0; //Index of inventory
+    //int targetInv = 0; //Index of inventory
     public int chosenStore = 0;//StoreID
     public int chosenStoreIndex = 0;//Index of store in store list
     public void Start()
@@ -31,10 +30,10 @@ public class Management : IMenu
             Console.WriteLine("[0] Add store:"); //
             Console.WriteLine("[1] Select current store:"); //
             Console.WriteLine("[2] Manage company carried items:"); //
-            Console.WriteLine($"[3] Adjust/Add store info [Current store number: {chosenStore}]:"); //
-            Console.WriteLine($"[4] Manage store inventory [Current store number: {chosenStore}]:"); //
-            Console.WriteLine($"[5] Delete store [Current store number: {chosenStore}]:"); //
-            Console.WriteLine($"[6] See store order history for: {chosenStore}]:"); //
+            Console.WriteLine($"[3] Adjust/Add store info [Current store: {allStores[chosenStoreIndex].StoreName}]:"); //
+            Console.WriteLine($"[4] Manage store inventory [Current store: {allStores[chosenStoreIndex].StoreName}]:"); //
+            Console.WriteLine($"[5] Delete store [Current store: {allStores[chosenStoreIndex].StoreName}]:"); //
+            Console.WriteLine($"[6] See store order history for: [Current store: {allStores[chosenStoreIndex].StoreName}]:"); //
             Console.WriteLine("[x] Return to main menu:"); //
             string choose = Console.ReadLine() ?? "";
             switch(choose)
@@ -65,8 +64,14 @@ public class Management : IMenu
                         {Console.WriteLine("Invalid input, enter a numeric value");}  
                     }res = false;
                     
-                    //Add user data to new store generation //DISABLED because of row error
-                    //bool res = Decimal.TryParse(lclVersion, out localVersion);
+                    //Add user data to new store generation 
+
+                    //I can't get custom exception to work, so I will manually check for duplicate names
+                    foreach(Store storeCheck in allStores)
+                    {
+                        if(storeCheck.StoreName == userStoreName)
+                        {Console.WriteLine("A store with that name already exists"); goto createStore;}
+                    }
 
                     try
                     {
@@ -97,7 +102,7 @@ public class Management : IMenu
                     // _bl.AddInventory(invNew);
                     //allStores.Add(storeNew); //Plug new store into store list
                     Console.WriteLine($"[{idStamp}] Store: {userStoreName} successfully created!\n");
-                    Log.Information("[{0}] {1} has been created.",DateTime.Now,userStoreName);
+                    Log.Information("{0} has been created.",userStoreName);
                     //chosenStore = idStamp; //Set current store to store just made
                     idStamp++; //Add to idStamp for next store
                 break;
@@ -176,23 +181,27 @@ public class Management : IMenu
                     string trySelectD = "";
                     while(!res){
                     trySelectD = Console.ReadLine() ?? "";
-                    res = Decimal.TryParse(trySelectD, out d);
-                    if(res){
-                    salesTax = Decimal.Parse(trySelectD); }
-                    else{Console.WriteLine("Invalid input, try again");}} res = false;
+                    if(trySelectD == ""){res = true;}//Abort change
+                    else
+                    {
+                        res = Decimal.TryParse(trySelectD, out d);
+                        if(res){
+                        salesTax = Decimal.Parse(trySelectD); }
+                        else{Console.WriteLine("Invalid input, try again");}
+                    }} res = false;
                         //Change sales tax 
 
 
                     //if(change != ""){salesTax = Convert.ToDecimal(Int32.Parse(change));} change = ""; //Change sales tax 
 
                     Store storInf = new Store {
-                        StoreID = chosenStoreIndex, 
+                        StoreID = allStores[chosenStoreIndex].StoreID, 
                         StoreName = storeName,
                         City = city,
                         State = state,
                         SalesTax = salesTax
                     };
-                    Log.Information("[{0}] The store: {1} has had its details adjusted.",DateTime.Now,allStores[chosenStoreIndex].StoreName); 
+                    Log.Information("The store: {0} has had its details adjusted.",allStores[chosenStoreIndex].StoreName); 
                     _bl.ChangeStoreInfo(storInf);
                     
                 break;
@@ -203,29 +212,12 @@ public class Management : IMenu
                     allStores = _bl.GetAllStores(); 
                     allInventory = _bl.GetAllInventory();
                     allCarried = _bl.GetAllCarried();
-                    //_bl.GetAllInventory();
 
                     //First show current inventory
                     Console.WriteLine($"Inventory for {allStores[chosenStoreIndex].StoreName}");
-                    //if(allStores[chosenStore].localInv.Count > 0){
-     
+
                     Console.WriteLine($"allInventory.Count: {allInventory.Count}");
                     if(allInventory.Count > 0){
-
-                    //Return what index of inventory we need to access
-                    //List<ProdDetails> thisStoreInv = new List<ProdDetails>();
-                    // int[] whatInv = new int[allInventory.Count]; int posInt = 0; //Store item number of inventory that belongs to this store
-                    // for(int i = 0; i < allInventory.Count; i++)
-                    // {
-                    //     if(allInventory[i].Store == allStores[chosenStoreIndex].StoreID){posInt += 1; whatInv[posInt] = allInventory[i].Item;}
-                    // }
-
-                    //List<ProdDetails> thisStoreInv = new List<ProdDetails>();  
-                    // int[] thisStoreInv = new int[allCarried.Count];
-                    // for(int i = 0; i < allInventory.Count; i++)
-                    // {
-                    //     if(allInventory[i].Store == allStores[chosenStoreIndex].StoreID){thisStoreInv[i] = ???allCarried[i].APN;}
-                    // }
 
                     //Show store inventory
                     //Loop through inventory checking store assignment, then nest loop to get details from carried
@@ -243,12 +235,6 @@ public class Management : IMenu
                         }
                     }}
 
-                    // for(int i = 0; i < allInventory[targetInv].Items.Count; i++)
-                    // {
-                    //     Console.WriteLine($"APN: [{allInventory[targetInv].Items[i].APN}] {allInventory[targetInv].Items[i].Name},"+
-                    //     $" Cost: {allInventory[targetInv].Items[i].Cost}, Weight: {allInventory[targetInv].Items[i].Weight}\n"+
-                    //     $"\tDescription: {allInventory[targetInv].Items[i].Descr}"); 
-                    // }}
                     Console.WriteLine("\nEnter an APN to select item to change quantity of,\nor enter 'n' to add new product from carried list.");
                     string choice = Console.ReadLine() ?? "";
                     bool res2; bool res3; int choiceInt = 0;  int choiceInt2 = 0;
@@ -387,7 +373,7 @@ public class Management : IMenu
                                         Item = getAllCarried[choiceInt].APN,
                                         Qty = choiceInt2
                                     };
-                                    Log.Information("[{0}] Item APN: {1} has been added to the inventory of {2}.",DateTime.Now,getAllCarried[choiceInt].APN,allStores[chosenStoreIndex].StoreName);
+                                    Log.Information("Item APN: {0} has been added to the inventory of {1}.",getAllCarried[choiceInt].APN,allStores[chosenStoreIndex].StoreName);
 
                                     //Now to Save it
                                     _bl.AddInventory(addStock);//targetInv, 
@@ -433,7 +419,7 @@ public class Management : IMenu
                         }
                         //Store
                         _bl.RemoveStore(allStoresB[chosenStoreIndex].StoreID); //Store is deleted last as it has PK/FK connections
-                        Log.Information("[{0}] {1} has been deleted.",DateTime.Now,allStoresB[chosenStoreIndex].StoreName);
+                        Log.Information("{0} has been deleted.",allStoresB[chosenStoreIndex].StoreName);
                     }
                 break;
 
@@ -484,42 +470,43 @@ List<Inventory> allInventory, List<ProdDetails> allCarried, int storeID)
             if(allTheStores[i].StoreID == ordo.StoreId){storeIndex = i;}
         }
     
+        //Console.WriteLine($"ordo.StoreId: {ordo.StoreId},  storeID: {storeID}"); //DEBUG
         if(ordo.StoreId == storeID)//Find orders filtered by ones for current store
         {
             Console.WriteLine($"\n\n<>===================// Order Record \\\\===================<>\n"+
             $"Id: [{ordo.OrderId}], Store Id: [{storeID}], Store Name: {allTheStores[storeIndex].StoreName}, "+
             $"Order Date: {ordo.OrderDate},"+
             $"\nTotal Items: {ordo.TotalQty}, Total Cost: {ordo.TotalCost}, Order status: {orderStatus}\n");
-        }
 
-        //Next list line items for each order
-        string? itemName = "";
-        Console.WriteLine($"*-----------------------/ Line Item(s) \\-----------------------*");
-        foreach(LineItems li in lineItemsList)
-        {
-            //If line item matches
-            if(li.OrderId == ordo.OrderId)
-            {        
-            //Get name of item
-            foreach(Inventory inv in allInventory)
+            //Next list line items for each order
+            string? itemName = "";
+            Console.WriteLine($"*-----------------------/ Line Item(s) \\-----------------------*");
+            foreach(LineItems li in lineItemsList)
             {
-                if(inv.Id == li.InvId)
+                //If line item matches
+                if(li.OrderId == ordo.OrderId)
+                {        
+                //Get name of item
+                foreach(Inventory inv in allInventory)
                 {
-                    foreach(ProdDetails pd in allCarried)
+                    if(inv.Id == li.InvId)
                     {
-                        if(inv.Item == pd.APN)
+                        foreach(ProdDetails pd in allCarried)
                         {
-                            itemName = pd.Name; //So easy to get that name, just need 4 level nested loops
+                            if(inv.Item == pd.APN)
+                            {
+                                itemName = pd.Name; //So easy to get that name, just need 4 level nested loops
+                            }
                         }
                     }
                 }
-            }
 
-            //Finally show message    
-            Console.WriteLine($"Id: [{li.Id}], Product Name: [{itemName}], Quantity Ordered: {li.Qty}, "+
-            $"Total line cost: {li.CostPerItem}");
+                //Finally show message    
+                Console.WriteLine($"Id: [{li.Id}], Product Name: [{itemName}], Quantity Ordered: {li.Qty}, "+
+                $"Total line cost: {li.CostPerItem}");
+                }
             }
-        }
+        }//End Check is this store has order sin history
     }
 
 }

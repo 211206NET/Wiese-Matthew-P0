@@ -85,11 +85,21 @@ while(!exit)
                 newCustNumb = allCustomers.Count+1; userId = newCustNumb;
                 if(custo.CustNumb == newCustNumb){newCustNumb++; userId = newCustNumb;}
 
-                if(custo.UserName == userN)
+                if(custo.UserName == userN || custo.Pass == pw1)
                 {
                 //An account with this name already exists
+                if(custo.UserName == userN)
+                {
                 canMake = false;
                 Console.WriteLine("Sorry, but an account with this name already exists.");
+                break;}
+
+                //An account with this pass already exists
+                if(custo.Pass == pw1)
+                {
+                canMake = false;
+                Console.WriteLine("Sorry, but we decided to make it so all users have to have unique passwords for some reason.");
+                break;}
                 }else{canMake = true;}    
             }
             }else{Console.WriteLine("The passwords do not match."); canMake = false;}
@@ -108,6 +118,7 @@ while(!exit)
                 };
 
                 _bl.AddCustomer(sendCust);
+                Log.Information("{0} has been added to users.",userN);
             }
             
         }
@@ -182,10 +193,10 @@ while(!exit)
             Console.WriteLine("1.) Shop Clays");//1.) //
             Console.WriteLine("2.) Shop Professional Clay Tools");//2.) //
             Console.WriteLine("3.) Shop Claymation Studio Accessories");//3.) //
-            Console.WriteLine("4.) Return to Store Selection [ Warning: This will clear items in your cart! ]");//4.) //  
+            Console.WriteLine("4.) Return to Store Selection [ You can only checkout at one store at a time. ]");//4.) //  
             Console.WriteLine("5.) Checkout");//5.) // 
             Console.WriteLine("6.) See Customer Orders");//6.) // 
-            Console.WriteLine("x.) Exit");//x.) 
+            Console.WriteLine("x.) Exit the entire website");//x.) 
 
             string input = Console.ReadLine() ?? "";
             //Homunculus Switch
@@ -254,7 +265,7 @@ while(!exit)
             }
             else
             {
-                bool res = false; int a; int intAPN = 0; bool abort = false;
+                bool res = false; int a; int intAPN = 0; bool abort = false; bool good = false;
                 while(!res || abort == true)
                 {
                     if(chooseAPN == "x"){pos = 2; abort = true; break;} //Give up selecting an APN
@@ -262,6 +273,13 @@ while(!exit)
                     if(res)
                     {
                         intAPN = Int32.Parse(chooseAPN); //Select APN   
+                        
+                        //Confirm that this choice is really an APN
+                        foreach(ProdDetails pdAPN in allCarried)
+                        {
+                            if(pdAPN.APN == intAPN){good = true;}//Must at least be a real APN, if APN not in store returns 0 qty
+                        }    
+                        if(good == false){pos = 2; abort = true; break;}
                     }//End check for parse
                     else{Console.WriteLine("Enter an APN or 'x' to go back"); chooseAPN = Console.ReadLine() ?? ""; }
                 }
@@ -320,6 +338,16 @@ while(!exit)
                         {isOrder = true; remOrdId = ord.OrderId;}//  Console.WriteLine($"Order was found, remOrdId: {remOrdId}");}
                     }  
 
+                    //Find how much of this item the store has one hand
+                    allInventory = _bl.GetAllInventory(); int getOnHand = 0;
+                    foreach(Inventory checkInv in allInventory)
+                    {
+                        if(checkInv.Store == allStores[chosenStore].StoreID && checkInv.Item == remAPN){getOnHand = checkInv.Qty;}
+                    }
+
+                    //Console.WriteLine($"getOnHand: {getOnHand}, qtyToBuy: {qtyToBuy}");
+                    if(qtyToBuy > 0 && qtyToBuy <= getOnHand){//Input quantity validation
+
                     if(!isOrder)
                     {
                         remOrdId = allOrders.Count+1;
@@ -337,6 +365,7 @@ while(!exit)
                         _bl.AddOrder(newOrd); 
                     }
 
+                    
                     //Now to Save it
                     LineItems newLI = new LineItems {  //DISABLED due to row error
                         //Id = remAPN,   
@@ -348,9 +377,9 @@ while(!exit)
                         SalesTax = sendTax
                     };
                     
-                    _bl.AddLineItem(newLI); 
-                            
+                    _bl.AddLineItem(newLI);         
                     Console.WriteLine("\nOrder made!");
+                    }else{Console.WriteLine("\nYou either ordered more than is in stock or a negative number");}
 
                     }//End parse check
                     else{Console.WriteLine("Invalid input");}
@@ -501,7 +530,6 @@ List<LineItems> allTheLineItems, List<Inventory> allInventory, List<ProdDetails>
             $"Id: [{ordo.OrderId}], Customer Name: [{customerName}], Store Name: {allTheStores[storeIndex].StoreName}, "+
             $"Order Date: {ordo.OrderDate},"+
             $"\nTotal Items: {ordo.TotalQty}, Total Cost: {ordo.TotalCost}, Order status: {orderStatus}\n");
-        }
 
         //Next list line items for each order
         string? itemName = "";
@@ -531,6 +559,7 @@ List<LineItems> allTheLineItems, List<Inventory> allInventory, List<ProdDetails>
             $"Total line cost: {li.CostPerItem}");
             }
         }
+        }//End check user hasorder history
     }
     pos = 2;
 }

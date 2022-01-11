@@ -92,7 +92,7 @@ public class InventoryCtrl : IMenu
                     };
 
                     _bl.AddCarried(itemNew);
-                    Log.Information("[{0}] {1} has been added to carried items.",DateTime.Now,itemName);
+                    Log.Information("{0} has been added to carried items.",itemName);
 
                     Console.WriteLine($"[{itemName}] successfully created and added to the list of carried items for this franchise.\n");
                 break;
@@ -270,7 +270,7 @@ public class InventoryCtrl : IMenu
                         Cost = itemCostC,
                         Weight = itemWeightC
                     };
-                    Log.Information("[{0}] {1} has had it's data updated in carried items.",DateTime.Now,itemNameC);
+                    Log.Information("{0} has had it's data updated in carried items.",itemNameC);
 
                     _bl.ChangeCarried(changeCarry);
                 break;
