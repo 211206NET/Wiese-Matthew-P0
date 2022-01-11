@@ -1,15 +1,7 @@
-﻿using UI;
-//using DL;
+﻿//For Serilog
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File(@"..\DL\customerLogFile.txt")
+    .CreateLogger();
 
-//string cS = connectionString.txt;
- //IRepo repoSQL = new DBRepo(cS);
-// CSBL bl = new CSBL(repoSQL);
-
-
-// IRepo repo = new FileRepo();
-// CSBL bl = new CSBL(repo);
-// MainMenu menu = new MainMenu(bl);
-// menu.Start();
-
-
+//Start Main Menu
 MenuFactory.GetMenu("main").Start();

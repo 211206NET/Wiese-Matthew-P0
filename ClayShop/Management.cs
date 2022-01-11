@@ -97,6 +97,7 @@ public class Management : IMenu
                     // _bl.AddInventory(invNew);
                     //allStores.Add(storeNew); //Plug new store into store list
                     Console.WriteLine($"[{idStamp}] Store: {userStoreName} successfully created!\n");
+                    Log.Information("[{0}] {1} has been created.",DateTime.Now,userStoreName);
                     //chosenStore = idStamp; //Set current store to store just made
                     idStamp++; //Add to idStamp for next store
                 break;
@@ -125,12 +126,6 @@ public class Management : IMenu
                     select = Int32.Parse(trySelect); }
                     else{Console.WriteLine("Invalid input, try again");}} res = false;
 
-                    // string select = Console.ReadLine(); 
-                    // switch(select)
-                    // {
-                    //     case Char.IsNumber:
-                    //     break;
-                    // }
                     if(select < allStoresQ.Count){
                     chosenStoreIndex = select;
                     chosenStore = allStoresQ[chosenStoreIndex].StoreID;}   //User inputs a choice
@@ -141,16 +136,6 @@ public class Management : IMenu
                 //Manage Company Carried Items:
                 case "2":
                     Console.WriteLine("Change carried items.");
-                    
-                    // //Here, I instantiated an implementation of IRepo (FileRepo)
-                    // IRepo repo = new FileRepo();
-                    // //next, I instantiated CSBL (an implementation of IBL) and then injected IRepo implementation for IBL/CSBL
-                    // IBL bl = new CSBL(repo);
-                    // //Finally, I instantiate carrMenu that needs an instance that implements Business Logic class
-                    // InventoryCtrl carrMenu = new InventoryCtrl(bl);
-                    // //Reset local settings for when returning to this menu
-                    // carrMenu.Start();
-
                     MenuFactory.GetMenu("inventory").Start();
                 break;
 
@@ -207,7 +192,7 @@ public class Management : IMenu
                         State = state,
                         SalesTax = salesTax
                     };
-
+                    Log.Information("[{0}] The store: {1} has had its details adjusted.",DateTime.Now,allStores[chosenStoreIndex].StoreName); 
                     _bl.ChangeStoreInfo(storInf);
                     
                 break;
@@ -402,8 +387,8 @@ public class Management : IMenu
                                         Item = getAllCarried[choiceInt].APN,
                                         Qty = choiceInt2
                                     };
+                                    Log.Information("[{0}] Item APN: {1} has been added to the inventory of {2}.",DateTime.Now,getAllCarried[choiceInt].APN,allStores[chosenStoreIndex].StoreName);
 
-                                    //allInventory[targetInv].Items.Add(addStock);  //DO I NEED THIS EVEN?
                                     //Now to Save it
                                     _bl.AddInventory(addStock);//targetInv, 
                                     abort = false; //reset
@@ -448,6 +433,7 @@ public class Management : IMenu
                         }
                         //Store
                         _bl.RemoveStore(allStoresB[chosenStoreIndex].StoreID); //Store is deleted last as it has PK/FK connections
+                        Log.Information("[{0}] {1} has been deleted.",DateTime.Now,allStoresB[chosenStoreIndex].StoreName);
                     }
                 break;
 

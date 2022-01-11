@@ -1,0 +1,5 @@
+
+2022-01-11 09:25:46.273 -08:00 [INF] ["2022-01-11T09:25:46.2664821-08:00"] StoreThatWillClose has been created.
+2022-01-11 09:26:17.238 -08:00 [INF] ["2022-01-11T09:26:17.2374727-08:00"] Item APN: 100 has been added to the inventory of StoreThatWillClose.
+2022-01-11 09:26:36.773 -08:00 [INF] ["2022-01-11T09:26:36.7736042-08:00"] The store: StoreThatWillClose has had its details adjusted.
+2022-01-11 09:26:48.972 -08:00 [INF] ["2022-01-11T09:26:48.9729721-08:00"] The store: StoreThatWillClose has had its details adjusted.

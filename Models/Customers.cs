@@ -1,9 +1,11 @@
 using System.Data;
+using Serilog;
 
 namespace Models;
 
 public class Customers
 {
+
     public Customers(){}
     //public Customers(Customers cust){return sasasas}
 
@@ -44,4 +46,26 @@ public class Customers
         row["Employee"] = this.Employee;
     }
 
+
+    /*
+    Serilog???
+    Did these in models folder...
+    dotnet add package Serilog --version 2.10.0
+    dotnet add package Serilog.Sinks.Console
+    dotnet add package Serilog.Sinks.File
+    */
+
+    //Where does this go?
+    // public void SerilLogIt()
+    // {
+    //     Log.Logger = new LoggerConfiguration()
+    //     .WriteTo.File("customerLogFile.txt");
+    //     .CreateLogger();
+    // }
+
+
+    
+
+
 }
+

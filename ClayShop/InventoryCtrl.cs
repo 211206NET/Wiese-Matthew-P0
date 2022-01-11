@@ -92,7 +92,7 @@ public class InventoryCtrl : IMenu
                     };
 
                     _bl.AddCarried(itemNew);
-                    //_bl.AddCarried(0,itemName ?? "",itemType,itemDesc ?? "",itemCost,itemWeight);
+                    Log.Information("[{0}] {1} has been added to carried items.",DateTime.Now,itemName);
 
                     Console.WriteLine($"[{itemName}] successfully created and added to the list of carried items for this franchise.\n");
                 break;
@@ -270,11 +270,9 @@ public class InventoryCtrl : IMenu
                         Cost = itemCostC,
                         Weight = itemWeightC
                     };
-                    // string jsonStringC = JsonSerializer.Serialize(changeCarry);
+                    Log.Information("[{0}] {1} has had it's data updated in carried items.",DateTime.Now,itemNameC);
 
                     _bl.ChangeCarried(changeCarry);
-                    //_bl.ChangeCarried(selChangeCarried,itemNameC,itemTypeC,itemDescC,itemCostC,itemWeightC);
-                    //FileRepo.SaveCarried();
                 break;
 
                 //Return to management menu:
