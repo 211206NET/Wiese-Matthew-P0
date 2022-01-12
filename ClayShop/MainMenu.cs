@@ -517,7 +517,15 @@ List<LineItems> allTheLineItems, List<Inventory> allInventory, List<ProdDetails>
     if(sortStr == "o")
     {allTheOrders.Sort((x, y) => x.OrderDate.CompareTo(y.OrderDate));}
     else{allTheOrders.Sort((x, y) => y.OrderDate.CompareTo(x.OrderDate));}
-    
+    sortStr = "";
+    //Sort Price
+    Console.WriteLine("To sort order by price input 'h' for highest 'l' for lowest, or enter nothing to proceed to sort by date.");
+    sortStr = Console.ReadLine() ?? "";
+    if(sortStr != ""){
+    if(sortStr == "l")
+    {allTheOrders.Sort((x, y) => x.TotalCost.CompareTo(y.TotalCost));}
+    else{allTheOrders.Sort((x, y) => y.TotalCost.CompareTo(x.TotalCost));}}
+
     //Get Order Info
     foreach(Orders ordo in allTheOrders)//Loop through all orders
     {
