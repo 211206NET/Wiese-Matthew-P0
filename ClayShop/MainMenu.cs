@@ -189,6 +189,7 @@ while(!exit)
 
         //Store Customer Main Menu 
         case 2:
+            canLog = false; //For relog
             Console.WriteLine($"\nWelcome to {allStores[chosenStore].StoreName}\nWhat would you like to do?");
             Console.WriteLine("1.) Shop Clays");//1.) //
             Console.WriteLine("2.) Shop Professional Clay Tools");//2.) //
@@ -196,6 +197,7 @@ while(!exit)
             Console.WriteLine("4.) Return to Store Selection [ You can only checkout at one store at a time. ]");//4.) //  
             Console.WriteLine("5.) Checkout");//5.) // 
             Console.WriteLine("6.) See Customer Orders");//6.) // 
+            Console.WriteLine("l.) Log Out");//l.) // 
             Console.WriteLine("x.) Exit the entire website");//x.) 
 
             string input = Console.ReadLine() ?? "";
@@ -222,6 +224,9 @@ while(!exit)
                 break;
                 case "6":
                     pos = 8;//See Customer Orders
+                break;
+                case "l":
+                    pos = 0;//Secret relogin
                 break;
                 case "x":
                     exit = true;//Exit App
@@ -464,7 +469,7 @@ while(!exit)
 private void Login()
 {
     List<Customers> allCustomers = _bl.GetAllCustomers();
-    while(!canLog)
+    while(!canLog && pos == 0)
     {
         //Login Functionality here
         Console.WriteLine("Enter user name here");
@@ -487,6 +492,7 @@ private void Login()
         
         if(!canLog){Console.WriteLine("\nUser name and/or password incorrect, please try again\n");}
     }
+    //canLog = false;
     pos = 1;
     
 }
